@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "branch-ui-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 5500
+    },
+    {
+      "name": "v26-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'branch_ui_generator_v26_card.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5501,'127.0.0.1',()=>console.log('v26 server on http://localhost:5501'))"],
+      "port": 5501
+    },
+    {
+      "name": "report-editor-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),root=process.cwd();h.createServer((q,r)=>{let u=decodeURIComponent(q.url.split('?')[0]);let fp=p.join(root,u);if(u==='/'||u==='')fp=p.join(root,'report_block_editor_v1.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found: '+fp);return}const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.json':'application/json'}[ext]||'application/octet-stream';r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5502,'127.0.0.1',()=>console.log('report-editor on http://localhost:5502 root='+root))"],
+      "port": 5502
+    }
+  ]
+}

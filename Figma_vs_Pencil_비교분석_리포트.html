@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figma vs Pencil.dev 비교 분석 리포트</title>
+<style>
+:root {
+  --figma: #F24E1E;
+  --figma-bg: #FFF5F2;
+  --figma-light: #FDDDD3;
+  --pencil: #4F46E5;
+  --pencil-bg: #F0EFFF;
+  --pencil-light: #DDD6FE;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --warning: #CA8A04;
+  --warning-bg: #FEFCE8;
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --accent: #2563EB;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Pretendard', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  line-height: 1.7;
+  font-size: 15px;
+}
+
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ===== COVER ===== */
+.cover {
+  background: linear-gradient(135deg, var(--gray-900) 0%, #1a1a3e 50%, var(--gray-800) 100%);
+  color: #fff;
+  padding: 80px 0 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 70%, rgba(242,78,30,0.15) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(79,70,229,0.15) 0%, transparent 50%);
+}
+.cover * { position: relative; }
+.cover-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 24px;
+}
+.cover h1 {
+  font-size: 38px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+.cover h1 .figma-t { color: var(--figma); }
+.cover h1 .pencil-t { color: #818CF8; }
+.cover-sub {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 32px;
+}
+.cover-meta {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ===== SECTION ===== */
+.section {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  margin: 24px 0;
+  overflow: hidden;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.section-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+.section-body { padding: 28px; }
+
+/* ===== STAT CARDS ===== */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-card .label {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.stat-card .values {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 12px;
+}
+.stat-card .val-figma {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--figma);
+}
+.stat-card .val-pencil {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--pencil);
+}
+.stat-card .vs {
+  font-size: 12px;
+  color: var(--gray-400);
+  font-weight: 600;
+}
+.stat-card .note {
+  font-size: 11px;
+  color: var(--gray-400);
+  margin-top: 6px;
+}
+
+/* ===== RECOMMENDATION BOX ===== */
+.rec-box {
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.rec-box.primary {
+  background: linear-gradient(135deg, #F0EFFF 0%, #E8E6FF 100%);
+  border-left: 5px solid var(--figma);
+}
+.rec-box .rec-rank {
+  display: inline-block;
+  background: var(--figma);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+.rec-box .rec-rank.rank2 {
+  background: var(--pencil);
+}
+.rec-box h3 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.rec-box p {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.6;
+}
+
+/* ===== COMPARE TABLE ===== */
+.compare-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.compare-table thead th {
+  background: var(--gray-100);
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--gray-600);
+  border-bottom: 1px solid var(--gray-200);
+}
+.compare-table thead th:nth-child(2) { color: var(--figma); }
+.compare-table thead th:nth-child(3) { color: var(--pencil); }
+.compare-table tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--gray-100);
+}
+.compare-table tbody tr:last-child td { border-bottom: none; }
+.compare-table tbody tr:hover { background: var(--gray-50); }
+.compare-table .cat {
+  font-weight: 600;
+  color: var(--gray-700);
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge.win { background: var(--success-bg); color: var(--success); }
+.badge.lose { background: var(--error-bg); color: var(--error); }
+.badge.tie { background: var(--warning-bg); color: var(--warning); }
+.badge.figma { background: var(--figma-bg); color: var(--figma); }
+.badge.pencil { background: var(--pencil-bg); color: var(--pencil); }
+
+/* ===== PROS/CONS ===== */
+.proscons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.proscons-col {
+  border-radius: 10px;
+  padding: 24px;
+}
+.proscons-col.figma-col {
+  background: var(--figma-bg);
+  border: 1px solid var(--figma-light);
+}
+.proscons-col.pencil-col {
+  background: var(--pencil-bg);
+  border: 1px solid var(--pencil-light);
+}
+.proscons-col h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.proscons-col .figma-dot { color: var(--figma); }
+.proscons-col .pencil-dot { color: var(--pencil); }
+.proscons-col ul {
+  list-style: none;
+  padding: 0;
+}
+.proscons-col li {
+  font-size: 13px;
+  padding: 5px 0;
+  color: var(--gray-700);
+  display: flex;
+  gap: 6px;
+}
+.proscons-col li::before {
+  flex-shrink: 0;
+}
+.pro-item::before { content: '+'; color: var(--success); font-weight: 700; }
+.con-item::before { content: '-'; color: var(--error); font-weight: 700; }
+
+/* ===== ISSUE LIST ===== */
+.issue-list {
+  border-radius: 8px;
+  padding: 20px;
+  margin: 12px 0;
+}
+.issue-list.figma-issues {
+  background: var(--figma-bg);
+  border: 1px solid var(--figma-light);
+}
+.issue-list.pencil-issues {
+  background: var(--pencil-bg);
+  border: 1px solid var(--pencil-light);
+}
+.issue-list h4 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.issue-list ol {
+  padding-left: 20px;
+}
+.issue-list li {
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--gray-700);
+}
+
+/* ===== RADAR CHART (CSS) ===== */
+.radar-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+.radar-table {
+  width: 100%;
+  max-width: 600px;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.radar-table th, .radar-table td {
+  padding: 10px 16px;
+  font-size: 13px;
+}
+.radar-table thead th {
+  background: var(--gray-100);
+  font-weight: 600;
+  text-align: center;
+  border-bottom: 1px solid var(--gray-200);
+}
+.radar-table tbody td {
+  border-bottom: 1px solid var(--gray-100);
+  text-align: center;
+}
+.radar-table tbody td:first-child { text-align: left; font-weight: 600; color: var(--gray-700); }
+.radar-table tbody tr:last-child td { border-bottom: none; }
+.score-bar {
+  display: inline-block;
+  height: 14px;
+  border-radius: 3px;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+/* ===== CALLOUT ===== */
+.callout {
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.callout.info {
+  background: #EFF6FF;
+  border-left: 4px solid var(--accent);
+  color: var(--gray-700);
+}
+.callout.warn {
+  background: var(--warning-bg);
+  border-left: 4px solid var(--warning);
+  color: var(--gray-700);
+}
+.callout.success {
+  background: var(--success-bg);
+  border-left: 4px solid var(--success);
+  color: var(--gray-700);
+}
+.callout strong { font-weight: 700; }
+
+/* ===== PROMPT BOX ===== */
+.prompt-box {
+  background: var(--gray-900);
+  color: #E2E8F0;
+  border-radius: 8px;
+  padding: 20px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 12px 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  color: var(--gray-400);
+  font-size: 12px;
+}
+
+/* ===== FLOW BOX ===== */
+.flow-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.flow-step {
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+.flow-arrow { color: var(--gray-400); font-size: 16px; }
+
+/* ===== SUB HEADING ===== */
+.sub-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin: 24px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.text-figma { color: var(--figma); font-weight: 700; }
+.text-pencil { color: var(--pencil); font-weight: 700; }
+
+/* ===== VERDICT ===== */
+.verdict {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+}
+.verdict-item {
+  flex: 1;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+}
+.verdict-item .v-label {
+  font-size: 12px;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+.verdict-item .v-winner {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+p { margin-bottom: 12px; }
+p:last-child { margin-bottom: 0; }
+
+/* ===== CONCLUSION SECTION ===== */
+.conclusion-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 20px 0;
+}
+.conclusion-card {
+  border-radius: 10px;
+  padding: 24px;
+  border: 2px solid;
+}
+.conclusion-card.rank1 {
+  border-color: var(--figma);
+  background: linear-gradient(135deg, #FFF5F2 0%, #fff 100%);
+}
+.conclusion-card.rank2 {
+  border-color: var(--pencil);
+  background: linear-gradient(135deg, #F0EFFF 0%, #fff 100%);
+}
+.conclusion-card .rank-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.conclusion-card.rank1 .rank-badge { background: var(--figma); }
+.conclusion-card.rank2 .rank-badge { background: var(--pencil); }
+.conclusion-card h4 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.conclusion-card .reason-list {
+  list-style: none;
+  padding: 0;
+}
+.conclusion-card .reason-list li {
+  font-size: 13px;
+  padding: 4px 0;
+  color: var(--gray-600);
+  padding-left: 16px;
+  position: relative;
+}
+.conclusion-card .reason-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.conclusion-card.rank1 .reason-list li::before { background: var(--figma); }
+.conclusion-card.rank2 .reason-list li::before { background: var(--pencil); }
+
+@media print {
+  body { background: #fff; font-size: 12px; }
+  .cover { padding: 40px 0 30px; }
+  .section { box-shadow: none; border: 1px solid var(--gray-200); page-break-inside: avoid; }
+  .stat-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== COVER ===== -->
+<div class="cover">
+  <div class="page-wrapper">
+    <div class="cover-badge">INTERNAL REPORT / DESIGN TOOL COMPARISON</div>
+    <h1><span class="figma-t">Figma</span> vs <span class="pencil-t">Pencil.dev</span></h1>
+    <h1 style="font-size:24px; font-weight:600; opacity:0.9;">Claude Code 디자인 도구 비교 분석 리포트</h1>
+    <p class="cover-sub">동일한 화면(Branch Q)을 두 도구로 각각 디자인한 결과를 비교하여<br>향후 디자인 작업 도구 선정을 위한 의사결정 근거를 제공합니다.</p>
+    <div class="cover-meta">
+      <span>작성일: 2026.04.08</span>
+      <span>대상: 사내 보고용</span>
+      <span>원본: 통합_시연용_v9.html</span>
+      <span>작성: Claude Code (Opus 4.6)</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+<!-- ===== 1. 개요 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-800)">1</div>
+    <h2>개요</h2>
+  </div>
+  <div class="section-body">
+    <h3 class="sub-heading">보고서 목적</h3>
+    <p>Claude Code를 활용한 UI 디자인 기획 작업에서, <strong class="text-figma">Figma</strong>와 <strong class="text-pencil">Pencil.dev</strong> 두 도구의 효율성을 비교합니다. 동일한 원본 화면(통합_시연용_v9.html, Branch Q 페이지)을 동일한 프롬프트 구조로 두 도구에 각각 작업한 결과물을 분석하여, <strong>향후 하나의 도구로 통일하기 위한 판단 근거</strong>를 제공합니다.</p>
+
+    <h3 class="sub-heading">비교 조건</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>항목</th><th>Figma</th><th>Pencil.dev</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cat">연동 방식</td><td>Figma MCP Plugin API (JS 코드 실행)</td><td>Pencil MCP (batch_design 직접 호출)</td></tr>
+        <tr><td class="cat">원본 파일</td><td colspan="2" style="text-align:center">통합_시연용_v9.html (251KB, 4,318줄)</td></tr>
+        <tr><td class="cat">작업 지시</td><td colspan="2" style="text-align:center">거의 동일한 프롬프트 (모든 구성요소 디자인 + DESC 포함)</td></tr>
+        <tr><td class="cat">수정 요청 횟수</td><td>수시로 반복 수정 요청</td><td>추가 수정 요청 거의 없음</td></tr>
+        <tr><td class="cat">겹침 수정</td><td colspan="2" style="text-align:center">두 도구 모두 사용자가 직접 겹침 부분 수정</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>공정 비교 유의사항:</strong> Pencil.dev는 이번 테스트에서 지속적인 수정 요청을 하지 않았습니다. 따라서 Pencil의 수정 비율(~5%)과 Figma의 수정 비율(~40%)을 단순 비교할 때 이 점을 감안해야 합니다. Pencil에도 동일 수준의 수정을 요청했다면 수치가 달라질 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. 한눈에 보는 비교 요약 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--accent)">2</div>
+    <h2>한눈에 보는 비교 요약</h2>
+  </div>
+  <div class="section-body">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="label">만든 화면 수</div>
+        <div class="values">
+          <span class="val-figma">40</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">17</span>
+        </div>
+        <div class="note">Figma가 2.4배 더 많이 제작</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">대화 횟수 (턴)</div>
+        <div class="values">
+          <span class="val-figma">~150</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">~55</span>
+        </div>
+        <div class="note">Pencil이 66% 적은 대화</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">AI 비용 (토큰)</div>
+        <div class="values">
+          <span class="val-figma">1,150만</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">770만</span>
+        </div>
+        <div class="note">Pencil이 33% 절약</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">화면 1장당 비용</div>
+        <div class="values">
+          <span class="val-figma">28.7만</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">45.3만</span>
+        </div>
+        <div class="note">Figma가 장당 비용은 저렴</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">겹침 문제 발생</div>
+        <div class="values">
+          <span class="val-figma">8건</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">1건</span>
+        </div>
+        <div class="note">Pencil이 겹침에 훨씬 강함</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">수정에 쓴 시간</div>
+        <div class="values">
+          <span class="val-figma">~40%</span>
+          <span class="vs">vs</span>
+          <span class="val-pencil">~5%</span>
+        </div>
+        <div class="note">Pencil은 수정 거의 불필요*</div>
+      </div>
+    </div>
+
+    <!-- 추천 결론 -->
+    <div class="rec-box primary" style="border-left-color:var(--figma); background: linear-gradient(135deg, var(--figma-bg) 0%, #fff 100%);">
+      <span class="rec-rank">1순위 추천</span>
+      <h3 style="color:var(--figma);">Figma + Claude Code</h3>
+      <p>외부 공유, 개발자 전달 품질, 업계 표준 호환성에서 압도적 우위. 비용이 높지만, 실무에서 "다른 사람에게 보여주고 함께 쓸 수 있는" 도구가 더 중요합니다.</p>
+    </div>
+    <div class="rec-box" style="border-left: 5px solid var(--pencil); background: linear-gradient(135deg, var(--pencil-bg) 0%, #fff 100%);">
+      <span class="rec-rank rank2">2순위 대안</span>
+      <h3 style="color:var(--pencil);">Pencil.dev + Claude Code</h3>
+      <p>비용 효율, 빠른 생성, 배치 안정성에서 우수. 내부 팀 단독 사용이거나 빠른 초안 작업이 목적이라면 충분히 활용 가능합니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. 만든 화면 범위 비교 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#0EA5E9">3</div>
+    <h2>만든 화면 범위 비교</h2>
+  </div>
+  <div class="section-body">
+    <table class="compare-table">
+      <thead>
+        <tr><th>화면 유형</th><th>Figma</th><th>Pencil.dev</th><th>비고</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">메인(Welcome) 화면</td>
+          <td>4개 (기본 + SubPanel 3종)</td>
+          <td>1개 (GlobalLayout_Sidebar)</td>
+          <td>Figma가 상태별 변형 제공</td>
+        </tr>
+        <tr>
+          <td class="cat">업무 시나리오 (S1~S6)</td>
+          <td>6개 (시나리오마다 개별 화면)</td>
+          <td>1개 (ChatMode로 통합)</td>
+          <td>Figma는 실제 데이터로 각각 그림</td>
+        </tr>
+        <tr>
+          <td class="cat">팝업/모달 (M1~M6)</td>
+          <td>7개</td>
+          <td>7개 (04~06D)</td>
+          <td>거의 동일한 커버리지</td>
+        </tr>
+        <tr>
+          <td class="cat">보고서 편집기</td>
+          <td>2개 (빈 상태 + 입력 상태)</td>
+          <td>1개 (BuilderView)</td>
+          <td>Figma가 상태별 분리</td>
+        </tr>
+        <tr>
+          <td class="cat">기타 부품/이벤트</td>
+          <td>6개 (NAV흐름도, 완료오버레이 등)</td>
+          <td>2개 (Toast, FilePreview)</td>
+          <td>Figma가 보조 화면 풍부</td>
+        </tr>
+        <tr>
+          <td class="cat">개발 설명서 (DESC)</td>
+          <td>11개</td>
+          <td>6개</td>
+          <td>Figma 설명서가 더 상세</td>
+        </tr>
+        <tr style="background:var(--gray-50); font-weight:700;">
+          <td class="cat">합계</td>
+          <td style="color:var(--figma);">40장</td>
+          <td style="color:var(--pencil);">17장</td>
+          <td>Figma가 2.4배</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-heading">왜 화면 수가 이렇게 다를까?</h3>
+
+    <div class="proscons">
+      <div class="proscons-col figma-col">
+        <h4><span class="figma-dot">&#9679;</span> Figma의 접근 방식</h4>
+        <p style="font-size:13px; color:var(--gray-600); margin-bottom:8px;"><strong>"시나리오마다 따로 그린다"</strong></p>
+        <ul>
+          <li class="pro-item">일반질의, 분석질의 등 6개 시나리오를 각각 실제 데이터로 화면 제작</li>
+          <li class="pro-item">개발자가 "이런 데이터일 때 이렇게 보인다"를 눈으로 바로 확인</li>
+          <li class="pro-item">상태 변형(열림/닫힘, 빈 상태/입력 상태)도 별도 화면으로 제공</li>
+          <li class="con-item">화면이 많아 관리 부담 증가</li>
+          <li class="con-item">수정 시 여러 화면을 일괄 업데이트해야 함</li>
+        </ul>
+      </div>
+      <div class="proscons-col pencil-col">
+        <h4><span class="pencil-dot">&#9679;</span> Pencil의 접근 방식</h4>
+        <p style="font-size:13px; color:var(--gray-600); margin-bottom:8px;"><strong>"하나의 틀로 여러 상황을 표현한다"</strong></p>
+        <ul>
+          <li class="pro-item">ChatMode 1장으로 6개 시나리오를 구조적으로 커버</li>
+          <li class="pro-item">BlockRenderer 부품을 채팅/편집기/모바일에서 재사용</li>
+          <li class="pro-item">관리 간편, 수정할 곳 적음, AI 비용 절약</li>
+          <li class="con-item">시나리오별 실제 모습을 시각적으로 보여주지 못함</li>
+          <li class="con-item">개발자가 "이 경우엔 어떻게 보이지?" 상상해야 함</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. 디자인 품질 비교 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#8B5CF6">4</div>
+    <h2>디자인 품질 비교</h2>
+  </div>
+  <div class="section-body">
+    <table class="compare-table">
+      <thead>
+        <tr><th>품질 항목</th><th>Figma</th><th>Pencil.dev</th><th>판정</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">AI 응답 블록 종류</td>
+          <td>14가지 (실제 데이터 포함)</td>
+          <td>16가지 (구조 정의)</td>
+          <td><span class="badge pencil">Pencil +2종</span></td>
+        </tr>
+        <tr>
+          <td class="cat">상태 표현 (hover/active 등)</td>
+          <td>hover/active/disabled/error 모두 포함</td>
+          <td>hover/active 상태 포함</td>
+          <td><span class="badge figma">Figma 더 상세</span></td>
+        </tr>
+        <tr>
+          <td class="cat">데이터 현실성</td>
+          <td>실제 금융 데이터 사용 (2억 3,840만원 등)</td>
+          <td>구조/레이블만 정의</td>
+          <td><span class="badge figma">Figma 우위</span></td>
+        </tr>
+        <tr>
+          <td class="cat">배치 안정성</td>
+          <td>절대 좌표 → 겹침 8건 발생</td>
+          <td>Flexbox 자동 정렬 → 겹침 1건</td>
+          <td><span class="badge pencil">Pencil 우위</span></td>
+        </tr>
+        <tr>
+          <td class="cat">색상/디자인 토큰</td>
+          <td>CSS 변수 1:1 매핑</td>
+          <td>23개 변수 등록 (일괄 관리)</td>
+          <td><span class="badge tie">비슷</span></td>
+        </tr>
+        <tr>
+          <td class="cat">글꼴(폰트) 처리</td>
+          <td>한글 미지원 → 715개 노드 수동 교체</td>
+          <td>문제 없음</td>
+          <td><span class="badge pencil">Pencil 우위</span></td>
+        </tr>
+        <tr>
+          <td class="cat">시나리오 데이터 흐름</td>
+          <td>6개 시나리오별 개별 화면 + 멀티턴 대화</td>
+          <td>6개 시나리오 분기 로직 문서화</td>
+          <td><span class="badge figma">Figma 우위</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-heading">개발 설명서(DESC) 비교 - 개발자가 어떤 걸로 더 쉽게 만들 수 있나?</h3>
+
+    <div class="proscons">
+      <div class="proscons-col figma-col">
+        <h4><span class="figma-dot">&#9679;</span> Figma 설명서 (11장)</h4>
+        <ul>
+          <li class="pro-item">화면 주소(라우트 경로) 명시됨</li>
+          <li class="pro-item">크기/색상/글꼴/간격 수치 모두 포함</li>
+          <li class="pro-item">마우스올림/클릭/비활성/에러 상태별 스타일</li>
+          <li class="pro-item">서버 연결(API) 포인트 안내</li>
+          <li class="pro-item">로딩 중/비어있을 때/에러 가이드</li>
+          <li class="pro-item">React 부품 구조 제안</li>
+        </ul>
+        <div class="callout success" style="margin-top:12px;">
+          <strong>판정:</strong> 신입 개발자가 이 설명서만 보고 개발 + 디버깅이 가능한 수준
+        </div>
+      </div>
+      <div class="proscons-col pencil-col">
+        <h4><span class="pencil-dot">&#9679;</span> Pencil 설명서 (6장)</h4>
+        <ul>
+          <li class="pro-item">React 부품 이름 + 속성(props) 구조</li>
+          <li class="pro-item">16가지 블록 타입 전체 목록</li>
+          <li class="pro-item">시나리오별 버튼 동작 분기 로직</li>
+          <li class="pro-item">핵심 부품(입력창, 모델선택기) 상세</li>
+          <li class="con-item">화면 주소(라우트) 없음</li>
+          <li class="con-item">서버 연결(API) 안내 없음</li>
+          <li class="con-item">에러 상태 가이드 없음</li>
+        </ul>
+        <div class="callout warn" style="margin-top:12px;">
+          <strong>판정:</strong> 경험 있는 개발자는 가능하나, 신입은 추가 질문이 필요한 수준
+        </div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">설명서 항목별 상세 비교</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>항목</th><th>Figma</th><th>Pencil</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cat">화면 주소(라우트)</td><td><span class="badge win">있음</span></td><td><span class="badge lose">없음</span></td></tr>
+        <tr><td class="cat">크기/간격 수치</td><td><span class="badge win">있음</span></td><td><span class="badge win">있음</span></td></tr>
+        <tr><td class="cat">서버 연결(API) 안내</td><td><span class="badge win">있음</span></td><td><span class="badge lose">없음</span></td></tr>
+        <tr><td class="cat">에러 상태 가이드</td><td><span class="badge win">있음</span></td><td><span class="badge lose">없음</span></td></tr>
+        <tr><td class="cat">React 부품 구조</td><td><span class="badge win">있음</span></td><td><span class="badge win">있음</span></td></tr>
+        <tr><td class="cat">시나리오별 실제 데이터</td><td><span class="badge win">있음 (실데이터)</span></td><td><span class="badge tie">구조만</span></td></tr>
+        <tr><td class="cat">블록 타입 열거</td><td>14종</td><td><span class="badge win">16종</span></td></tr>
+        <tr><td class="cat">LLM 모델 목록</td><td>명시됨</td><td>4그룹 11모델 + 티어배지</td></tr>
+        <tr><td class="cat">신입 개발자 독립 개발</td><td><span class="badge win">가능</span></td><td><span class="badge lose">어려움</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 5. 작업 효율 비교 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--success)">5</div>
+    <h2>작업 효율(비용/시간) 비교</h2>
+  </div>
+  <div class="section-body">
+    <table class="compare-table">
+      <thead>
+        <tr><th>지표</th><th>Figma</th><th>Pencil.dev</th><th>차이</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">실제 생성 내용 (콘텐츠 토큰)</td>
+          <td>~300,000</td>
+          <td>~141,000</td>
+          <td><span class="badge pencil">Pencil 53% 적음</span></td>
+        </tr>
+        <tr>
+          <td class="cat">과금 기준 (빌링 토큰)</td>
+          <td>~11,500,000</td>
+          <td>~7,700,000</td>
+          <td><span class="badge pencil">Pencil 33% 절약</span></td>
+        </tr>
+        <tr>
+          <td class="cat">대화 횟수 (턴)</td>
+          <td>~150-200회</td>
+          <td>~50-60회</td>
+          <td><span class="badge pencil">Pencil 66% 감소</span></td>
+        </tr>
+        <tr>
+          <td class="cat">대화 1회당 평균 비용</td>
+          <td>~77,000 토큰</td>
+          <td>~128,000 토큰</td>
+          <td><span class="badge figma">Figma 1회당 저렴</span></td>
+        </tr>
+        <tr>
+          <td class="cat">화면 1장당 비용</td>
+          <td>~287,500 토큰</td>
+          <td>~453,000 토큰</td>
+          <td><span class="badge figma">Figma 장당 저렴</span></td>
+        </tr>
+        <tr>
+          <td class="cat">수정/재작업 비율</td>
+          <td>~40% (겹침, 폰트, 배치)</td>
+          <td>~5% (배치 1건)</td>
+          <td><span class="badge pencil">Pencil 압도적</span></td>
+        </tr>
+        <tr>
+          <td class="cat">컨텍스트 압축 발생</td>
+          <td>1회 (130턴째)</td>
+          <td>없음</td>
+          <td><span class="badge pencil">Pencil 안정적</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <strong>왜 Pencil이 1회당 비용은 더 비싼데 총비용은 저렴할까?</strong><br>
+      Pencil MCP는 매 대화마다 시스템 프롬프트(~15,000토큰)와 스키마(~15,000토큰)를 보내야 해서 1회당 비용이 높습니다. 하지만 Flexbox 자동 정렬 덕분에 겹침 수정이 거의 필요 없어 <strong>총 대화 횟수가 66% 줄어들었고</strong>, 결과적으로 총비용은 33% 절약되었습니다. 즉, "1회는 비싸지만 횟수가 적어서 총합이 저렴한" 구조입니다.
+    </div>
+
+    <h3 class="sub-heading">작업 단계별 토큰 소비 비교</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>단계</th><th>Figma (빌링 토큰)</th><th>Pencil (빌링 토큰)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cat">1단계: HTML 분석 + 준비</td><td>~1,100,000</td><td>~900,000</td></tr>
+        <tr><td class="cat">2단계: 주요 화면 생성</td><td>~4,700,000</td><td>~3,000,000</td></tr>
+        <tr><td class="cat">3단계: 모달/부가화면 + 검증</td><td>~2,000,000</td><td>~2,900,000</td></tr>
+        <tr><td class="cat">4단계: 수정/리워크</td><td>~3,000,000</td><td>~0 (거의 없음)</td></tr>
+        <tr><td class="cat">5단계: 보고서/마무리</td><td>~700,000</td><td>~900,000</td></tr>
+        <tr style="font-weight:700; background:var(--gray-50);">
+          <td class="cat">합계</td>
+          <td style="color:var(--figma)">~11,500,000</td>
+          <td style="color:var(--pencil)">~7,700,000</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>핵심 차이:</strong> Figma는 전체 비용의 약 26%(3,000,000 토큰)이 수정/리워크에 소비되었습니다. 이 부분이 없었다면 두 도구의 총비용은 거의 비슷했을 것입니다. 겹침 문제를 줄이면 Figma의 비용 효율도 크게 개선될 수 있습니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6. 발생한 문제 비교 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--error)">6</div>
+    <h2>발생한 문제 비교</h2>
+  </div>
+  <div class="section-body">
+    <div class="proscons">
+      <div class="issue-list figma-issues">
+        <h4 style="color:var(--figma);">Figma 발생 문제 (8건)</h4>
+        <ol>
+          <li><strong>한글이 안 보임</strong> — 기본 폰트(Inter)가 한글 미지원. 715개 텍스트 노드를 Noto Sans KR로 일일이 교체</li>
+          <li><strong>화면 대규모 겹침</strong> — 6행 배치 구조에서 DESC 프레임과 시나리오 프레임이 충돌. 5행으로 전면 재구성</li>
+          <li><strong>채팅 말풍선 겹침</strong> — S1 화면의 5턴 대화에서 AI 응답이 예상보다 커서 다음 메시지와 겹침. 10개 턴 위치 전부 재계산</li>
+          <li><strong>숫자 카드 텍스트 겹침</strong> — 값 텍스트(28px)와 라벨(13px)이 같은 위치. 13개 카드 모두 수정</li>
+          <li><strong>보고서 제목 vs 결재란 겹침</strong> — S6 화면에서 가로 방향 충돌. <strong>3번 반복</strong> 후 해결 (제목 너비 제한 350px)</li>
+          <li><strong>차트 글자 넘침</strong> — "기타(8%)" 텍스트가 바 영역 밖으로 넘침. 중앙 정렬 공식 적용</li>
+          <li><strong>공유 버튼 크기 불일치</strong> — PDF/Excel/Share/Report 버튼 높이/너비/테두리가 제각각. 전체 통일(h=36, min-w=90, radius=20)</li>
+          <li><strong>이상거래 표 정렬</strong> — 금액이 왼쪽 정렬, 위험점수 글자 너무 작음. 오른쪽 정렬 + 24px 볼드로 수정</li>
+        </ol>
+      </div>
+      <div class="issue-list pencil-issues">
+        <h4 style="color:var(--pencil);">Pencil 발생 문제 (1건)</h4>
+        <ol>
+          <li><strong>전체 화면 배치 겹침</strong> — 캔버스 레벨에서 프레임들의 Y좌표가 겹침. 9개 프레임의 Y축 재배치로 해결</li>
+        </ol>
+        <div class="callout info" style="margin-top:16px;">
+          <strong>Pencil이 문제가 적었던 이유:</strong><br>
+          1) Flexbox(자동 정렬) 기반이라 내부 요소 겹침이 구조적으로 발생하지 않음<br>
+          2) 추가 수정 요청을 거의 하지 않았으므로 수정 과정에서 발생하는 새 문제도 없었음<br>
+          3) 한글 폰트 문제가 없어 초기 설정 이슈 없음
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:16px;">
+      <strong>공통 이슈:</strong> 두 도구 모두 캔버스 레벨의 프레임 겹침이 발생했으며, 최종적으로 사용자가 직접 확인하고 수정하는 과정이 필요했습니다. AI만으로는 완벽한 배치가 어렵다는 공통적 한계입니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7. 장단점 정리 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#F59E0B">7</div>
+    <h2>도구별 장단점 정리</h2>
+  </div>
+  <div class="section-body">
+    <div class="proscons">
+      <div class="proscons-col figma-col">
+        <h4 style="font-size:17px;"><span class="figma-dot">&#9679;</span> Figma</h4>
+        <p style="font-size:12px; color:var(--gray-500); margin-bottom:12px;">좋은 점</p>
+        <ul>
+          <li class="pro-item">업계 표준 — 디자이너/개발자 누구나 익숙함</li>
+          <li class="pro-item">시나리오마다 실제 데이터로 개별 화면 제공</li>
+          <li class="pro-item">링크 하나로 외부 공유, 브라우저에서 바로 확인</li>
+          <li class="pro-item">Dev Mode로 개발자가 수치/색상 직접 확인</li>
+          <li class="pro-item">풍부한 플러그인/핸드오프 도구 생태계</li>
+          <li class="pro-item">실시간 댓글로 팀 소통 가능</li>
+          <li class="pro-item">버전 이력 자동 관리</li>
+          <li class="pro-item">설명서(DESC)가 매우 상세 — 신입도 독립 개발 가능</li>
+        </ul>
+        <p style="font-size:12px; color:var(--gray-500); margin:16px 0 12px;">아쉬운 점</p>
+        <ul>
+          <li class="con-item">AI 비용이 높음 (~1,150만 토큰)</li>
+          <li class="con-item">전체 작업의 ~40%가 수정에 소비</li>
+          <li class="con-item">한글 폰트 문제 (초기 설정 필요)</li>
+          <li class="con-item">절대 좌표 방식 → 겹침이 잦음</li>
+          <li class="con-item">대화 ~150-200회로 오래 걸림</li>
+        </ul>
+      </div>
+      <div class="proscons-col pencil-col">
+        <h4 style="font-size:17px;"><span class="pencil-dot">&#9679;</span> Pencil.dev</h4>
+        <p style="font-size:12px; color:var(--gray-500); margin-bottom:12px;">좋은 점</p>
+        <ul>
+          <li class="pro-item">Flexbox 자동 정렬 → 겹침 거의 없음</li>
+          <li class="pro-item">대화 ~50-60회로 빠르게 완성 (66% 감소)</li>
+          <li class="pro-item">총 비용 33% 절약</li>
+          <li class="pro-item">수정이 거의 불필요 (~5%)</li>
+          <li class="pro-item">23개 색상 변수 체계적 관리</li>
+          <li class="pro-item">Claude Code와 MCP 직접 연동 — 중간 단계 적음</li>
+          <li class="pro-item">블록 타입 16종으로 Figma보다 2종 더 많이 정의</li>
+        </ul>
+        <p style="font-size:12px; color:var(--gray-500); margin:16px 0 12px;">아쉬운 점</p>
+        <ul>
+          <li class="con-item">화면 17장으로 시나리오별 개별 화면 없음</li>
+          <li class="con-item">업계 비표준 — 새로 배워야 함</li>
+          <li class="con-item">.pen 파일 전달 필요 → 외부 공유 어려움</li>
+          <li class="con-item">실시간 협업/댓글 기능 없음</li>
+          <li class="con-item">플러그인/연동 도구 생태계 제한적</li>
+          <li class="con-item">설명서에 라우트/API/에러상태 없음</li>
+          <li class="con-item">이번 테스트에서 수정을 많이 안 시켜서 수정 내구성 미검증</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 8. 종합 점수표 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#EC4899">8</div>
+    <h2>종합 점수표 (5점 만점)</h2>
+  </div>
+  <div class="section-body">
+    <div class="radar-wrap">
+      <table class="radar-table">
+        <thead>
+          <tr><th style="text-align:left">평가 기준</th><th style="color:var(--figma)">Figma</th><th style="color:var(--pencil)">Pencil</th><th>우위</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>디자인 완성도</td>
+            <td><span class="score-bar" style="width:80px;background:var(--figma)"></span> 4.5</td>
+            <td><span class="score-bar" style="width:56px;background:var(--pencil)"></span> 3.5</td>
+            <td><span class="badge figma">Figma</span></td>
+          </tr>
+          <tr>
+            <td>개발 설명서 품질</td>
+            <td><span class="score-bar" style="width:80px;background:var(--figma)"></span> 4.5</td>
+            <td><span class="score-bar" style="width:56px;background:var(--pencil)"></span> 3.5</td>
+            <td><span class="badge figma">Figma</span></td>
+          </tr>
+          <tr>
+            <td>비용 효율</td>
+            <td><span class="score-bar" style="width:48px;background:var(--figma)"></span> 3.0</td>
+            <td><span class="score-bar" style="width:72px;background:var(--pencil)"></span> 4.0</td>
+            <td><span class="badge pencil">Pencil</span></td>
+          </tr>
+          <tr>
+            <td>배치 안정성</td>
+            <td><span class="score-bar" style="width:36px;background:var(--figma)"></span> 2.5</td>
+            <td><span class="score-bar" style="width:80px;background:var(--pencil)"></span> 4.5</td>
+            <td><span class="badge pencil">Pencil</span></td>
+          </tr>
+          <tr>
+            <td>수정 쉬운 정도</td>
+            <td><span class="score-bar" style="width:48px;background:var(--figma)"></span> 3.0</td>
+            <td><span class="score-bar" style="width:72px;background:var(--pencil)"></span> 4.0</td>
+            <td><span class="badge pencil">Pencil</span></td>
+          </tr>
+          <tr>
+            <td>도구 범용성 / 생태계</td>
+            <td><span class="score-bar" style="width:88px;background:var(--figma)"></span> 5.0</td>
+            <td><span class="score-bar" style="width:36px;background:var(--pencil)"></span> 2.0</td>
+            <td><span class="badge figma">Figma</span></td>
+          </tr>
+          <tr>
+            <td>외부 공유 편의성</td>
+            <td><span class="score-bar" style="width:88px;background:var(--figma)"></span> 5.0</td>
+            <td><span class="score-bar" style="width:28px;background:var(--pencil)"></span> 1.5</td>
+            <td><span class="badge figma">Figma</span></td>
+          </tr>
+          <tr>
+            <td>배우기 쉬운 정도</td>
+            <td><span class="score-bar" style="width:72px;background:var(--figma)"></span> 4.0</td>
+            <td><span class="score-bar" style="width:48px;background:var(--pencil)"></span> 3.0</td>
+            <td><span class="badge figma">Figma</span></td>
+          </tr>
+          <tr style="background:var(--gray-50); font-weight:700;">
+            <td>평균</td>
+            <td style="color:var(--figma)">3.94</td>
+            <td style="color:var(--pencil)">3.25</td>
+            <td><span class="badge figma">Figma +0.69</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="verdict">
+      <div class="verdict-item">
+        <div class="v-label">Figma가 앞선 항목</div>
+        <div class="v-winner" style="color:var(--figma);">5개</div>
+        <div style="font-size:11px; color:var(--gray-400);">완성도, 설명서, 범용성, 공유, 학습</div>
+      </div>
+      <div class="verdict-item">
+        <div class="v-label">Pencil이 앞선 항목</div>
+        <div class="v-winner" style="color:var(--pencil);">3개</div>
+        <div style="font-size:11px; color:var(--gray-400);">비용, 배치, 수정</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 9. 수정/추가 대응력 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#14B8A6">9</div>
+    <h2>수정 / 신규 추가 시 어떤 게 더 유리한가?</h2>
+  </div>
+  <div class="section-body">
+    <h3 class="sub-heading">이미 만든 화면을 수정할 때</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>관점</th><th>Figma</th><th>Pencil.dev</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">수정 방법</td>
+          <td>Plugin API로 특정 노드 지정 수정</td>
+          <td>batch_design의 Update 연산</td>
+        </tr>
+        <tr>
+          <td class="cat">수정 후 부작용</td>
+          <td>다른 요소와 겹칠 위험 있음 (절대 좌표)</td>
+          <td>자동 정렬로 부작용 적음 (Flexbox)</td>
+        </tr>
+        <tr>
+          <td class="cat">검증 방법</td>
+          <td>스크린샷 → 육안 확인 반복</td>
+          <td>snapshot_layout 자동 겹침 검증</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout success">
+      <strong>판정:</strong> 수정 안정성은 <strong>Pencil이 우위</strong>. 자동 정렬 덕분에 한 곳을 고쳐도 다른 곳에 영향이 적습니다.
+    </div>
+
+    <h3 class="sub-heading">새 기능/화면을 추가할 때</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>관점</th><th>Figma</th><th>Pencil.dev</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">기존 화면 수</td>
+          <td>40장 → AI가 기억할 내용 많음</td>
+          <td>17장 → 상대적으로 여유</td>
+        </tr>
+        <tr>
+          <td class="cat">추가 비용 예상</td>
+          <td>높음 (컨텍스트 누적 ~100K/턴)</td>
+          <td>중간 (컨텍스트 여유 있음)</td>
+        </tr>
+        <tr>
+          <td class="cat">추가 품질</td>
+          <td>실제 데이터 기반 개별 화면 → 구체적</td>
+          <td>기존 틀 재사용 + DESC 추가 → 빠르지만 추상적</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout info">
+      <strong>판정:</strong> 확장성(추가 작업의 가벼움)은 <strong>Pencil이 유리</strong>하고, 추가된 화면의 상세함은 <strong>Figma가 유리</strong>합니다.
+    </div>
+
+    <h3 class="sub-heading">계속 수정을 반복할 때</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>관점</th><th>Figma</th><th>Pencil.dev</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">수정 비율</td>
+          <td>~40% (이번 테스트 기준)</td>
+          <td>~5% (수정 요청 적었음)</td>
+        </tr>
+        <tr>
+          <td class="cat">수정 시 비용 증가</td>
+          <td>눈덩이식 — 수정할수록 비용 급증</td>
+          <td>완만 — 자동 정렬로 재작업 최소</td>
+        </tr>
+        <tr>
+          <td class="cat">수정 내구성 검증</td>
+          <td>검증됨 (8건 이슈 모두 해결)</td>
+          <td>미검증 (수정 요청 적어 데이터 부족)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>유의:</strong> Pencil의 수정 비율 5%는 수정 요청을 적게 했기 때문입니다. 동일 수준의 수정을 요청하면 이 비율이 올라갈 수 있으며, 이를 확인하려면 <strong>추가 검증 테스트가 필요</strong>합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10. Claude Code 단독 작업 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#6366F1">10</div>
+    <h2>Claude Code만으로 계속 작업해도 되는가?</h2>
+  </div>
+  <div class="section-body">
+    <h3 class="sub-heading">작업 흐름 비교</h3>
+
+    <div class="proscons">
+      <div class="proscons-col figma-col">
+        <h4><span class="figma-dot">&#9679;</span> Figma 작업 흐름</h4>
+        <div class="flow-row">
+          <span class="flow-step" style="background:var(--figma-light);color:var(--figma);">Claude가 JS 코드 생성</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background:var(--figma-light);color:var(--figma);">Figma Plugin API 실행</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background:var(--figma-light);color:var(--figma);">스크린샷 확인</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background:var(--figma-light);color:var(--figma);">수정 반복</span>
+        </div>
+        <ul style="margin-top:12px;">
+          <li class="con-item">중간에 "코드 생성 → 실행" 변환 단계가 있어 왕복이 많음</li>
+          <li class="con-item">스크린샷 기반 검증 → 이미지 토큰 소비 (~1,500,000)</li>
+          <li class="pro-item">Figma 생태계의 모든 기능 활용 가능</li>
+        </ul>
+      </div>
+      <div class="proscons-col pencil-col">
+        <h4><span class="pencil-dot">&#9679;</span> Pencil 작업 흐름</h4>
+        <div class="flow-row">
+          <span class="flow-step" style="background:var(--pencil-light);color:var(--pencil);">Claude가 MCP 직접 호출</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background:var(--pencil-light);color:var(--pencil);">batch_design 실행</span>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="flow-step" style="background:var(--pencil-light);color:var(--pencil);">자동 검증</span>
+        </div>
+        <ul style="margin-top:12px;">
+          <li class="pro-item">MCP 직접 호출 → 중간 변환 없이 빠름</li>
+          <li class="pro-item">snapshot_layout으로 자동 겹침 검증</li>
+          <li class="con-item">Pencil 특화 MCP이므로 생태계 제한적</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">Claude Code 단독 작업의 한계</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>영역</th><th>Claude가 할 수 있는 것</th><th>사람이 해야 하는 것</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cat">화면 구조 생성</td><td>프레임, 텍스트, 색상, 아이콘 배치</td><td>최종 미세 정렬 확인</td></tr>
+        <tr><td class="cat">겹침 해결</td><td>자동 감지 + 좌표 재계산</td><td>시각적으로 자연스러운지 최종 확인</td></tr>
+        <tr><td class="cat">디자인 품질</td><td>규칙 기반 일관성 유지</td><td>디자인 감각 기반 미적 판단</td></tr>
+        <tr><td class="cat">데이터 입력</td><td>구조적 데이터 배치</td><td>비즈니스 맥락에 맞는 데이터 선별</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout success">
+      <strong>추천 방식:</strong> Claude Code로 <strong>80% 빠르게 생성</strong>하고, 사람이 <strong>20% 마무리</strong>하는 협업 방식이 가장 효과적입니다. 두 도구 모두 이 패턴이 적용되며, 차이는 "80%까지 가는 속도"(Pencil이 빠름)와 "80%의 품질"(Figma가 높음)입니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 11. 외부 공유 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:#0891B2">11</div>
+    <h2>다른 사람에게 공유하기 편한가?</h2>
+  </div>
+  <div class="section-body">
+    <table class="compare-table">
+      <thead>
+        <tr><th>공유 항목</th><th>Figma</th><th>Pencil.dev</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">링크 공유</td>
+          <td><span class="badge win">바로 가능</span> — URL 하나로 전달</td>
+          <td><span class="badge lose">불가</span> — .pen 파일 전달 필요</td>
+        </tr>
+        <tr>
+          <td class="cat">설치 없이 보기</td>
+          <td><span class="badge win">가능</span> — 브라우저에서 바로</td>
+          <td><span class="badge lose">불가</span> — Pencil.dev 설치 필요</td>
+        </tr>
+        <tr>
+          <td class="cat">개발자 수치 확인</td>
+          <td><span class="badge win">Dev Mode</span> — 크기/색상/간격 즉시 확인</td>
+          <td><span class="badge tie">파일 열어야 함</span></td>
+        </tr>
+        <tr>
+          <td class="cat">실시간 소통</td>
+          <td><span class="badge win">댓글 기능</span> — 특정 위치에 댓글</td>
+          <td><span class="badge lose">없음</span></td>
+        </tr>
+        <tr>
+          <td class="cat">외부(고객사/협력사) 공유</td>
+          <td><span class="badge win">매우 쉬움</span> — 업계 표준</td>
+          <td><span class="badge lose">어려움</span> — 도구 모름</td>
+        </tr>
+        <tr>
+          <td class="cat">변경 이력 관리</td>
+          <td><span class="badge win">자동</span> — 수정 기록 자동 저장</td>
+          <td><span class="badge tie">파일 버전 관리</span> — 수동</td>
+        </tr>
+        <tr>
+          <td class="cat">이미지 내보내기</td>
+          <td><span class="badge win">다양한 형식</span> (PNG, SVG, PDF)</td>
+          <td><span class="badge win">PNG/PDF 가능</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <strong>핵심 차이:</strong> Figma는 "보내면 바로 볼 수 있는" 도구이고, Pencil은 "상대방도 같은 도구가 있어야 하는" 도구입니다. 내부 팀만 사용한다면 크게 문제 없지만, 외부 이해관계자(고객사, 파트너, 다른 부서)와 공유해야 하는 경우 Figma가 압도적으로 유리합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 12. 결론 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-900)">12</div>
+    <h2>결론 및 추천</h2>
+  </div>
+  <div class="section-body">
+
+    <div class="conclusion-grid">
+      <div class="conclusion-card rank1">
+        <span class="rank-badge">1순위 추천</span>
+        <h4 style="color:var(--figma);">Figma + Claude Code</h4>
+        <ul class="reason-list">
+          <li><strong>외부 공유가 압도적으로 편함</strong> — 링크 하나로 누구든 바로 확인. 고객사/협력사/타 부서와의 소통에 필수</li>
+          <li><strong>개발 설명서 품질이 높음</strong> — 라우트, API, 에러상태까지 포함. 신입 개발자도 독립 구현 가능</li>
+          <li><strong>시나리오별 실제 데이터 화면</strong> — "이 경우 이렇게 보인다"를 눈으로 확인, 개발자 해석 부담 최소</li>
+          <li><strong>업계 표준</strong> — 디자이너, PM, 개발자 누구나 쓸 줄 알아 학습 비용 없음</li>
+          <li><strong>풍부한 생태계</strong> — Dev Mode, 플러그인, Zeplin 등 연동 도구 다수</li>
+        </ul>
+      </div>
+      <div class="conclusion-card rank2">
+        <span class="rank-badge">2순위 대안</span>
+        <h4 style="color:var(--pencil);">Pencil.dev + Claude Code</h4>
+        <ul class="reason-list">
+          <li><strong>비용 33% 절약</strong> + 대화 66% 감소 — 예산/시간 제약이 클 때 유효</li>
+          <li><strong>배치 안정성이 뛰어남</strong> — Flexbox 자동 정렬로 겹침 문제 거의 없음</li>
+          <li><strong>수정 시 부작용 적음</strong> — 자동 정렬 덕분에 한 곳 고쳐도 다른 곳 안 깨짐</li>
+          <li><strong>빠른 초안 작업에 적합</strong> — 내부 검토용 빠른 프로토타입 제작</li>
+          <li><strong>확장성 유리</strong> — 기존 17장이라 새 화면 추가 시 AI 부담 적음</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">하나만 쓸지, 나눠 쓸지?</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>시나리오</th><th>추천 도구</th><th>이유</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">외부 공유가 필요한 경우</td>
+          <td><span class="badge figma">Figma</span></td>
+          <td>링크 공유, Dev Mode, 댓글 기능 필수</td>
+        </tr>
+        <tr>
+          <td class="cat">개발자에게 완성된 기획서 전달</td>
+          <td><span class="badge figma">Figma</span></td>
+          <td>라우트/API/에러상태 포함 상세 DESC</td>
+        </tr>
+        <tr>
+          <td class="cat">빠른 내부 검토용 초안</td>
+          <td><span class="badge pencil">Pencil</span></td>
+          <td>빠르고 저렴하게 구조 확인</td>
+        </tr>
+        <tr>
+          <td class="cat">비용이 최우선 제약</td>
+          <td><span class="badge pencil">Pencil</span></td>
+          <td>33% 절약, 66% 시간 단축</td>
+        </tr>
+        <tr>
+          <td class="cat">잦은 수정이 예상되는 경우</td>
+          <td><span class="badge pencil">Pencil</span></td>
+          <td>자동 정렬로 수정 부작용 최소 (단, 추가 검증 필요)</td>
+        </tr>
+        <tr>
+          <td class="cat">하나만 선택해야 한다면</td>
+          <td><span class="badge figma">Figma</span></td>
+          <td>비용은 높지만 공유/협업/품질에서 종합 우위</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-heading">보완이 필요한 점</h3>
+    <div class="proscons">
+      <div class="proscons-col figma-col">
+        <h4><span class="figma-dot">&#9679;</span> Figma 개선 사항</h4>
+        <ul>
+          <li class="con-item"><strong>겹침 문제 줄이기</strong> — 프롬프트에 Auto Layout 우선 사용 지시, 좌표 재계산 로직 강화</li>
+          <li class="con-item"><strong>한글 폰트 사전 설정</strong> — 작업 시작 전 Noto Sans KR 로드를 프롬프트에 포함</li>
+          <li class="con-item"><strong>수정 비용 줄이기</strong> — 겹침 자동 감지 + 자동 수정 스크립트 사전 준비</li>
+        </ul>
+      </div>
+      <div class="proscons-col pencil-col">
+        <h4><span class="pencil-dot">&#9679;</span> Pencil 검증 필요 사항</h4>
+        <ul>
+          <li class="con-item"><strong>수정 내구성 테스트</strong> — 동일 수준의 수정 요청을 반복하여 수정 비율 재측정</li>
+          <li class="con-item"><strong>시나리오별 개별 화면 생성</strong> — 지시하면 Figma 수준의 상세 화면 가능한지 확인</li>
+          <li class="con-item"><strong>DESC 품질 향상</strong> — 라우트, API, 에러상태 포함 여부 확인</li>
+          <li class="con-item"><strong>외부 공유 방안</strong> — 이미지 내보내기 + 별도 문서화로 보완 가능한지</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout success" style="margin-top:20px;">
+      <strong>최종 요약:</strong> 종합적으로 <strong class="text-figma">Figma를 1순위</strong>로 추천합니다. 비용은 높지만 "만든 결과물을 다른 사람과 함께 볼 수 있고, 개발자가 바로 쓸 수 있는 품질"이 실무에서 더 중요하기 때문입니다. <strong class="text-pencil">Pencil.dev는 2순위</strong>로, 빠른 초안이나 내부 검토 목적이라면 비용/시간 면에서 충분히 활용 가치가 있습니다. 다만, Pencil에 동일 수준의 수정 요청을 했을 때의 내구성은 추가 검증이 필요합니다.
+    </div>
+  </div>
+</div>
+
+<!-- ===== 13. 부록 ===== -->
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-500)">13</div>
+    <h2>부록</h2>
+  </div>
+  <div class="section-body">
+    <h3 class="sub-heading">작업 프롬프트 원문 비교</h3>
+
+    <p style="font-size:13px; color:var(--gray-600); margin-bottom:8px;"><strong style="color:var(--figma);">Figma용 프롬프트:</strong></p>
+    <div class="prompt-box">당신은 이제 UI/UX 기획자로 개발자에게 전달하기 위한 디자인 작업을 할 것입니다.
+
+https://www.figma.com/design/moHy3BaQLmzoGcXTgbJeI1/claude-code?node-id=0-1 이 피그마 링크에
+브랜치Q 라는 페이지에 디자인을 그려야 합니다.
+
+첨부한 html 파일을 가지고만 디자인 작업을 하여야 하며, 좌측, 상단의 프레임은 이미지를 참고하세요.
+
+당신이 모든것을 그려야 하기 때문에 최대한 모든 구성요소를 디자인 하여야 하며, 각 화면별 디스크립션을 최대한 자세히 적어 주어야 합니다 (화면 우측 영역 별도로 하여)
+
+모든 프레임은 겹침이 없어야 합니다.
+
+화면 개발은 전체 리엑트로 진행되니 참고하세요.
+
+임의로 없는 것을 만들지 말고 초급 개발자가 해당 페이지의 내용만으로 개발 및 디버깅 가능한 수준으로 작업 해 주세요</div>
+
+    <p style="font-size:13px; color:var(--gray-600); margin-bottom:8px; margin-top:16px;"><strong style="color:var(--pencil);">Pencil용 프롬프트:</strong></p>
+    <div class="prompt-box">당신은 이제 UI/UX 기획자로 개발자에게 전달하기 위한 디자인 작업을 할 것입니다.
+
+C:\Users\김광현\Desktop\클로드작업물 폴더에 클로드코드작업 이라는 팬슬.dev 파일에서
+브랜치Q 라는 페이지에 디자인을 그려야 합니다.
+
+첨부한 html 파일을 가지고만 디자인 작업을 하여야 하며, 좌측, 상단의 프레임은 이미지를 참고하세요.
+
+당신이 모든것을 그려야 하기 때문에 최대한 모든 구성요소를 디자인 하여야 하며, 각 화면별 디스크립션을 최대한 자세히 적어 주어야 합니다 (화면 우측 영역 별도로 하여)
+
+모든 프레임은 겹침이 없어야 합니다.
+
+화면 개발은 전체 리엑트로 진행되니 참고하세요.
+
+임의로 없는 것을 만들지 말고 초급 개발자가 해당 페이지의 내용만으로 개발 및 디버깅 가능한 수준으로 작업 해 주세요</div>
+
+    <div class="callout info" style="margin-top:16px;">
+      <strong>프롬프트 차이점:</strong> 두 프롬프트는 도구 지정 부분(Figma URL vs Pencil 파일 경로)만 다르고, 나머지 지시 내용은 동일합니다. 동일한 조건에서의 도구 비교가 가능한 구성입니다.
+    </div>
+
+    <h3 class="sub-heading">참고 파일 목록</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>파일</th><th>용도</th><th>크기</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="cat">통합_시연용_v9.html</td><td>원본 UI (두 도구의 공통 소스)</td><td>251KB</td></tr>
+        <tr><td class="cat">BranchQ_작업과정_보고서.html</td><td>Figma 작업 과정 보고서</td><td>73KB</td></tr>
+        <tr><td class="cat">브랜치Q_Pencil_디자인기획서.html</td><td>Pencil.dev 디자인 기획서</td><td>49KB</td></tr>
+        <tr><td class="cat">클로드코드작업.pen (pencil/기본.pen)</td><td>Pencil.dev 디자인 파일</td><td>2.7MB</td></tr>
+        <tr><td class="cat">Figma 파일 (claude-code)</td><td>Figma 디자인 파일</td><td>온라인</td></tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub-heading">보고서 정보</h3>
+    <table class="compare-table">
+      <tbody>
+        <tr><td class="cat">작성일</td><td>2026년 4월 8일</td></tr>
+        <tr><td class="cat">작성 도구</td><td>Claude Code (Opus 4.6, 1M context)</td></tr>
+        <tr><td class="cat">대상 독자</td><td>사내 보고용</td></tr>
+        <tr><td class="cat">보고서 유형</td><td>상세 기술 비교 분석 리포트</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div><!-- /page-wrapper -->
+
+<div class="footer">
+  <p>Figma vs Pencil.dev 비교 분석 리포트 | 2026.04.08 | Claude Code (Opus 4.6)</p>
+  <p style="margin-top:4px;">이 보고서는 내부 의사결정 참고용이며, 외부 배포를 목적으로 하지 않습니다.</p>
+</div>
+
+</body>
+</html>

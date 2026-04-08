@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -H \"X-Figma-Token: figd_e9VWg8LVUj0dL9wnWW8dLd0IAAqb0kqn9bxPeAXf\" \"https://api.figma.com/v1/files/SjOZgU5gg1fm2jKqnD9Ifr?depth=1\" | python3 -c \"\nimport json,sys\nd=json.load\\(sys.stdin\\)\nprint\\('파일명:', d.get\\('name',''\\)\\)\nprint\\('마지막 수정:', d.get\\('lastModified',''\\)\\)\nprint\\(\\)\nprint\\('=== 페이지 목록 ==='\\)\nfor i,p in enumerate\\(d.get\\('document',{}\\).get\\('children',[]\\)\\):\n    print\\(f'{i}. [{p[\\\\\"id\\\\\"]}] {p[\\\\\"name\\\\\"]}'\\)\n\")",
+      "Bash(node \"C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\figma_analyze.js\" 2>&1)",
+      "Bash(node \"C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\figma_deep.js\" 2>&1)",
+      "Bash(node \"C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\figma_layout.js\" 2>&1)",
+      "Bash(node \"C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\figma_dashboard_login.js\" 2>&1)",
+      "Bash(node \"C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\figma_find_ui.js\" 2>&1)",
+      "Bash(ls \"C:/Users/김광현/Desktop/새 폴더/\"*.html 2>&1)",
+      "Bash(node --check \"C:/Users/김광현/Desktop/새 폴더/check_v25.js\" 2>&1 && echo \"SYNTAX OK\")",
+      "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst content = fs.readFileSync\\('C:/Users/김광현/Desktop/새 폴더/branch_ui_generator_html_v25_lite.html', 'utf8'\\);\nconst start = content.indexOf\\('<script>'\\);\nconst end = content.lastIndexOf\\('</script>'\\);\nif \\(start === -1 || end === -1\\) { console.error\\('Script tags not found'\\); process.exit\\(1\\); }\nconst script = content.slice\\(start + 8, end\\);\nfs.writeFileSync\\('/tmp/check_script.js', script\\);\nconsole.log\\('Script extracted, length:', script.length\\);\n\")",
+      "Bash(node --check /tmp/check_script.js && echo \"SYNTAX OK\" || echo \"SYNTAX ERROR\")",
+      "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst content = fs.readFileSync\\('C:/Users/김광현/Desktop/새 폴더/branch_ui_generator_html_v25_lite.html', 'utf8'\\);\nconst start = content.indexOf\\('<script>'\\);\nconst end = content.lastIndexOf\\('</script>'\\);\nconst script = content.slice\\(start + 8, end\\);\nfs.writeFileSync\\('C:/Users/김광현/Desktop/check_script.js', script\\);\nconsole.log\\('Saved to desktop'\\);\n\")",
+      "Bash(node --check \"C:/Users/김광현/Desktop/check_script.js\" && echo \"SYNTAX OK\" || echo \"SYNTAX ERROR\")",
+      "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst content = fs.readFileSync\\('C:/Users/김광현/Desktop/새 폴더/branch_ui_generator_html_v25_lite.html', 'utf8'\\);\nconst checks = [\n  ['Title', 'Branch UI Generator v25 Lite'],\n  ['Claude Code banner text', 'Claude Code 버전'],\n  ['applyCfgPatch function', 'function applyCfgPatch'],\n  ['BRAND_PRESETS', 'const BRAND_PRESETS'],\n  ['applyBrandPreset', 'function applyBrandPreset'],\n  ['saveAppState', 'function saveAppState'],\n  ['loadAppState', 'function loadAppState'],\n  ['resetAppState', 'function resetAppState'],\n  ['exportHtml', 'function exportHtml'],\n  ['importAllJson', 'function importAllJson'],\n  ['buildPrompt', 'function buildPrompt'],\n  ['renderPreviewHTML', 'function renderPreviewHTML'],\n  ['parsePromptTokens', 'function parsePromptTokens'],\n  ['finishEditMode', 'function finishEditMode'],\n  ['getActivePromptText', 'function getActivePromptText'],\n  ['promptContext state', 'promptContext:'],\n];\nlet allOk = true;\nchecks.forEach\\(\\([name, pattern]\\) => {\n  const found = content.includes\\(pattern\\);\n  if \\(!found\\) { console.log\\('MISSING:', name, '\\('+pattern+'\\)'\\); allOk = false; }\n}\\);\nif \\(allOk\\) console.log\\('All required elements present.'\\);\n\")",
+      "Bash(node -e \"\nconst fs = require\\('fs'\\);\nconst content = fs.readFileSync\\('C:/Users/김광현/Desktop/새 폴더/branch_ui_generator_html_v25_lite.html', 'utf8'\\);\nconst lines = content.split\\('\\\\n'\\).length;\nconsole.log\\('Total lines:', lines\\);\n\")",
+      "Bash(where node:*)",
+      "Bash(find \"C:\\\\Users\\\\김광현\" -name \"*.pen\" -not -path \"*/node_modules/*\" 2>/dev/null | head -20)",
+      "Bash(find 'C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더' -maxdepth 2 -type f -name *)",
+      "Bash(grep -E \"\\\\.\\(json|py|js|yaml|yml|config\\)$|manage\\\\.py|app\\\\.py\")",
+      "Bash(find 'C:\\\\Users\\\\김광현\\\\Desktop\\\\새 폴더\\\\.claude' -type f -name *.json)",
+      "Bash(xargs ls:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(gh auth:*)",
+      "Bash(where git:*)",
+      "Bash(git config:*)",
+      "Bash(GIT_SSL_NO_VERIFY=1 git push -u origin claude/sad-meitner)",
+      "Bash(GIT_SSL_NO_VERIFY=1 git log --oneline master..claude/sad-meitner)",
+      "WebFetch(domain:github.com)",
+      "Bash(GIT_SSL_NO_VERIFY=1 git ls-remote --get-url origin)",
+      "Bash(node -e \":*)",
+      "Bash(node test_v26.js)",
+      "Bash(node test_v26_strict.js)",
+      "Bash(node /tmp/test_v27.js)",
+      "Bash(node -e \"require\\(''fs''\\).copyFileSync\\(''/tmp/test_v27.js'',''test_v27.js''\\)\")",
+      "Bash(node test_v27.js)",
+      "Bash(node test_v27_r2.js)"
+    ]
+  }
+}

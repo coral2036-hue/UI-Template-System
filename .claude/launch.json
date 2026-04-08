@@ -1,0 +1,138 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "branch-ui-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 5500
+    },
+    {
+      "name": "v26-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'branch_ui_generator_v26_card.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5501,'127.0.0.1',()=>console.log('v26 server on http://localhost:5501'))"],
+      "port": 5501
+    },
+    {
+      "name": "v27-server",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'branch_ui_generator_v27.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5503,'127.0.0.1',()=>console.log('v27 server on http://localhost:5503'))"],
+      "port": 5503
+    },
+    {
+      "name": "report-editor",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'report_block_editor_v2.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5502,'127.0.0.1',()=>console.log('report-editor on http://localhost:5502'))"],
+      "port": 5502
+    },
+    {
+      "name": "ai-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'ai_demo_showcase.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5505,'127.0.0.1',()=>console.log('ai-demo on http://localhost:5505'))"],
+      "port": 5505
+    },
+    {
+      "name": "ai-chatbot",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["ai-chatbot-response/serve.cjs"],
+      "port": 5506
+    },
+    {
+      "name": "prompt-report",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'prompt_report_system.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5507,'127.0.0.1',()=>console.log('prompt-report on http://localhost:5507'))"],
+      "port": 5507
+    },
+    {
+      "name": "demo-r3",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'\\uc601\\uc0c1 \\uc81c\\uc791\\uc6a9_r3.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5508,'127.0.0.1',()=>console.log('demo-r3 on http://localhost:5508'))"],
+      "port": 5508
+    },
+    {
+      "name": "qa-demo-r3",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'\\uc9c8\\uc758\\ub2f5\\ubcc0 \\uc601\\uc0c1 \\uc2dc\\uc5f0\\uc6a9_r3.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5509,'127.0.0.1',()=>console.log('qa-demo-r3 on http://localhost:5509'))"],
+      "port": 5509
+    },
+    {
+      "name": "demo-r4",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'\\uc601\\uc0c1 \\uc81c\\uc791\\uc6a9_r4.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5511,'127.0.0.1',()=>console.log('demo-r4 on http://localhost:5511'))"],
+      "port": 5511
+    },
+    {
+      "name": "md-editor",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'prompt_report_system_md.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5510,'127.0.0.1',()=>console.log('md-editor on http://localhost:5510'))"],
+      "port": 5510
+    },
+    {
+      "name": "integrated-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'\\ud1b5\\ud569_\\uc2dc\\uc5f0\\uc6a9.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5512,'127.0.0.1',()=>console.log('integrated-demo on http://localhost:5512'))"],
+      "port": 5512
+    },
+    {
+      "name": "ppt-v3",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'\\ube0c\\ub79c\\uce58Q_\\ubc1c\\ud45c_v3.html');const ext=p.extname(fp);const ct={'':' text/html','.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5513,'127.0.0.1',()=>console.log('ppt-v3 on http://localhost:5513'))"],
+      "port": 5513
+    },
+    {
+      "name": "block-samples",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'AI_챗봇_응답블록_샘플.html');const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png'}[ext]||'text/html';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+'; charset=utf-8'});r.end(d)})}).listen(5515,'127.0.0.1',()=>console.log('block-samples on http://localhost:5515'))"],
+      "port": 5515
+    },
+    {
+      "name": "k-branch",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,decodeURIComponent(q.url.split('?')[0]));if(fp===__dirname||fp===__dirname+p.sep)fp=p.join(__dirname,'k-branch-home.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5504,'127.0.0.1',()=>console.log('k-branch on http://localhost:5504'))"],
+      "port": 5504
+    },
+    {
+      "name": "mockup-s4",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,'mockup_chatgpt_s4.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5520,'127.0.0.1',()=>console.log('mockup-s4 on http://localhost:5520'))"],
+      "port": 5520
+    },
+    {
+      "name": "mockup-s9",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp=p.join(__dirname,'mockup_before_s9.html');f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5521,'127.0.0.1',()=>console.log('mockup-s9 on http://localhost:5521'))"],
+      "port": 5521
+    },
+    {
+      "name": "kakao-demo",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),base=process.cwd(),PORT=process.env.PORT||5517;h.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);let fp=(u==='/')?p.join(base,'\\uce74\\uce74\\uc624\\ud1a1_\\ube0c\\ub79c\\uce58Q_\\ub370\\ubaa8.html'):p.join(base,u);const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(PORT,'127.0.0.1',()=>console.log('kakao-demo on http://localhost:'+PORT))"],
+      "port": 5517,
+      "autoPort": true
+    },
+    {
+      "name": "block-guide",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');const base='C:\\\\Users\\\\\uae40\uad11\ud604\\\\Downloads';h.createServer((q,r)=>{let fp=p.join(base,decodeURIComponent(q.url.split('?')[0]));if(fp===base||fp===base+p.sep)fp=p.join(base,'\ube14\ub85d\ud654_\uc791\uc5c5\uc911.html');const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.pdf':'application/pdf','.png':'image/png','.jpg':'image/jpeg'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct});r.end(d)})}).listen(5520,'127.0.0.1',()=>console.log('block-guide on http://localhost:5520'))"],
+      "port": 5520
+    },
+    {
+      "name": "multi-llm-chat",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,r)=>{let fp='C:\\\\Users\\\\\\uae40\\uad11\\ud604\\\\Downloads\\\\multi_llm_chat.html';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':'text/html; charset=utf-8'});r.end(d)})}).listen(5530,'127.0.0.1',()=>console.log('multi-llm-chat on http://localhost:5530'))"],
+      "port": 5530
+    },
+    {
+      "name": "branchq-v9",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),base=process.cwd();h.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);let fp=(u==='/')?p.join(base,'\\ud1b5\\ud569_\\uc2dc\\uc5f0\\uc6a9_v9.html'):p.join(base,u);const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5518,'127.0.0.1',()=>console.log('branchq-v9 on http://localhost:5518'))"],
+      "port": 5518
+    },
+    {
+      "name": "branchq-v7",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),base=process.cwd();h.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);let fp=(u==='/')?p.join(base,'\\ud1b5\\ud569_\\uc2dc\\uc5f0\\uc6a9_v7_branchQ.html'):p.join(base,u);const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5516,'127.0.0.1',()=>console.log('branchq-v7 on http://localhost:5516'))"],
+      "port": 5516
+    }
+  ]
+}

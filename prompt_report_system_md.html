@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>보고서 MD 편집기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+:root{
+  --primary:#1e293b;--primary-light:#334155;--primary-bg:#f8fafc;--primary-border:#e2e8f0;
+  --accent:#2563EB;--accent-light:#3b82f6;--accent-bg:#eff6ff;--accent-border:#bfdbfe;
+  --success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;
+  --warning:#ca8a04;--warning-bg:#fefce8;--warning-border:#fef08a;
+  --error:#dc2626;--error-bg:#fef2f2;--error-border:#fecaca;
+  --info:#0891b2;--info-bg:#ecfeff;--info-border:#a5f3fc;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;
+  --radius:4px;--radius-lg:6px;--radius-xl:8px;
+  --shadow:0 1px 3px rgba(0,0,0,.08);--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 6px rgba(0,0,0,.07);
+  --transition:all .15s ease;
+  --font-mono:'SF Mono','Fira Code','Consolas',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard','Noto Sans KR',sans-serif;background:#fff;color:var(--gray-800);font-size:14px;line-height:1.6;overflow-x:hidden;}
+button{cursor:pointer;font-family:inherit;}
+input,select,textarea{font-family:inherit;font-size:13px;border:1px solid var(--gray-300);border-radius:var(--radius);padding:8px 12px;outline:none;transition:var(--transition);color:var(--gray-800);}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+
+/* ═══ Header ═══ */
+.app-header{height:52px;background:var(--gray-900);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:fixed;top:0;left:0;right:0;z-index:100;}
+.app-logo{color:#fff;font-size:15px;font-weight:700;letter-spacing:-.3px;white-space:nowrap;display:flex;align-items:center;gap:8px;}
+.app-logo .logo-badge{font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;font-weight:600;}
+.header-actions{display:flex;gap:8px;align-items:center;}
+.header-actions .btn{height:32px;padding:0 16px;font-size:12px;border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.8);background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:var(--radius);font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:var(--transition);cursor:pointer;}
+.header-actions .btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.4);}
+.header-actions .btn-primary{background:var(--accent);border-color:var(--accent);color:#fff;}
+.header-actions .btn-primary:hover{background:#1d4ed8;}
+
+/* ═══ Main Layout ═══ */
+.app-main{display:flex;margin-top:52px;height:calc(100vh - 52px);overflow:hidden;}
+.main-preview{flex:1;overflow-y:auto;padding:32px;background:#f1f5f9;font-size:16px;}
+.edit-panel{overflow-y:auto;padding:16px 20px;background:#fff;border-left:1px solid var(--gray-200);}
+.main-divider{width:6px;cursor:col-resize;background:var(--gray-200);flex-shrink:0;position:relative;transition:background .15s;}
+.main-divider:hover,.main-divider.dragging{background:var(--accent);}
+.main-divider::after{content:'⋮';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:var(--gray-400);font-size:12px;}
+.main-divider:hover::after,.main-divider.dragging::after{color:#fff;}
+
+/* ═══ Toast ═══ */
+.toast{position:fixed;top:64px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--gray-800);color:#fff;padding:10px 24px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s ease;z-index:200;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ═══ MD Editor Panel ═══ */
+.editor-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--gray-200);}
+.editor-title{font-size:15px;font-weight:700;color:var(--gray-800);display:flex;align-items:center;gap:8px;}
+.editor-title .et-icon{font-size:16px;}
+.editor-actions{display:flex;gap:8px;}
+.btn{height:36px;padding:0 18px;border:1px solid var(--gray-200);border-radius:var(--radius);font-size:13px;font-weight:600;background:#fff;color:var(--gray-700);display:inline-flex;align-items:center;gap:6px;transition:var(--transition);cursor:pointer;}
+.btn:hover{border-color:var(--gray-400);background:var(--gray-50);}
+.btn-primary{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-primary:hover{background:#1d4ed8;border-color:#1d4ed8;}
+.btn-sm{height:30px;padding:0 12px;font-size:12px;}
+.btn-outline{border:1px solid var(--accent-border);color:var(--accent);background:var(--accent-bg);}
+.btn-outline:hover{background:var(--accent);color:#fff;}
+
+/* ═══ DSL Editor ═══ */
+.dsl-editor{width:100%;font-family:var(--font-mono);font-size:12px;line-height:1.8;resize:none;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:14px 16px;min-height:calc(100vh - 200px);color:var(--gray-800);background:#fafbfc;outline:none;tab-size:2;transition:border-color .2s;}
+.dsl-editor:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.08);background:#fff;}
+.dsl-editor.typing{caret-color:var(--accent);border-color:var(--accent-border);}
+
+/* Typing cursor animation */
+@keyframes blink{0%,50%{border-color:var(--accent);}51%,100%{border-color:transparent;}}
+
+/* ═══ Typing indicator */
+.typing-status{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:var(--radius);margin-bottom:12px;font-size:12px;color:var(--accent);font-weight:500;transition:opacity .3s;}
+.typing-status.hidden{opacity:0;pointer-events:none;}
+.typing-dots{display:inline-flex;gap:3px;}
+.typing-dots span{width:5px;height:5px;border-radius:50%;background:var(--accent);animation:typingDot 1.2s infinite;}
+.typing-dots span:nth-child(2){animation-delay:.2s;}
+.typing-dots span:nth-child(3){animation-delay:.4s;}
+@keyframes typingDot{0%,60%,100%{opacity:.3;transform:translateY(0);}30%{opacity:1;transform:translateY(-3px);}}
+
+/* ═══ Corporate Report Style ═══ */
+.corp-report{max-width:800px;margin:0 auto;font-family:'Pretendard','Noto Sans KR',sans-serif;}
+.cr-title-bar{display:flex;justify-content:space-between;align-items:flex-end;padding:20px 28px;border-bottom:3px solid #1e293b;margin-bottom:16px;background:#fff;border-radius:var(--radius-xl) var(--radius-xl) 0 0;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.cr-title{font-size:22px;font-weight:800;color:#0f172a;letter-spacing:-.5px;}
+.cr-date{font-size:13px;color:#64748b;}
+.cr-approval{display:flex;justify-content:flex-end;padding:0 28px 20px;background:#fff;box-shadow:0 2px 12px rgba(0,0,0,.06);border-radius:0 0 var(--radius-xl) var(--radius-xl);margin-bottom:20px;}
+.cr-banner{background:linear-gradient(135deg,#1e293b 0%,#334155 100%);color:#fff;padding:22px 28px;border-radius:var(--radius-xl);margin-bottom:16px;position:relative;overflow:hidden;}
+.cr-banner::after{content:'';position:absolute;bottom:-20px;right:30px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.08);}
+.cr-banner-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.6;margin-bottom:4px;}
+.cr-banner-title{font-size:18px;font-weight:800;letter-spacing:-.3px;}
+.cr-banner-date{position:absolute;top:22px;right:28px;font-size:12px;opacity:.5;}
+.cr-inner{background:#fff;border-radius:var(--radius-xl);box-shadow:0 4px 24px rgba(0,0,0,.07);overflow:hidden;margin-bottom:16px;}
+.cr-inner-banner{background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);color:#fff;padding:18px 28px;position:relative;}
+.cr-inner-banner::after{content:'';position:absolute;bottom:-15px;right:40px;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.1);}
+.cr-inner-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;margin-bottom:2px;}
+.cr-inner-title{font-size:16px;font-weight:800;letter-spacing:-.3px;}
+.cr-inner-date{position:absolute;top:18px;right:28px;font-size:11px;opacity:.5;}
+.cr-body{padding:28px 32px;}
+.cr-h2{font-size:18px;font-weight:800;color:#0f172a;margin-bottom:24px;padding-bottom:10px;border-bottom:2px solid #e2e8f0;letter-spacing:-.3px;}
+.cr-h3{font-size:14px;font-weight:700;color:#1e293b;margin:24px 0 12px;padding-left:12px;border-left:3px solid #2563eb;}
+.cr-callout{background:#fffbeb;border-left:3px solid #f59e0b;padding:12px 16px;border-radius:0 6px 6px 0;font-size:13px;color:#92400e;line-height:1.7;margin-bottom:16px;}
+.cr-analysis{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.cr-analysis-item{padding:10px 16px 10px 32px;font-size:13px;color:#475569;line-height:1.7;position:relative;background:#f8fafc;border-radius:6px;}
+.cr-analysis-item::before{content:'•';position:absolute;left:16px;color:#2563eb;font-weight:700;}
+.cr-hr{border:none;border-top:1px solid #e2e8f0;margin:20px 0;}
+.cr-footnote{font-size:12px;color:#94a3b8;font-style:italic;}
+.cr-footer{display:flex;justify-content:space-between;align-items:center;padding:14px 28px;background:#fff;border-radius:var(--radius-xl);box-shadow:0 2px 12px rgba(0,0,0,.06);}
+.cr-footer-label{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#94a3b8;}
+.cr-footer-date{font-size:12px;color:#94a3b8;}
+
+/* ═══ Block Render Styles ═══ */
+.rb{margin-bottom:16px;}.rb:last-child{margin-bottom:0;}
+.rb-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.rb-summary-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px 16px;}
+.rb-summary-card .sc-label{font-size:11px;color:var(--gray-500);margin-bottom:6px;font-weight:500;}
+.rb-summary-card .sc-value{font-size:20px;font-weight:700;color:var(--gray-900);letter-spacing:-.3px;}
+.rb-summary-card .sc-sub{font-size:11px;color:var(--gray-400);margin-top:4px;}
+.rb-table-wrap{overflow-x:auto;border:1px solid var(--gray-200);border-radius:var(--radius);}
+.rb-table{width:100%;border-collapse:collapse;font-size:12px;}
+.rb-table th{background:var(--gray-100);color:var(--gray-700);font-weight:600;padding:8px 12px;font-size:11px;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--gray-200);}
+.rb-table td{padding:8px 12px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);}
+.rb-table tr:last-child td{border-bottom:none;}
+.rb-table tr:nth-child(even) td{background:var(--gray-50);}
+.rb-table tr:hover td{background:#f1f5f9;}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;gap:4px;}
+.badge-green{background:var(--success-bg);color:var(--success);}
+.badge-red{background:var(--error-bg);color:var(--error);}
+.badge-orange{background:var(--warning-bg);color:var(--warning);}
+.badge-blue{background:var(--accent-bg);color:var(--accent);}
+.badge-gray{background:var(--gray-100);color:var(--gray-500);}
+.rb-chart{max-width:100%;background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius);padding:14px 16px;}
+.rb-chart .chart-canvas-wrap{width:85%;margin:0 auto;}
+.rb-chart .chart-canvas-wrap canvas{max-width:100%;height:260px!important;}
+.rb-chart .chart-title{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:10px;}
+.rb-approval{display:flex;gap:0;border:1px solid var(--gray-200);border-radius:var(--radius);overflow:hidden;background:#fff;}
+.rb-approval.col{flex-direction:column;}
+.rb-approval-item{flex:1;text-align:center;padding:14px 10px;border-right:1px solid var(--gray-200);position:relative;}
+.rb-approval.col .rb-approval-item{border-right:none;border-bottom:1px solid var(--gray-200);}
+.rb-approval-item:last-child{border-right:none;border-bottom:none;}
+.rb-approval-item .ap-title{font-size:10px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.rb-approval-item .ap-name{font-size:13px;font-weight:700;color:var(--gray-800);margin-bottom:6px;}
+.rb-approval-item .ap-stamp{width:40px;height:40px;border-radius:50%;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;border:2px solid;}
+.ap-stamp.pending{color:var(--gray-400);border-color:var(--gray-300);background:var(--gray-50);}
+
+/* Preview placeholder */
+.preview-placeholder{max-width:800px;margin:0 auto;text-align:center;padding:80px 20px;color:var(--gray-400);font-size:14px;}
+
+/* File input hidden */
+.file-input-hidden{position:absolute;width:1px;height:1px;opacity:0;overflow:hidden;}
+
+/* Info bar */
+.info-bar{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:var(--radius);margin-bottom:12px;font-size:11px;color:var(--gray-500);}
+.info-bar .ib-icon{font-size:14px;}
+.info-bar kbd{background:var(--gray-200);padding:1px 6px;border-radius:3px;font-family:var(--font-mono);font-size:10px;}
+</style>
+</head>
+<body>
+
+<!-- ═══ Header ═══ -->
+<header class="app-header">
+  <div class="app-logo">
+    보고서 빌더 시스템
+    <span class="logo-badge">MD Editor</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="resetEditor()">초기화</button>
+    <button class="btn btn-primary" onclick="refreshPreview()">프리뷰 적용</button>
+  </div>
+</header>
+
+<!-- ═══ Main Layout ═══ -->
+<div class="toast" id="toast"></div>
+<main class="app-main">
+  <!-- Left: Preview -->
+  <div class="main-preview" id="main-preview">
+    <div id="preview-scroll">
+      <div class="preview-placeholder">MD를 작성하면 보고서 미리보기가 표시됩니다</div>
+    </div>
+  </div>
+
+  <!-- Divider -->
+  <div class="main-divider" id="main-divider"></div>
+
+  <!-- Right: MD Editor Panel -->
+  <div class="edit-panel" id="edit-panel" style="width:42%;">
+    <!-- Editor Header -->
+    <div class="editor-header">
+      <div class="editor-title"><span class="et-icon">📝</span> MD 편집</div>
+      <div class="editor-actions">
+        <button class="btn btn-sm btn-outline" onclick="importMDFile()">📂 파일 가져오기</button>
+        <input type="file" id="md-file-input" class="file-input-hidden" accept=".md,.txt" onchange="onMDFileSelected(event)"/>
+      </div>
+    </div>
+
+    <!-- Typing Status -->
+    <div class="typing-status hidden" id="typing-status">
+      <div class="typing-dots"><span></span><span></span><span></span></div>
+      <span>기본 템플릿 입력 중...</span>
+      <span style="margin-left:auto;font-size:11px;color:var(--gray-400);cursor:pointer;" onclick="skipTyping()">[건너뛰기]</span>
+    </div>
+
+    <!-- Info Bar -->
+    <div class="info-bar" id="info-bar">
+      <span class="ib-icon">💡</span>
+      <span>MD 형식으로 보고서 구조를 정의하세요. <kbd>Ctrl+Enter</kbd> 프리뷰 적용</span>
+    </div>
+
+    <!-- DSL Editor -->
+    <textarea class="dsl-editor" id="dsl-editor" placeholder="보고서 구조를 마크다운 형식으로 작성하세요..." oninput="onDSLInput()" onkeydown="onEditorKeydown(event)"></textarea>
+  </div>
+</main>
+
+<script>
+// ═══════════════════════════════════════════════════
+// Utils
+// ═══════════════════════════════════════════════════
+let _uid=0;
+const uid=()=>'b'+(++_uid)+'_'+Date.now().toString(36);
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ═══════════════════════════════════════════════════
+// Toast
+// ═══════════════════════════════════════════════════
+function showToast(msg,duration=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
+
+// ═══════════════════════════════════════════════════
+// Block Renderers
+// ═══════════════════════════════════════════════════
+const chartInstances={};
+const BADGE_COLORS={green:'badge-green',red:'badge-red',orange:'badge-orange',blue:'badge-blue',gray:'badge-gray'};
+const R={};
+
+R['summary-cards']=(d)=>{let h='<div class="rb rb-summary">';(d.cards||[]).forEach(c=>{h+=`<div class="rb-summary-card"><div class="sc-label">${esc(c.label)}</div><div class="sc-value">${esc(c.value)}</div>${c.sub?`<div class="sc-sub">${esc(c.sub)}</div>`:''}</div>`;});return h+'</div>';};
+
+R['data-table']=(d)=>{let h=`<div class="rb">${d.caption?`<div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:10px;">${esc(d.caption)}</div>`:''}`;h+=`<div class="rb-table-wrap"><table class="rb-table"><thead><tr>`;(d.columns||[]).forEach(c=>{h+=`<th style="text-align:${c.align||'left'}">${esc(c.label)}</th>`;});h+='</tr></thead><tbody>';(d.rows||[]).forEach(row=>{h+='<tr>';(d.columns||[]).forEach(c=>{const val=row[c.key]||'';const al=c.align||'left';if(c.type==='badge'&&typeof val==='object'){h+=`<td style="text-align:${al}"><span class="badge ${BADGE_COLORS[val.color]||'badge-gray'}">${esc(val.text)}</span></td>`;}else{h+=`<td style="text-align:${al}">${esc(typeof val==='object'?JSON.stringify(val):val)}</td>`;}});h+='</tr>';});return h+'</tbody></table></div></div>';};
+
+R['bar-chart']=(d,bid)=>`<div class="rb rb-chart">${d.title?`<div class="chart-title">${esc(d.title)}</div>`:''}<div class="chart-canvas-wrap"><canvas id="chart-${bid}"></canvas></div></div>`;
+
+R['approval-box']=(d)=>{
+  const dir=d.layout==='column'||d.layout==='col'?'col':'';
+  let h=`<div class="rb rb-approval ${dir}">`;
+  (d.lines||[]).forEach(ln=>{
+    const st=ln.status||'pending';
+    const stampText=st==='approved'?'승인':st==='rejected'?'반려':'대기';
+    h+=`<div class="rb-approval-item"><div class="ap-title">${esc(ln.title)}</div><div class="ap-name">${esc(ln.name)}</div><div class="ap-stamp ${st}">${stampText}</div></div>`;
+  });
+  return h+'</div>';
+};
+
+function initChartBlock(bid,type,d){
+  const cv=document.getElementById('chart-'+bid);if(!cv)return;
+  if(chartInstances[bid])chartInstances[bid].destroy();
+  let cfg;
+  if(type==='bar'||type==='line'){
+    cfg={type,data:{labels:d.labels||[],datasets:(d.datasets||[]).map(ds=>({...ds,borderRadius:type==='bar'?6:undefined,tension:type==='line'?0.3:undefined}))},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:(d.datasets||[]).length>1,position:'top'}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,.05)'}},x:{grid:{display:false}}}}};
+  }
+  chartInstances[bid]=new Chart(cv,cfg);
+}
+
+// ═══════════════════════════════════════════════════
+// Corporate Report Template
+// ═══════════════════════════════════════════════════
+function buildCorpReport(title,bodyContent,opts={}){
+  const today=new Date();
+  const dateStr=today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일';
+  const isoDate=today.toISOString().slice(0,10);
+  const themeColor=opts.themeColor||'#1e293b';
+  const approvalLines=opts.approvalLines||[];
+  const defaultApproval=['작성','검토','승인','결재','확인'];
+  const apLines=approvalLines.length>0?approvalLines:defaultApproval;
+
+  let approvalHtml=`<table style="border-collapse:collapse;margin-left:auto;">
+    <tr>${apLines.map(l=>`<td style="border:1px solid #d1d5db;padding:6px 18px;font-size:11px;font-weight:700;color:#374151;text-align:center;background:#f9fafb;">${esc(typeof l==='object'?l.title:l)}</td>`).join('')}</tr>
+    <tr>${apLines.map(l=>`<td style="border:1px solid #d1d5db;padding:14px 18px;font-size:12px;color:#6b7280;text-align:center;min-width:60px;height:48px;">${typeof l==='object'&&l.name?esc(l.name):''}</td>`).join('')}</tr>
+  </table>`;
+
+  return `<div class="corp-report">
+    <div class="cr-title-bar">
+      <div class="cr-title">${esc(title)}</div>
+      <div class="cr-date">${dateStr}</div>
+    </div>
+    <div class="cr-approval">${approvalHtml}</div>
+    <div class="cr-banner" style="background:${themeColor};">
+      <div class="cr-banner-label">REPORT BUILDER</div>
+      <div class="cr-banner-title">${esc(title)}</div>
+      <div class="cr-banner-date">${dateStr}</div>
+    </div>
+    <div class="cr-inner">
+      <div class="cr-inner-banner" style="background:linear-gradient(135deg,${themeColor},${themeColor}dd);">
+        <div class="cr-inner-label">AI REPORT</div>
+        <div class="cr-inner-title">${esc(title)}</div>
+        <div class="cr-inner-date">${dateStr}</div>
+      </div>
+      <div class="cr-body">
+        <h2 class="cr-h2">${esc(title)}</h2>
+        ${bodyContent}
+      </div>
+    </div>
+    <div class="cr-footer">
+      <div class="cr-footer-label">Webcash AI 보고서 빌더</div>
+      <div class="cr-footer-date">${isoDate}</div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// DSL Parser
+// ═══════════════════════════════════════════════════
+function parseDSL(text){
+  const lines=text.split('\n');
+  const def={title:'',metadata:{},sections:[]};
+  let currentSection=null;
+  let mode='root';
+
+  for(const raw of lines){
+    const line=raw.trim();
+    if(!line)continue;
+
+    if(line.startsWith('# ')){
+      const m=line.match(/^#\s+보고서\s*구조\s*[:：]\s*(.+)/);
+      if(m) def.title=m[1].trim();
+      else def.title=line.slice(2).trim();
+      continue;
+    }
+    if(line.startsWith('## ')){
+      const secText=line.slice(3).trim();
+      if(secText.includes('메타데이터')||secText.includes('메타')){mode='metadata';currentSection=null;continue;}
+      if(secText.includes('결재')){
+        currentSection={type:'approval',layout:'row',lines:[]};
+        def.sections.push(currentSection);mode='approval';continue;
+      }
+      const tableMatch=secText.match(/테이블\s*(\d*)/);
+      if(tableMatch){
+        currentSection={type:'table',title:'',columns:[],filters:[],groupBy:[],aggregations:[],background:'',visual:'',chartType:null,unit:''};
+        def.sections.push(currentSection);mode='table';
+        const titlePart=secText.replace(/테이블\s*\d*/,'').replace(/[:：]/,'').trim();
+        if(titlePart)currentSection.title=titlePart;
+        continue;
+      }
+      if(secText.includes('디자인')){mode='design';currentSection=null;continue;}
+      continue;
+    }
+    if(line.startsWith('---'))continue;
+    if(line.startsWith('- ')||line.startsWith('* ')){
+      const kv=line.slice(2).trim();
+      const colonIdx=kv.indexOf(':');
+      if(colonIdx<0)continue;
+      let key=kv.slice(0,colonIdx).trim().replace(/\*\*/g,'').toLowerCase();
+      const val=kv.slice(colonIdx+1).trim();
+
+      if(mode==='metadata'){
+        if(key.includes('제목')) def.title=val;
+        else if(key.includes('색상')||key.includes('팔레트')) def.metadata.colorPalette=val;
+        continue;
+      }
+      if(mode==='approval'&&currentSection){
+        if(key.includes('레이아웃')) currentSection.layout=val.includes('column')?'column':'row';
+        else if(key.includes('결재라인 수')||key.includes('라인수')) currentSection.lineCount=parseInt(val)||3;
+        else if(key.match(/결재라인\s*\d/)){
+          currentSection.lines.push({title:key.replace(/결재라인\s*/,'').trim(),name:val});
+        }
+        continue;
+      }
+      if(mode==='table'&&currentSection){
+        if(key==='제목'||key==='title') currentSection.title=val;
+        else if(key.includes('레이아웃')) currentSection.layout=val;
+        else if(key.includes('차트유형')||key.includes('차트 유형')) currentSection.chartType=val;
+        else if(key.includes('단위')) currentSection.unit=val;
+        else if(key.includes('컬럼')||key==='columns'){
+          const colParts=[];let buf='',depth=0;
+          for(const ch of val){if(ch==='(')depth++;if(ch===')')depth--;if((ch===','||ch==='，')&&depth===0){colParts.push(buf.trim());buf='';}else buf+=ch;}
+          if(buf.trim())colParts.push(buf.trim());
+          currentSection.columns=colParts.map((c,i)=>({key:c.trim()||'col_'+i,label:c.trim(),width:'auto',align:'left',format:'text'}));
+        }
+        else if(key.includes('조건')){
+          val.split(/[,，]/).forEach(cond=>{
+            const m=cond.trim().match(/^(.+?)\s*(==|!=|>=|<=|>|<|contains)\s*(.+)$/);
+            if(m) currentSection.filters.push({field:m[1].trim(),op:m[2],value:isNaN(m[3].trim().replace(/['"]/g,''))?m[3].trim().replace(/['"]/g,''):Number(m[3].trim().replace(/['"]/g,''))});
+          });
+        }
+        else if(key.includes('그룹')) currentSection.groupBy=val.split(/[,，]/).map(g=>g.trim()).filter(Boolean);
+        else if(key.includes('연산')){
+          val.split(/[,，]/).forEach(a=>{
+            const m1=a.trim().match(/^(SUM|AVG|COUNT|MAX|MIN)\s*\(\s*(.+?)\s*\)$/i);
+            if(m1){currentSection.aggregations.push({op:m1[1].toUpperCase(),field:m1[2]});return;}
+            const m2=a.trim().match(/^(SUM|AVG|COUNT|MAX|MIN)\s*[:：]\s*(.+)$/i);
+            if(m2) currentSection.aggregations.push({op:m2[1].toUpperCase(),field:m2[2].trim()});
+          });
+        }
+        else if(key.includes('배경')){
+          const hexMatch=val.match(/([0-9A-Fa-f]{6})/);
+          currentSection.background=hexMatch?'#'+hexMatch[1]:val;
+        }
+        else if(key.includes('비주얼')) currentSection.visual=val;
+        continue;
+      }
+    }
+  }
+  return def;
+}
+
+// ═══════════════════════════════════════════════════
+// Sample Data (자금현황 보고서 - hardcoded)
+// ═══════════════════════════════════════════════════
+const FUND_SAMPLE_DATA = {
+  summaryCards: {
+    cards: [
+      {label:'KRW 보통예금',value:'1,486,662원',sub:'하나은행'},
+      {label:'KRW 당좌예금',value:'40,000원',sub:'하나은행'},
+      {label:'EUR',value:'€2',sub:'외화예금'},
+      {label:'JPY',value:'¥1,202',sub:'외화예금'}
+    ]
+  },
+  accountTable: {
+    caption:'계좌별 자금 현황',
+    columns:[
+      {key:'bank',label:'은행'},{key:'account',label:'계좌번호'},
+      {key:'type',label:'계좌구분'},{key:'currency',label:'통화'},
+      {key:'balance',label:'잔액',align:'right'},
+      {key:'status',label:'상태',align:'center',type:'badge'}
+    ],
+    rows:[
+      {bank:'하나은행',account:'083-013302-82',type:'보통예금',currency:'KRW',balance:'1,486,662',status:{text:'정상',color:'green'}},
+      {bank:'하나은행',account:'082-052234-15019',type:'당좌예금',currency:'KRW',balance:'40,000',status:{text:'정상',color:'green'}},
+      {bank:'하나은행',account:'143-410057-01001',type:'외화예금',currency:'EUR',balance:'2',status:{text:'정상',color:'green'}},
+      {bank:'우리은행',account:'000083452003702',type:'외화예금',currency:'JPY',balance:'1,202',status:{text:'정상',color:'green'}},
+      {bank:'국민은행',account:'150-890051-82938',type:'정기예금',currency:'KRW',balance:'500,000,000',status:{text:'만기 D-15',color:'orange'}}
+    ]
+  },
+  monthlyChart: {
+    title:'월별 자금 입출금 현황 (단위: 백만원)',
+    labels:['10월','11월','12월','1월','2월'],
+    datasets:[
+      {label:'입금',data:[135,150,140,265,175],backgroundColor:'#2563EB',borderRadius:6},
+      {label:'출금',data:[128,145,155,135,160],backgroundColor:'#93C5FD',borderRadius:6}
+    ]
+  }
+};
+
+// ═══════════════════════════════════════════════════
+// Rendering: DSL → Preview
+// ═══════════════════════════════════════════════════
+function renderDSLPreview(){
+  const text=document.getElementById('dsl-editor').value;
+  const target=document.getElementById('preview-scroll');
+  if(!text.trim()){target.innerHTML='<div class="preview-placeholder">MD를 작성하면 보고서 미리보기가 표시됩니다</div>';return;}
+  try{
+    const def=parseDSL(text);
+    const approvalSec=(def.sections||[]).find(s=>s.type==='approval');
+    const approvalLines=approvalSec?(approvalSec.lines||[]).map(l=>({title:l.title||'',name:l.name||''})):[];
+
+    let bodyHtml='';
+
+    // Query period info
+    bodyHtml+=`<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;font-size:12px;color:#1e40af;margin-bottom:20px;">
+      <span style="font-weight:600;">조회 기간:</span> <span style="font-weight:700;text-decoration:underline;">이번 달</span>
+      <span style="color:#93c5fd;">|</span> <span>작성: Webcash AI 보고서 빌더</span>
+    </div>`;
+
+    // Summary cards
+    bodyHtml+=`<div style="margin-bottom:20px;">${R['summary-cards'](FUND_SAMPLE_DATA.summaryCards)}</div>`;
+
+    // Render table sections
+    const tableSections=(def.sections||[]).filter(s=>s.type==='table');
+    tableSections.forEach(sec=>{
+      if(sec.chartType||sec.layout==='chart'){
+        // Chart section
+        const bid=uid();
+        bodyHtml+=`<div style="margin-bottom:20px;">${R['bar-chart'](FUND_SAMPLE_DATA.monthlyChart,bid)}</div>`;
+        setTimeout(()=>initChartBlock(bid,'bar',FUND_SAMPLE_DATA.monthlyChart),150);
+      } else {
+        // Table section
+        bodyHtml+=`<div style="margin-bottom:20px;">${R['data-table'](FUND_SAMPLE_DATA.accountTable)}</div>`;
+      }
+    });
+
+    target.innerHTML=buildCorpReport(def.title||'보고서',bodyHtml,{approvalLines,themeColor:'#1e293b'});
+  }catch(e){
+    target.innerHTML='<div style="color:#dc2626;padding:40px;text-align:center;font-size:13px;">파싱 오류: '+esc(e.message)+'</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// DSL Input Handler (debounced)
+// ═══════════════════════════════════════════════════
+let _dslDebounce=null;
+function onDSLInput(){
+  clearTimeout(_dslDebounce);
+  _dslDebounce=setTimeout(()=>renderDSLPreview(),400);
+}
+
+function refreshPreview(){
+  renderDSLPreview();
+  showToast('프리뷰가 갱신되었습니다');
+}
+
+function onEditorKeydown(e){
+  if(e.ctrlKey && e.key==='Enter'){
+    e.preventDefault();
+    refreshPreview();
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// File Import
+// ═══════════════════════════════════════════════════
+function importMDFile(){
+  document.getElementById('md-file-input').click();
+}
+
+function onMDFileSelected(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    // Stop any ongoing typing
+    skipTyping();
+    const editor=document.getElementById('dsl-editor');
+    editor.value=reader.result;
+    renderDSLPreview();
+    showToast('파일을 불러왔습니다: '+file.name);
+  };
+  reader.readAsText(file,'utf-8');
+  e.target.value='';// reset for re-selection
+}
+
+// ═══════════════════════════════════════════════════
+// Typing Animation (2-Phase: Structure first, then Data)
+// ═══════════════════════════════════════════════════
+
+// Phase 1: Structure template (format only, placeholders for data)
+const STRUCTURE_TEMPLATE = `# 보고서 구조:
+
+## 메타데이터
+- **제목**:
+- 결재방 사용 : OK
+- 총 보고서 테이블 수: 2
+- 언어: 한국어
+- 스타일: professional
+- 색상 팔레트:
+- 헤더 폰트: Pretendard
+- 본문 폰트: Pretendard
+
+---
+
+## 결재방
+- **레이아웃**: column
+- **결재라인 수**: 5
+- **결재라인 1**:
+- **결재라인 2**:
+- **결재라인 3**:
+- **결재라인 4**:
+- **결재라인 5**:
+
+---
+
+## 테이블 1
+- **레이아웃**: title
+- **제목**:
+- **컬럼**:
+- **조건**:
+- **그룹**:
+- **연산**:
+- **배경**: 라이트 (F8FAFC)
+
+---
+
+## 테이블 2
+- **레이아웃**: chart
+- **제목**:
+- **차트유형**: bar
+- **단위**:
+- **컬럼**:
+- **배경**: 라이트 (F8FAFC)
+
+---
+
+## 디자인 가이드라인
+- 주색 : 60-70% (제목/다크 배경)
+- 보조색 : 20-30% (액센트 바, 강조)
+- 액센트 : 10% (핵심 수치 강조)`;
+
+// Phase 2: Data fill-ins (line number → text to append after existing content)
+const DATA_FILLS = [
+  { line: 0, after: '# 보고서 구조: ', text: '자금현황 보고서' },
+  { line: 3, after: '- **제목**: ', text: '자금현황 보고서' },
+  { line: 8, after: '- 색상 팔레트: ', text: 'Corporate Blue (주색: 1E293B, 보조색: 2563EB, 액센트: 38BDF8)' },
+  { line: 16, after: '- **결재라인 1**: ', text: '김대리' },
+  { line: 17, after: '- **결재라인 2**: ', text: '이팀장' },
+  { line: 18, after: '- **결재라인 3**: ', text: '박부장' },
+  { line: 19, after: '- **결재라인 4**: ', text: '최이사' },
+  { line: 20, after: '- **결재라인 5**: ', text: '정상무' },
+  { line: 25, after: '- **제목**: ', text: '계좌별 자금 현황' },
+  { line: 26, after: '- **컬럼**: ', text: '은행, 계좌번호, 계좌구분, 통화, 잔액, 상태' },
+  { line: 27, after: '- **조건**: ', text: '잔액 > 0' },
+  { line: 28, after: '- **그룹**: ', text: '은행, 계좌구분' },
+  { line: 29, after: '- **연산**: ', text: 'SUM : 잔액' },
+  { line: 34, after: '- **제목**: ', text: '월별 자금 입출금 현황' },
+  { line: 36, after: '- **단위**: ', text: '백만원' },
+  { line: 37, after: '- **컬럼**: ', text: '월, 입금, 출금' },
+  { line: 42, after: '- 주색 ', text: '1E293B' },
+  { line: 43, after: '- 보조색 ', text: '2563EB' },
+  { line: 44, after: '- 액센트 ', text: '38BDF8' },
+];
+
+// Full final template
+const DEFAULT_TEMPLATE = `# 보고서 구조: 자금현황 보고서
+
+## 메타데이터
+- **제목**: 자금현황 보고서
+- 결재방 사용 : OK
+- 총 보고서 테이블 수: 2
+- 언어: 한국어
+- 스타일: professional
+- 색상 팔레트: Corporate Blue (주색: 1E293B, 보조색: 2563EB, 액센트: 38BDF8)
+- 헤더 폰트: Pretendard
+- 본문 폰트: Pretendard
+
+---
+
+## 결재방
+- **레이아웃**: column
+- **결재라인 수**: 5
+- **결재라인 1**: 김대리
+- **결재라인 2**: 이팀장
+- **결재라인 3**: 박부장
+- **결재라인 4**: 최이사
+- **결재라인 5**: 정상무
+
+---
+
+## 테이블 1
+- **레이아웃**: title
+- **제목**: 계좌별 자금 현황
+- **컬럼**: 은행, 계좌번호, 계좌구분, 통화, 잔액, 상태
+- **조건**: 잔액 > 0
+- **그룹**: 은행, 계좌구분
+- **연산**: SUM : 잔액
+- **배경**: 라이트 (F8FAFC)
+
+---
+
+## 테이블 2
+- **레이아웃**: chart
+- **제목**: 월별 자금 입출금 현황
+- **차트유형**: bar
+- **단위**: 백만원
+- **컬럼**: 월, 입금, 출금
+- **배경**: 라이트 (F8FAFC)
+
+---
+
+## 디자인 가이드라인
+- 주색 1E293B: 60-70% (제목/다크 배경)
+- 보조색 2563EB: 20-30% (액센트 바, 강조)
+- 액센트 38BDF8: 10% (핵심 수치 강조)`;
+
+let typingTimer = null;
+let isTyping = false;
+let typingPhase = 0; // 0=none, 1=structure, 2=data
+let typingIndex = 0;
+
+function startTypingAnimation(){
+  const editor = document.getElementById('dsl-editor');
+  const status = document.getElementById('typing-status');
+  editor.value = '';
+  editor.classList.add('typing');
+  status.classList.remove('hidden');
+  status.querySelector('span:nth-child(2)').textContent = '보고서 구조 입력 중...';
+  isTyping = true;
+  typingPhase = 1;
+  typingIndex = 0;
+
+  let previewDebounce = null;
+
+  function typeStructure(){
+    if(!isTyping || typingIndex >= STRUCTURE_TEMPLATE.length){
+      // Phase 1 done → move to Phase 2
+      typingPhase = 2;
+      status.querySelector('span:nth-child(2)').textContent = '세부 데이터 입력 중...';
+      renderDSLPreview();
+      setTimeout(()=> startDataFill(), 500);
+      return;
+    }
+
+    const remaining = STRUCTURE_TEMPLATE.slice(typingIndex);
+    let chunkSize = 1;
+    const currentChar = STRUCTURE_TEMPLATE[typingIndex];
+
+    // Speed: type faster for structure
+    if(currentChar === '-' && remaining.startsWith('---')){
+      chunkSize = 3;
+    }
+
+    const chunk = STRUCTURE_TEMPLATE.slice(typingIndex, typingIndex + chunkSize);
+    editor.value += chunk;
+    typingIndex += chunkSize;
+    editor.scrollTop = editor.scrollHeight;
+
+    // Debounced preview
+    clearTimeout(previewDebounce);
+    previewDebounce = setTimeout(()=>{
+      if(isTyping) renderDSLPreview();
+    }, 800);
+
+    let delay = 12;
+    if(currentChar === '\n'){
+      delay = 25;
+      if(remaining.startsWith('\n---') || remaining.startsWith('\n\n##')){
+        delay = 80;
+      }
+    } else if(currentChar === '#'){
+      delay = 20;
+    }
+
+    typingTimer = setTimeout(typeStructure, delay);
+  }
+
+  // Start Phase 1
+  typingTimer = setTimeout(typeStructure, 400);
+}
+
+// Phase 2: Fill in data values with character-by-character typing
+let dataFillIdx = 0;
+let dataCharIdx = 0;
+
+function startDataFill(){
+  dataFillIdx = 0;
+  dataCharIdx = 0;
+  fillNextData();
+}
+
+function findTargetLine(lines, afterText){
+  // Find the LAST matching line that starts with afterText (trimmed)
+  const needle = afterText.trimEnd();
+  // Try exact match first
+  for(let i = 0; i < lines.length; i++){
+    if(lines[i].trimEnd() === needle) return i;
+  }
+  // Try startsWith match — find the first one whose current content matches
+  // We only want lines that end right at the after text (haven't been filled yet)
+  for(let i = 0; i < lines.length; i++){
+    if(lines[i].trimEnd() === needle || lines[i] === afterText) return i;
+  }
+  // Fallback: startsWith
+  for(let i = 0; i < lines.length; i++){
+    if(lines[i].startsWith(needle)) return i;
+  }
+  return -1;
+}
+
+function fillNextData(){
+  if(!isTyping || dataFillIdx >= DATA_FILLS.length){
+    finishTyping();
+    return;
+  }
+
+  const fill = DATA_FILLS[dataFillIdx];
+  const editor = document.getElementById('dsl-editor');
+  const lines = editor.value.split('\n');
+
+  // Find target line by content matching
+  let targetLineIdx = findTargetLine(lines, fill.after);
+  if(targetLineIdx === -1){
+    // Skip this fill if target not found
+    dataFillIdx++;
+    dataCharIdx = 0;
+    typingTimer = setTimeout(fillNextData, 20);
+    return;
+  }
+
+  if(dataCharIdx < fill.text.length){
+    const char = fill.text[dataCharIdx];
+    lines[targetLineIdx] += char;
+    editor.value = lines.join('\n');
+    dataCharIdx++;
+
+    // Scroll to edited line
+    const lineHeight = 19.2;
+    const targetScroll = targetLineIdx * lineHeight - editor.clientHeight / 2;
+    editor.scrollTop = Math.max(0, targetScroll);
+
+    const isLastChar = dataCharIdx >= fill.text.length;
+    if(isLastChar){
+      renderDSLPreview();
+    }
+
+    typingTimer = setTimeout(fillNextData, 22);
+  } else {
+    dataFillIdx++;
+    dataCharIdx = 0;
+    typingTimer = setTimeout(fillNextData, 100);
+  }
+}
+
+function finishTyping(){
+  isTyping = false;
+  typingPhase = 0;
+  clearTimeout(typingTimer);
+  const editor = document.getElementById('dsl-editor');
+  const status = document.getElementById('typing-status');
+
+  editor.value = DEFAULT_TEMPLATE;
+  editor.classList.remove('typing');
+  status.classList.add('hidden');
+  editor.scrollTop = 0;
+
+  renderDSLPreview();
+  showToast('기본 템플릿이 로드되었습니다');
+}
+
+function skipTyping(){
+  if(isTyping){
+    finishTyping();
+  }
+}
+
+function resetEditor(){
+  skipTyping();
+  document.getElementById('dsl-editor').value='';
+  document.getElementById('preview-scroll').innerHTML='<div class="preview-placeholder">MD를 작성하면 보고서 미리보기가 표시됩니다</div>';
+  showToast('편집기가 초기화되었습니다');
+}
+
+// ═══════════════════════════════════════════════════
+// Split Divider Drag
+// ═══════════════════════════════════════════════════
+function initSplitDivider(dividerId,leftId,rightId,storageKey){
+  const divider=document.getElementById(dividerId);
+  const left=document.getElementById(leftId);
+  const right=document.getElementById(rightId);
+  if(!divider||!left||!right)return;
+  const saved=localStorage.getItem(storageKey);
+  if(saved){left.style.width='';right.style.width=saved+'%';left.style.flex='1';}
+  let dragging=false;
+  divider.addEventListener('mousedown',e=>{dragging=true;divider.classList.add('dragging');e.preventDefault();});
+  document.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const parent=divider.parentElement;
+    const rect=parent.getBoundingClientRect();
+    let pct=((e.clientX-rect.left)/rect.width)*100;
+    pct=Math.max(30,Math.min(75,pct));
+    right.style.width=(100-pct-0.5)+'%';
+  });
+  document.addEventListener('mouseup',()=>{
+    if(!dragging)return;
+    dragging=false;divider.classList.remove('dragging');
+    localStorage.setItem(storageKey,parseFloat(right.style.width));
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// Click on editor stops typing
+// ═══════════════════════════════════════════════════
+document.getElementById('dsl-editor').addEventListener('focus',function(){
+  if(isTyping) skipTyping();
+});
+
+// ═══════════════════════════════════════════════════
+// Init
+// ═══════════════════════════════════════════════════
+initSplitDivider('main-divider','main-preview','edit-panel','prs_md_split');
+
+// Start typing animation on page load
+setTimeout(()=>startTypingAnimation(),300);
+</script>
+</body>
+</html>

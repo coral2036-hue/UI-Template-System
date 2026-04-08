@@ -1,0 +1,2034 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>디자인 가이드 생성기 v10 라이트/다크 분리판</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#0c0c0c;color:#e0e0e0;min-height:100vh}
+.wrap{max-width:1020px;margin:0 auto;padding:44px 22px}
+h1{font-size:23px;font-weight:700;margin-bottom:5px}
+.sub{color:#444;font-size:13px;margin-bottom:28px}
+
+.src-bar{display:flex;gap:4px;margin-bottom:14px}
+.stab{padding:8px 16px;border:1px solid #252525;border-radius:8px;background:#141414;color:#555;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.stab:hover{color:#aaa;border-color:#333}
+.stab.on{background:#1a1230;border-color:#6d28d9;color:#c4b5fd}
+
+.card{background:#141414;border:1px solid #1e1e1e;border-radius:13px;padding:22px;margin-bottom:14px}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.fg{margin-bottom:13px}
+label{display:block;font-size:11px;color:#444;margin-bottom:5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.lh{text-transform:none;letter-spacing:0;color:#333;font-weight:400}
+input,textarea,select{width:100%;padding:9px 12px;background:#0c0c0c;border:1px solid #222;border-radius:7px;color:#e0e0e0;font-size:13px;outline:none;transition:border-color .2s;resize:vertical}
+input:focus,textarea:focus,select:focus{border-color:#6d28d9}
+textarea{font-family:'Courier New',monospace;line-height:1.6}
+.hint{font-size:11px;color:#333;margin-top:-8px;margin-bottom:12px;line-height:1.5}
+.btn{padding:10px 18px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-p{background:#6d28d9;color:#fff;width:100%;margin-top:4px}
+.btn-p:hover:not(:disabled){background:#5b21b6}
+.btn-p:disabled{background:#1a1230;color:#444;cursor:not-allowed}
+.btn-s{padding:6px 12px;font-size:12px;border-radius:6px;background:#1a1a1a;color:#aaa;border:1px solid #222}
+.btn-s:hover{background:#202020;color:#ddd}
+.btn-danger{background:#2d1010;color:#f87171;border:1px solid #4c1515}
+.btn-danger:hover{background:#3d1414}
+.btn-add{background:#0f1a0f;color:#4ade80;border:1px solid #1e4d1e;width:100%;margin-top:8px;padding:7px}
+.btn-add:hover{background:#142014}
+.alert{border-radius:7px;padding:10px 13px;font-size:12px;line-height:1.6;margin-top:11px;display:none}
+.a-err{background:#180808;border:1px solid #4c1515;color:#f87171}
+.a-warn{background:#181600;border:1px solid #4c4400;color:#facc15}
+
+/* Progress */
+.prog-list{list-style:none}
+.ps{display:flex;align-items:center;gap:9px;padding:7px 0;font-size:13px;color:#2e2e2e;border-bottom:1px solid #161616}
+.ps:last-child{border:none}
+.ps.active{color:#ddd}
+.ps.done{color:#4ade80}
+.ps.skip{color:#2e2e2e}
+.ps.error{color:#f87171}
+.si{width:18px;text-align:center;font-size:13px;flex-shrink:0}
+.spin{display:inline-block;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* Results */
+.res-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.tab-bar{display:flex;gap:0;border-bottom:1px solid #1a1a1a;overflow-x:auto}
+.tab{padding:9px 15px;font-size:12px;cursor:pointer;border:none;background:none;color:#444;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-weight:500;transition:color .15s}
+.tab:hover{color:#999}
+.tab.on{color:#c4b5fd;border-bottom-color:#6d28d9}
+.tc{display:none;padding-top:20px}
+.tc.on{display:block}
+
+/* Edit bar */
+.edit-bar{display:flex;align-items:center;gap:8px;padding:10px 14px;background:#0f0f18;border:1px solid #2a2040;border-radius:9px;margin-bottom:14px;flex-wrap:wrap}
+.edit-bar-title{font-size:12px;font-weight:600;color:#a78bfa;margin-right:4px}
+.change-cnt{font-size:11px;color:#555;margin-left:auto}
+.change-cnt.has-changes{color:#facc15}
+
+/* Section */
+.sec{font-size:13px;font-weight:600;color:#aaa;margin-bottom:11px;margin-top:24px;display:flex;align-items:center;gap:7px}
+.sec:first-child{margin-top:0}
+.cnt{font-size:10px;background:#181818;color:#444;padding:2px 7px;border-radius:100px;font-weight:400}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin-bottom:22px}
+.stat{background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:12px;text-align:center}
+.stat-n{font-size:24px;font-weight:700}
+.stat-l{font-size:10px;color:#3a3a3a;margin-top:3px}
+.scope{border-radius:7px;padding:9px 13px;margin-bottom:18px;font-size:12px;display:flex;align-items:center;gap:7px}
+.sc-f{background:#0e101f;border:1px solid #1e2a50}
+.sc-w{background:#0e1a0e;border:1px solid #1e4d1e}
+.sc-c{background:#1a100e;border:1px solid #4d2e1e}
+.sc-i{background:#0e0e1a;border:1px solid #2a1e4d}
+.ptags{display:flex;flex-wrap:wrap;gap:5px}
+.ptag{padding:3px 10px;background:#181818;border:1px solid #1e1e1e;border-radius:100px;font-size:11px;color:#777}
+
+/* Color grid */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:6px}
+.ci{border:1px solid #1e1e1e;border-radius:9px;overflow:hidden;transition:border-color .2s}
+.ci:hover{border-color:#333}
+.csw{height:64px;position:relative;overflow:hidden}
+.cp-ov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.45);cursor:pointer;font-size:11px;color:#fff;gap:4px}
+.ci:hover .cp-ov{opacity:1}
+.color-input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.cinfo{padding:8px 8px 7px}
+.cname{font-size:11px;font-weight:600;color:#ccc;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chex{font-size:10px;color:#3a3a3a;font-family:'Courier New',monospace}
+.cdesc{font-size:10px;color:#2e2e2e;margin-top:2px}
+.cbadge{position:absolute;bottom:4px;right:5px;font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(0,0,0,.5);color:rgba(255,255,255,.5)}
+
+/* Edit controls on items */
+.item-edit{display:none;padding:8px 8px 6px;border-top:1px solid #1a1a1a;gap:5px;flex-direction:column}
+.edit-mode .item-edit{display:flex}
+.edit-mode .ci,.edit-mode .fi,.edit-mode .citem,.edit-mode .eitem{border-color:#1e1e2e}
+.ef{display:flex;gap:5px;align-items:center}
+.ef label{margin:0;font-size:10px;color:#333;white-space:nowrap;text-transform:none;letter-spacing:0;width:32px;flex-shrink:0}
+.ef input,.ef select{padding:4px 7px;font-size:11px;border-radius:5px}
+.del-btn{padding:3px 8px;background:#1f1010;border:1px solid #3a1010;border-radius:5px;color:#f87171;font-size:11px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.del-btn:hover{background:#2d1414}
+.note-area{width:100%;padding:5px 8px;background:#0c0c0c;border:1px solid #1a1a1a;border-radius:5px;font-size:10px;color:#555;font-family:inherit;resize:none;line-height:1.5;min-height:36px}
+.note-area:focus{outline:none;border-color:#333;color:#888}
+.note-area::placeholder{color:#2a2a2a}
+.edited-dot{width:5px;height:5px;border-radius:50%;background:#facc15;display:inline-block;margin-left:4px;vertical-align:middle}
+
+/* Typography */
+.fi{background:#141414;border:1px solid #1e1e1e;border-radius:9px;margin-bottom:6px;overflow:hidden;transition:border-color .2s}
+.fi:hover{border-color:#333}
+.fi-main{padding:13px}
+.fmeta{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.ftag{font-size:11px;padding:2px 7px;background:#181818;border-radius:4px;color:#555}
+.fprev{color:#999;overflow:hidden}
+
+/* Components */
+.cgrd{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px}
+.citem{background:#141414;border:1px solid #1e1e1e;border-radius:8px;overflow:hidden;transition:border-color .2s}
+.citem:hover{border-color:#333}
+.citem-main{padding:11px}
+.citem-n{font-size:12px;font-weight:500;color:#ccc}
+.citem-d{font-size:11px;color:#3a3a3a;margin-top:3px}
+
+/* Effects */
+.eitem{background:#141414;border:1px solid #1e1e1e;border-radius:9px;margin-bottom:6px;overflow:hidden}
+.eitem-main{padding:13px}
+.ecss{font-family:'Courier New',monospace;font-size:11px;color:#555;background:#0c0c0c;padding:7px 9px;border-radius:5px;margin-top:7px;word-break:break-all}
+
+/* Tokens */
+.tokbox{background:#0a0a0a;border:1px solid #1a1a1a;border-radius:7px;padding:13px;font-family:'Courier New',monospace;font-size:11px;color:#666;line-height:1.7;max-height:360px;overflow-y:auto}
+
+/* Prompts */
+.pb{background:#090909;border:1px solid #1a1a1a;border-radius:9px;padding:14px;margin-bottom:9px;position:relative}
+.plabel{font-size:10px;color:#6d28d9;font-weight:700;margin-bottom:7px;letter-spacing:.07em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.pbadge{padding:1px 6px;border-radius:100px;font-size:9px;background:#1a1030;color:#a78bfa}
+.cpbtn{position:absolute;top:11px;right:11px;padding:3px 8px;background:#181818;border:1px solid #222;border-radius:4px;color:#444;font-size:10px;cursor:pointer}
+.cpbtn:hover{background:#202020;color:#ccc}
+.ptext{font-family:'Courier New',monospace;font-size:11px;line-height:1.7;color:#888;white-space:pre-wrap;word-break:break-all}
+.ptext[contenteditable="true"]{border:1px dashed #222;padding:4px 6px;border-radius:4px;outline:none}
+.ptext[contenteditable="true"]:focus{border-color:#6d28d9}
+
+/* Info table */
+.itbl{width:100%;border-collapse:collapse;font-size:12px}
+.itbl td{padding:5px 0;border-bottom:1px solid #161616}
+.itbl td:first-child{color:#3a3a3a;width:120px}
+.itbl tr:last-child td{border:none}
+
+/* DL bar */
+.dlbar{display:flex;gap:7px;margin-top:18px;flex-wrap:wrap;padding-top:18px;border-top:1px solid #181818}
+hr{border:none;border-top:1px solid #181818;margin:18px 0}
+
+/* Image upload drop zone */
+.drop-zone{border:2px dashed #252525;border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#6d28d9;background:#0f0c1a}
+.dz-icon{font-size:36px;margin-bottom:10px}
+.dz-text{font-size:14px;color:#666;margin-bottom:4px}
+.dz-sub{font-size:11px;color:#333}
+#imgPreviewArea{display:none;margin-top:14px}
+#imgPreview{max-height:180px;max-width:100%;border-radius:8px;border:1px solid #222;display:none}
+#imgInfo{font-size:11px;color:#444;margin-top:6px}
+#imgFileName{font-size:11px;color:#555;margin-top:2px;font-family:'Courier New',monospace}
+
+/* Master prompt tab */
+.mp-targets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:4px}
+.mpt{padding:7px 14px;border:1px solid #252525;border-radius:7px;background:#141414;color:#555;font-size:12px;cursor:pointer;transition:all .15s}
+.mpt:hover{color:#aaa;border-color:#333}
+.mpt.on{background:#1a1230;border-color:#6d28d9;color:#c4b5fd}
+.mp-form{background:#0f0f0f;border:1px solid #1a1a1a;border-radius:10px;padding:16px;margin:12px 0}
+
+/* v5 enhancements */
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 14px;background:#101016;border:1px solid #202033;border-radius:9px;margin-bottom:14px}
+.filter-bar input,.filter-bar select{max-width:240px}
+.filter-meta{font-size:11px;color:#666;margin-left:auto}
+.audit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:9px;margin:14px 0 20px}
+.audit-card{background:#111114;border:1px solid #202028;border-radius:10px;padding:12px}
+.audit-card h3{font-size:12px;color:#ddd;margin-bottom:8px}
+.audit-card p{font-size:11px;color:#8c8c96;line-height:1.6}
+.audit-list{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.audit-item{font-size:11px;padding:7px 8px;border-radius:7px;border:1px solid #1f1f26;background:#0d0d11;color:#b8b8c2}
+.audit-item.warn{border-color:#4c4400;background:#181600;color:#facc15}
+.audit-item.good{border-color:#1e4d1e;background:#0e1a0e;color:#4ade80}
+.audit-item.bad{border-color:#4c1515;background:#180808;color:#f87171}
+.mini-code{background:#090909;border:1px solid #1a1a1a;border-radius:8px;padding:12px;font-family:'Courier New',monospace;font-size:11px;color:#8b8b93;line-height:1.6;max-height:260px;overflow:auto}
+.export-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.kbd{display:inline-block;padding:1px 6px;border:1px solid #2a2a33;border-bottom-width:2px;border-radius:6px;background:#111;font-size:10px;color:#aaa}
+.empty-filter{padding:18px 14px;border:1px dashed #24242f;border-radius:10px;color:#666;font-size:12px;text-align:center}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🎨 디자인 가이드 생성기 v9</h1>
+  <p class="sub">더블클릭으로 바로 실행하는 단일 파일 버전입니다. Figma · 웹페이지 · CSS · 이미지를 분석하고 결과를 수정·진단·다운로드할 수 있습니다.</p>
+
+
+  <div class="card" style="padding:16px 18px;background:#101018;border-color:#27203a">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#ddd;margin-bottom:6px">빠른 시작</div>
+        <div style="font-size:12px;color:#888;line-height:1.7">
+          1) 분석할 소스를 고릅니다 → 2) 내용 입력 → 3) <strong style="color:#c4b5fd">분석 시작</strong> 클릭 → 4) 결과 수정/다운로드
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span class="ptag">단일 HTML</span>
+        <span class="ptag">더블클릭 실행</span>
+        <span class="ptag">로컬 저장</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="src-bar">
+    <button class="stab on" onclick="switchSrc('figma')">🔷 Figma API</button>
+    <button class="stab" onclick="switchSrc('web')">🌐 웹페이지 URL</button>
+    <button class="stab" onclick="switchSrc('css')">📝 CSS 붙여넣기</button>
+    <button class="stab" onclick="switchSrc('img')">🖼️ 이미지</button>
+  </div>
+
+  <div class="card">
+    <div id="pnl-figma">
+      <div class="fg">
+        <label>Figma URL 붙여넣기 <span class="lh">(자동 파싱)</span></label>
+        <input type="text" id="figmaUrl" placeholder="https://www.figma.com/design/..." oninput="parseFigmaUrl(this.value)">
+      </div>
+      <div class="r2">
+        <div class="fg">
+          <label>Personal Access Token</label>
+          <input type="password" id="figmaToken" placeholder="figd_..." autocomplete="off">
+        </div>
+        <div class="fg">
+          <label>File ID</label>
+          <input type="text" id="fileId" placeholder="URL에서 자동 입력">
+        </div>
+      </div>
+      <div class="fg">
+        <label>Node ID <span class="lh">(선택 — 특정 프레임만 분석. URL의 node-id 값)</span></label>
+        <input type="text" id="nodeId" placeholder="예: 10438-173082  (비우면 전체 파일 분석)">
+      </div>
+    </div>
+    <div id="pnl-web" style="display:none">
+      <div class="fg">
+        <label>웹페이지 URL</label>
+        <input type="text" id="webUrl" placeholder="https://example.com">
+      </div>
+      <p class="hint">공개 웹페이지의 HTML·CSS를 CORS 프록시를 통해 분석합니다.</p>
+    </div>
+    <div id="pnl-css" style="display:none">
+      <div class="fg">
+        <label>CSS 붙여넣기 <span class="lh">(개발자 도구 / 디자인 툴 / 임의 CSS)</span></label>
+        <textarea id="cssInput" rows="11" placeholder=":root { --color-primary: #6d28d9; --color-bg: #ffffff; }
+h1 { font-size: 32px; font-weight: 700; }
+body { font-family: 'Inter', sans-serif; color: #333; }"></textarea>
+      </div>
+    </div>
+    <div id="pnl-img" style="display:none">
+      <div class="drop-zone" id="dropZone">
+        <div class="dz-icon">🖼️</div>
+        <div class="dz-text">이미지를 드래그하거나 클릭해서 업로드</div>
+        <div class="dz-sub">PNG · JPG · WebP 지원</div>
+      </div>
+      <input type="file" id="imgFile" accept="image/*" style="display:none">
+      <div id="imgPreviewArea">
+        <img id="imgPreview" alt="미리보기">
+        <div id="imgInfo"></div>
+        <div id="imgFileName"></div>
+      </div>
+      <div class="fg" style="margin-top:14px">
+        <label>추출할 색상 수</label>
+        <select id="colorCount">
+          <option value="8">8가지</option>
+          <option value="12" selected>12가지</option>
+          <option value="16">16가지</option>
+          <option value="24">24가지</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-p" id="genBtn" onclick="start()">분석 시작 →</button>
+    <div class="alert a-err" id="errMsg"></div>
+    <div class="alert a-warn" id="corsWarn">⚠️ <strong>CORS 오류:</strong> VS Code <strong>Live Server</strong> 확장으로 파일을 열거나 Chrome을 <code>--disable-web-security --user-data-dir=/tmp/dev</code> 옵션으로 실행해주세요.</div>
+  </div>
+
+  <div class="card" id="progCard" style="display:none">
+    <ul class="prog-list" id="progList"></ul>
+  </div>
+
+  <div id="results" style="display:none">
+    <!-- Edit bar -->
+    <div class="edit-bar" id="editBar">
+      <span class="edit-bar-title">✏️ 편집 모드</span>
+      <button class="btn-s" id="editToggleBtn" onclick="toggleEdit()">켜기</button>
+      <button class="btn-s" id="undoBtn" onclick="undoEdit()" style="display:none">↩ 되돌리기</button>
+      <button class="btn-s btn-danger" id="resetBtn" onclick="resetEdit()" style="display:none">↺ 원본 복원</button>
+      <button class="btn-s" id="saveBtn" onclick="saveToLS()" style="display:none">💾 로컬 저장</button>
+      <button class="btn-s" id="loadBtn" onclick="loadFromLS()" style="display:none">📂 저장본 불러오기</button>
+      <span class="change-cnt" id="changeCnt"></span>
+    </div>
+
+
+    <div class="filter-bar" id="filterBar" style="display:none">
+      <input id="globalSearch" type="text" placeholder="색상, 폰트, 컴포넌트 검색">
+      <select id="groupFilter">
+        <option value="">전체 그룹</option>
+      </select>
+      <select id="typeFilter">
+        <option value="">전체 유형</option>
+        <option value="solid">색상: solid</option>
+        <option value="gradient">색상: gradient</option>
+        <option value="font">타이포</option>
+        <option value="component">컴포넌트</option>
+      </select>
+      <span class="filter-meta" id="filterMeta">필터 없음</span>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab on" onclick="showTab('overview')">📊 개요</button>
+      <button class="tab" onclick="showTab('colors')">🎨 색상</button>
+      <button class="tab" onclick="showTab('typography')">✍️ 타이포그래피</button>
+      <button class="tab" id="tab-comp" onclick="showTab('components')">🧩 컴포넌트</button>
+      <button class="tab" id="tab-eff" onclick="showTab('effects')">✨ 이펙트</button>
+      <button class="tab" onclick="showTab('tokens')">📦 토큰 JSON</button>
+      <button class="tab" onclick="showTab('prompts')">🤖 AI 프롬프트</button>
+      <button class="tab" onclick="showTab('master')">🎯 통합 프롬프트</button>
+    </div>
+    <div id="overview" class="tc on"></div>
+    <div id="colors" class="tc"></div>
+    <div id="typography" class="tc"></div>
+    <div id="components" class="tc"></div>
+    <div id="effects" class="tc"></div>
+    <div id="tokens" class="tc"></div>
+    <div id="prompts" class="tc"></div>
+    <div id="master" class="tc">
+      <!-- Platform selector -->
+      <div class="sec" style="margin-top:0">타겟 플랫폼 선택</div>
+      <div class="mp-targets">
+        <button class="mpt on" onclick="selectMPTarget('pencil', this)">✏️ Pencil</button>
+        <button class="mpt" onclick="selectMPTarget('midjourney', this)">🎨 Midjourney</button>
+        <button class="mpt" onclick="selectMPTarget('claude', this)">🤖 Claude AI</button>
+        <button class="mpt" onclick="selectMPTarget('v0', this)">⚡ v0 (개발)</button>
+        <button class="mpt" onclick="selectMPTarget('gpt', this)">💬 ChatGPT</button>
+        <button class="mpt" onclick="selectMPTarget('custom', this)">✍️ 커스텀</button>
+      </div>
+
+      <div class="sec" style="margin-top:20px">화면 설정</div>
+      <div class="mp-form">
+        <div class="fg">
+          <label>화면 이름 / 목적 <span class="lh">(어떤 화면을 만드시나요?)</span></label>
+          <input id="mpScreen" placeholder="예: 로그인, 메인 대시보드, 상품 목록, 결제 화면" oninput="genMasterPrompt()">
+        </div>
+        <div class="r2">
+          <div class="fg">
+            <label>스타일 키워드</label>
+            <input id="mpStyle" placeholder="예: 미니멀, 모던, 다크모드, 카드형" value="미니멀, 모던" oninput="genMasterPrompt()">
+          </div>
+          <div class="fg">
+            <label>서비스 유형</label>
+            <input id="mpType" placeholder="예: 핀테크, 커머스, SaaS, 의료" oninput="genMasterPrompt()">
+          </div>
+        </div>
+        <div class="fg">
+          <label>추가 요구사항 <span class="lh">(선택)</span></label>
+          <textarea id="mpExtra" rows="2" placeholder="특별히 포함하거나 제외할 사항을 자유롭게 입력하세요..." oninput="genMasterPrompt()"></textarea>
+        </div>
+      </div>
+
+      <div class="sec">생성된 통합 프롬프트</div>
+      <div style="position:relative">
+        <button class="cpbtn" onclick="copyMaster()">복사</button>
+        <div id="masterPromptOut" class="ptext" style="background:#090909;border:1px solid #1a1a1a;border-radius:9px;padding:14px;min-height:120px"></div>
+      </div>
+      <button class="btn-s" style="margin-top:8px;width:100%" onclick="dlMasterPrompt()">📥 통합 프롬프트 다운로드</button>
+    </div>
+
+    <div class="dlbar">
+      <button class="btn-s" onclick="dlGuide()">📄 디자인 가이드 (.md)</button>
+      <button class="btn-s" onclick="dlPrompts()">🤖 프롬프트 가이드 (.md)</button>
+      <button class="btn-s" onclick="dlTokens()">📦 토큰 JSON (.json)</button>
+      <button class="btn-s" id="runHealthBtn">🧪 UI 상태 점검</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+let D = {};
+let origD = null;       // backup for reset
+let history = [];       // undo stack (max 20)
+let editMode = false;
+let changes = 0;
+let curSrc = 'figma';
+let mpTarget = 'pencil';
+
+// ═══════════════════════════
+// UI HELPERS
+// ═══════════════════════════
+function switchSrc(s) {
+  curSrc = s;
+  const srcs = ['figma','web','css','img'];
+  document.querySelectorAll('.stab').forEach((t,i) => t.classList.toggle('on', srcs[i]===s));
+  srcs.forEach(k => document.getElementById('pnl-'+k).style.display = k===s?'':'none');
+}
+function showTab(id) {
+  const ids=['overview','colors','typography','components','effects','tokens','prompts','master'];
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('on', ids[i]===id));
+  document.querySelectorAll('.tc').forEach(el => el.classList.toggle('on', el.id===id));
+}
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') }
+function setErr(m, cors=false) {
+  const el=document.getElementById('errMsg'); el.textContent='오류: '+m; el.style.display='block';
+  if(cors) document.getElementById('corsWarn').style.display='block';
+}
+function initProg(steps) {
+  document.getElementById('progList').innerHTML=steps.map((s,i)=>`<li class="ps" id="ps${i}"><span class="si">○</span><span>${s}</span></li>`).join('');
+  document.getElementById('progCard').style.display='block';
+}
+let _pi=0;
+function stepDone(){ setSt(_pi,'done'); _pi++; if(_pi<99) setSt(_pi,'active'); }
+function stepErr(){ setSt(_pi,'error'); }
+function stepSkip(){ setSt(_pi,'skip'); _pi++; }
+function setSt(i,st){
+  const el=document.getElementById('ps'+i); if(!el) return;
+  el.className='ps '+st;
+  const ic={active:'<span class="spin">↻</span>',done:'✓',error:'✕',skip:'–'};
+  el.querySelector('.si').innerHTML=ic[st]||'○';
+}
+
+// ═══════════════════════════
+// EDIT SYSTEM
+// ═══════════════════════════
+function toggleEdit() {
+  editMode = !editMode;
+  if (editMode && !origD) origD = deepCopy(D);
+  const btn = document.getElementById('editToggleBtn');
+  btn.textContent = editMode ? '끄기' : '켜기';
+  btn.style.background = editMode ? '#2a1a40' : '';
+  btn.style.color = editMode ? '#c4b5fd' : '';
+  ['undoBtn','resetBtn','saveBtn','loadBtn'].forEach(id => {
+    document.getElementById(id).style.display = editMode ? '' : 'none';
+  });
+  document.querySelectorAll('.tc.on').forEach(tc => {
+    if(tc.id==='colors') renderColors();
+    else if(tc.id==='typography') renderTypo();
+    else if(tc.id==='components') renderComponents();
+    else if(tc.id==='effects') renderEffects();
+    else if(tc.id==='prompts') renderPrompts();
+  });
+  // Toggle edit-mode class on grids
+  ['colors','typography','components','effects'].forEach(id => {
+    document.getElementById(id).classList.toggle('edit-mode', editMode);
+  });
+  updateChangeCnt();
+}
+
+function pushHistory() {
+  history.push(deepCopy(D));
+  if(history.length > 20) history.shift();
+  changes++;
+  updateChangeCnt();
+  rebuildAndRefresh();
+}
+function undoEdit() {
+  if(!history.length) return;
+  D = history.pop();
+  buildData();
+  renderAll();
+  changes = Math.max(0, changes-1);
+  updateChangeCnt();
+}
+function resetEdit() {
+  if(!origD) return;
+  if(!confirm('모든 편집 내용을 원본으로 되돌리시겠습니까?')) return;
+  D = deepCopy(origD);
+  history = [];
+  changes = 0;
+  buildData();
+  renderAll();
+  updateChangeCnt();
+}
+function updateChangeCnt() {
+  const el = document.getElementById('changeCnt');
+  if(changes > 0) { el.textContent = `변경 ${changes}개`; el.className='change-cnt has-changes'; }
+  else { el.textContent = ''; el.className='change-cnt'; }
+}
+function rebuildAndRefresh() {
+  buildData();
+  renderOverview();
+  renderColors();
+  renderTypo();
+  renderComponents();
+  renderEffects();
+  renderTokens();
+  renderPrompts();
+}
+function deepCopy(o) { return JSON.parse(JSON.stringify(o)) }
+
+// Save / Load localStorage
+function saveToLS() {
+  localStorage.setItem('dgv10_data', JSON.stringify(D));
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='✓ 저장됨';
+  setTimeout(()=>btn.textContent='💾 로컬 저장', 1800);
+}
+function loadFromLS() {
+  const raw = localStorage.getItem('dgv10_data');
+  if(!raw){alert('저장된 데이터가 없습니다.');return;}
+  if(!confirm('저장된 데이터를 불러오면 현재 결과가 대체됩니다. 계속하시겠습니까?')) return;
+  D = JSON.parse(raw);
+  origD = deepCopy(D);
+  history = [];
+  changes = 0;
+  buildData();
+  renderAll();
+  updateChangeCnt();
+}
+
+// ── Color edits ──────────────────────────────
+function editColorHex(idx, hex) {
+  history.push(deepCopy(D));
+  D.colors[idx].hex = hex;
+  D.colors[idx]._edited = true;
+  changes++;
+  D.colorGroups = regroup(D.colors, c => D.source==='figma' ? (c.name.includes('/')?c.name.split('/')[0].trim():'기타') : getHueGroup(c.hex));
+  renderColors();
+  renderOverview();
+  buildData();
+  renderPrompts();
+  renderTokens();
+  updateChangeCnt();
+}
+function editColorField(idx, field, val) {
+  history.push(deepCopy(D));
+  D.colors[idx][field] = val;
+  D.colors[idx]._edited = true;
+  changes++;
+  updateChangeCnt();
+  renderOverview();
+  buildData();
+  renderTokens();
+  renderPrompts();
+}
+function deleteColor(idx) {
+  history.push(deepCopy(D));
+  D.colors.splice(idx,1);
+  D.colorGroups = regroup(D.colors, c => D.source==='figma' ? (c.name.includes('/')?c.name.split('/')[0].trim():'기타') : getHueGroup(c.hex));
+  changes++;
+  updateChangeCnt();
+  renderColors();
+  renderOverview();
+  buildData();
+  renderPrompts();
+  renderTokens();
+}
+function addColor() {
+  history.push(deepCopy(D));
+  D.colors.push({name:'새 색상',hex:'#6d28d9',opacity:100,type:'solid',description:'',_edited:true,_new:true});
+  D.colorGroups = regroup(D.colors, c => D.source==='figma' ? (c.name.includes('/')?c.name.split('/')[0].trim():'기타') : getHueGroup(c.hex));
+  changes++;
+  updateChangeCnt();
+  renderColors();
+  renderOverview();
+  buildData();
+  renderPrompts();
+  renderTokens();
+}
+
+// ── Typography edits ─────────────────────────
+function editTypoField(idx, field, val) {
+  history.push(deepCopy(D));
+  if(field==='fontSize'||field==='fontWeight'||field==='lineHeight') val=parseFloat(val)||val;
+  D.typography[idx][field] = val;
+  D.typography[idx]._edited = true;
+  changes++;
+  updateChangeCnt();
+  renderTypo();
+  buildData();
+  renderPrompts();
+  renderTokens();
+}
+function deleteTypo(idx) {
+  history.push(deepCopy(D));
+  D.typography.splice(idx,1);
+  changes++;
+  updateChangeCnt();
+  renderTypo();
+  renderOverview();
+  buildData();
+  renderPrompts();
+  renderTokens();
+}
+function addTypo() {
+  history.push(deepCopy(D));
+  D.typography.push({name:'새 텍스트 스타일',fontFamily:'Inter',fontSize:16,fontWeight:400,lineHeight:24,letterSpacing:0,description:'',_edited:true,_new:true});
+  changes++;
+  updateChangeCnt();
+  renderTypo();
+  renderOverview();
+  buildData();
+  renderPrompts();
+  renderTokens();
+}
+
+// ── Component edits ──────────────────────────
+function editCompField(idx, field, val) {
+  history.push(deepCopy(D));
+  D.components[idx][field] = val;
+  D.components[idx]._edited = true;
+  changes++;
+  updateChangeCnt();
+}
+function deleteComp(idx) {
+  history.push(deepCopy(D));
+  D.components.splice(idx,1);
+  changes++;
+  updateChangeCnt();
+  renderComponents();
+  renderOverview();
+}
+function addComp() {
+  history.push(deepCopy(D));
+  D.components.push({name:'새 컴포넌트',description:'',_edited:true,_new:true});
+  changes++;
+  updateChangeCnt();
+  renderComponents();
+  renderOverview();
+}
+
+// ── Effect edits ─────────────────────────────
+function editEffName(idx, val) {
+  history.push(deepCopy(D));
+  D.effects[idx].name = val;
+  D.effects[idx]._edited = true;
+  changes++;
+  updateChangeCnt();
+}
+function deleteEffect(idx) {
+  history.push(deepCopy(D));
+  D.effects.splice(idx,1);
+  changes++;
+  updateChangeCnt();
+  renderEffects();
+  renderOverview();
+  buildData();
+  renderTokens();
+}
+
+// ── Prompt edits ─────────────────────────────
+function savePromptEdit(key, el) {
+  D.prompts[key] = el.textContent;
+  D._promptsEdited = D._promptsEdited||{};
+  D._promptsEdited[key] = true;
+}
+
+// ── Note edits ───────────────────────────────
+function saveNote(type, idx, val) {
+  if(!D._notes) D._notes={};
+  D._notes[type+'_'+idx] = val;
+}
+function getNote(type, idx) { return D._notes?.[type+'_'+idx]||'' }
+
+// ═══════════════════════════
+// COLOR UTILITIES
+// ═══════════════════════════
+function rgbToHex(r,g,b){const h=v=>Math.round(v*255).toString(16).padStart(2,'0');return'#'+h(r)+h(g)+h(b)}
+function hslToRgb(h,s,l){
+  if(s===0){const v=Math.round(l*255);return[v,v,v]}
+  const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;
+  const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p};
+  return[f(p,q,h+1/3),f(p,q,h),f(p,q,h-1/3)].map(v=>Math.round(v*255))
+}
+function parseColorVal(v){
+  v=v.trim().toLowerCase();
+  if(/^#[0-9a-f]{3}$/.test(v)){const[,r,g,b]=v.match(/#(.)(.)(.)/);return'#'+r+r+g+g+b+b}
+  if(/^#[0-9a-f]{6}$/.test(v))return v;
+  if(/^#[0-9a-f]{8}$/.test(v))return v.slice(0,7);
+  const rgb=v.match(/rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/);
+  if(rgb)return rgbToHex(+rgb[1]/255,+rgb[2]/255,+rgb[3]/255);
+  const hsl=v.match(/hsla?\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%/);
+  if(hsl){const[r,g,b]=hslToRgb(+hsl[1]/360,+hsl[2]/100,+hsl[3]/100);return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  const named={red:'#ff0000',blue:'#0000ff',green:'#008000',white:'#ffffff',black:'#000000',gray:'#808080',grey:'#808080',orange:'#ffa500',yellow:'#ffff00',purple:'#800080',pink:'#ffc0cb',navy:'#000080',teal:'#008080',cyan:'#00ffff',indigo:'#4b0082',coral:'#ff7f50',gold:'#ffd700',silver:'#c0c0c0'};
+  return named[v]||null;
+}
+function hexLum(hex){
+  const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  const l=c=>c<=0.03928?c/12.92:Math.pow((c+.055)/1.055,2.4);
+  return .2126*l(r)+.7152*l(g)+.0722*l(b);
+}
+function getHueGroup(hex){
+  const r=parseInt(hex.slice(1,3),16)/255,g=parseInt(hex.slice(3,5),16)/255,b=parseInt(hex.slice(5,7),16)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2;
+  if(mx===mn||mx-mn<0.08){if(l<0.13)return'⬛ 블랙';if(l>0.87)return'⬜ 화이트';return'🩶 그레이'}
+  const s=l>0.5?(mx-mn)/(2-mx-mn):(mx-mn)/(mx+mn);
+  if(s<0.12){if(l<0.15)return'⬛ 블랙';if(l>0.85)return'⬜ 화이트';return'🩶 그레이'}
+  let h=0;
+  if(mx===r)h=((g-b)/(mx-mn)+6)%6;else if(mx===g)h=(b-r)/(mx-mn)+2;else h=(r-g)/(mx-mn)+4;
+  h=h/6*360;
+  if(h<20||h>=340)return'🔴 레드';if(h<45)return'🟠 오렌지';if(h<70)return'🟡 옐로우';
+  if(h<150)return'🟢 그린';if(h<195)return'🩵 시안';if(h<255)return'🔵 블루';
+  if(h<285)return'🟣 퍼플';return'🩷 핑크';
+}
+function regroup(arr,fn){const o={};arr.forEach(i=>{const k=fn(i);(o[k]=o[k]||[]).push(i)});return o}
+function toPx(v){if(v.endsWith('rem'))return Math.round(parseFloat(v)*16);if(v.endsWith('pt'))return Math.round(parseFloat(v)*1.333);return Math.round(parseFloat(v))||0}
+
+// ═══════════════════════════
+// CSS PARSER
+// ═══════════════════════════
+function parseCSS(css){
+  const cm=new Map(),fm=new Map(),vars={};
+  let m;
+  const varRe=/--([\w-]+)\s*:\s*([^;}\n]+)/g;
+  while((m=varRe.exec(css))!==null){
+    const nm='--'+m[1],v=m[2].trim(); vars[nm]=v;
+    const h=parseColorVal(v);
+    if(h&&h.length===7){if(!cm.has(h))cm.set(h,{name:nm,hex:h,count:0,source:'CSS 변수',type:'solid',opacity:100});cm.get(h).count++;}
+  }
+  const pRe=/(?:color|background(?:-color)?|background|border(?:-color)?|outline-color|fill|stroke)\s*:\s*([^;}\n]+)/gi;
+  while((m=pRe.exec(css))!==null){
+    const raw=m[1].trim();
+    if(raw.startsWith('var(')||raw.startsWith('linear')||raw.startsWith('radial')) continue;
+    const h=parseColorVal(raw);
+    if(h&&h.length===7&&h!=='#ffffff'&&h!=='#000000'){if(!cm.has(h))cm.set(h,{name:h.toUpperCase(),hex:h,count:0,source:'스타일',type:'solid',opacity:100});cm.get(h).count++;}
+  }
+  const ffRe=/font-family\s*:\s*([^;}\n]+)/gi;
+  while((m=ffRe.exec(css))!==null){
+    const f=m[1].split(',')[0].trim().replace(/['"]/g,'');
+    if(!f||/^(inherit|initial|var\()/.test(f)) continue;
+    if(!fm.has(f))fm.set(f,{name:f,fontFamily:f,fontSize:16,fontWeight:400,lineHeight:24,letterSpacing:0,description:''});
+  }
+  const fsRe=/font-size\s*:\s*([\d.]+(?:px|rem|em|pt))/gi;
+  while((m=fsRe.exec(css))!==null){const px=toPx(m[1]);if(px>8)fm.forEach(f=>{if(!f._gotSize){f.fontSize=px;f._gotSize=true;}})}
+  const fwRe=/font-weight\s*:\s*(\d{3}|bold|normal|light)/gi;
+  while((m=fwRe.exec(css))!==null){const w=m[1]==='bold'?700:m[1]==='normal'?400:m[1]==='light'?300:parseInt(m[1]);fm.forEach(f=>{if(!f._gotW){f.fontWeight=w;f._gotW=true;}})}
+  const spacingSet=new Set();
+  const spRe=/(?:padding|margin)(?:-(?:top|right|bottom|left))?\s*:\s*([\d.]+px)/gi;
+  while((m=spRe.exec(css))!==null) spacingSet.add(m[1]);
+  const colors=[...cm.values()].sort((a,b)=>hexLum(b.hex)-hexLum(a.hex));
+  const typography=[...fm.values()];
+  return{colors,typography,vars,spacingTokens:[...spacingSet]};
+}
+
+// ═══════════════════════════
+// WEB ANALYZER
+// ═══════════════════════════
+const PROXIES=[u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`];
+async function fetchProxy(url,pi=0){
+  if(pi>=PROXIES.length) throw new Error('CORS 프록시 실패 — 접근 불가한 URL입니다.');
+  try{const r=await fetch(PROXIES[pi](url),{signal:AbortSignal.timeout(15000)});if(!r.ok)throw new Error(r.status+'');return r.text();}
+  catch(e){return fetchProxy(url,pi+1);}
+}
+async function analyzeWeb(rawUrl){
+  const url=rawUrl.startsWith('http')?rawUrl:'https://'+rawUrl;
+  setSt(_pi,'active');
+  const html=await fetchProxy(url);stepDone();
+  setSt(_pi,'active');
+  const doc=new DOMParser().parseFromString(html,'text/html');
+  const base=new URL(url);
+  let css=''; doc.querySelectorAll('style').forEach(s=>css+=s.textContent+'\n');
+  const th=doc.querySelector('meta[name="theme-color"]');
+  if(th) css+=`:root{--theme-color:${th.content};}\n`;
+  const links=[...doc.querySelectorAll('link[rel="stylesheet"]')].slice(0,8);
+  stepDone();
+  setSt(_pi,'active');
+  for(const lk of links){
+    const h=lk.getAttribute('href'); if(!h) continue;
+    try{const cu=h.startsWith('http')?h:h.startsWith('//')?'https:'+h:new URL(h,base).href;css+=await fetchProxy(cu)+'\n';}catch(e){}
+  }
+  stepDone();
+  setSt(_pi,'active');
+  const p=parseCSS(css);
+  p.title=doc.querySelector('title')?.textContent||url;
+  p.desc=doc.querySelector('meta[name="description"]')?.getAttribute('content')||'';
+  p.sourceUrl=url;
+  stepDone();
+  return p;
+}
+
+// ═══════════════════════════
+// FIGMA ANALYZER
+// ═══════════════════════════
+function parseFigmaUrl(url){
+  const fm=url.match(/\/(?:design|file)\/([a-zA-Z0-9]+)/);if(fm)document.getElementById('fileId').value=fm[1];
+  const nm=url.match(/node-id=([0-9A-Za-z%-:]+)/);if(nm)document.getElementById('nodeId').value=decodeURIComponent(nm[1]).replace(':','-');
+}
+async function figmaFetch(ep,tok){
+  const r=await fetch('https://api.figma.com/v1/'+ep,{headers:{'X-Figma-Token':tok}});
+  if(!r.ok){const b=await r.text().catch(()=>'');throw new Error(`${r.status} ${r.statusText}${b?' — '+b.slice(0,100):''}`);}
+  return r.json();
+}
+function collectStyleIds(node,ids=new Set()){
+  if(node.styles) Object.values(node.styles).forEach(id=>ids.add(id));
+  if(node.children) node.children.forEach(c=>collectStyleIds(c,ids));
+  return ids;
+}
+async function analyzeFigma(tok,fileId,nodeId){
+  setSt(_pi,'active');
+  const file=await figmaFetch(`files/${fileId}?depth=1`,tok);
+  const pages=(file.document?.children||[]).map(p=>({id:p.id,name:p.name}));
+  stepDone();
+  setSt(_pi,'active');
+  const sr=await figmaFetch(`files/${fileId}/styles`,tok);
+  const styles=sr.meta?.styles||[];
+  const fillSt=styles.filter(s=>s.style_type==='FILL');
+  const textSt=styles.filter(s=>s.style_type==='TEXT');
+  const effSt=styles.filter(s=>s.style_type==='EFFECT');
+  stepDone();
+  setSt(_pi,'active');
+  const colors=[],typography=[],effects=[];
+  const allIds=styles.map(s=>s.node_id);
+  if(allIds.length){
+    const nodes={};
+    for(let i=0;i<allIds.length;i+=100){
+      const nd=await figmaFetch(`files/${fileId}/nodes?ids=${allIds.slice(i,i+100).join(',')}`,tok);
+      Object.assign(nodes,nd.nodes||{});
+    }
+    for(const s of fillSt){
+      const doc=nodes[s.node_id]?.document; if(!doc) continue;
+      const fill=(doc.fills||[])[0]; if(!fill) continue;
+      if(fill.type==='SOLID'){
+        colors.push({name:s.name,hex:rgbToHex(fill.color.r,fill.color.g,fill.color.b),opacity:Math.round((fill.opacity??1)*100),type:'solid',description:s.description||''});
+      } else if(fill.type==='LINEAR_GRADIENT'||fill.type==='RADIAL_GRADIENT'){
+        const stops=(fill.gradientStops||[]).map(st=>({hex:rgbToHex(st.color.r,st.color.g,st.color.b),opacity:Math.round(st.color.a*100),pos:Math.round(st.position*100)}));
+        const css=fill.type==='LINEAR_GRADIENT'?`linear-gradient(${stops.map(s=>`${s.hex} ${s.pos}%`).join(', ')})`:`radial-gradient(${stops.map(s=>`${s.hex} ${s.pos}%`).join(', ')})`;
+        colors.push({name:s.name,hex:stops[0]?.hex||'#000',type:'gradient',gradientType:fill.type,stops,css,description:s.description||''});
+      }
+    }
+    for(const s of textSt){
+      const st=nodes[s.node_id]?.document?.style; if(!st) continue;
+      typography.push({name:s.name,fontFamily:st.fontFamily||'',fontSize:st.fontSize||0,fontWeight:st.fontWeight||400,lineHeight:st.lineHeightPx?Math.round(st.lineHeightPx):null,letterSpacing:st.letterSpacing||0,description:s.description||''});
+    }
+    for(const s of effSt){
+      const effs=(nodes[s.node_id]?.document?.effects||[]).filter(e=>e.visible!==false);
+      if(!effs.length) continue;
+      const parsed=effs.map(e=>{
+        if(e.type==='DROP_SHADOW'||e.type==='INNER_SHADOW'){
+          const hex=rgbToHex(e.color.r,e.color.g,e.color.b);
+          const aHex=Math.round(e.color.a*255).toString(16).padStart(2,'0');
+          const css=`box-shadow: ${e.type==='INNER_SHADOW'?'inset ':''}${Math.round(e.offset?.x||0)}px ${Math.round(e.offset?.y||0)}px ${Math.round(e.radius||0)}px ${Math.round(e.spread||0)}px ${hex}${e.color.a<1?aHex:''};`;
+          return{type:e.type,label:e.type==='DROP_SHADOW'?'드롭 섀도':'이너 섀도',hex,offsetX:Math.round(e.offset?.x||0),offsetY:Math.round(e.offset?.y||0),blur:Math.round(e.radius||0),spread:Math.round(e.spread||0),css};
+        }
+        if(e.type==='LAYER_BLUR') return{type:e.type,label:'레이어 블러',blur:Math.round(e.radius||0),css:`filter: blur(${Math.round(e.radius||0)}px);`};
+        if(e.type==='BACKGROUND_BLUR') return{type:e.type,label:'배경 블러',blur:Math.round(e.radius||0),css:`backdrop-filter: blur(${Math.round(e.radius||0)}px);`};
+        return{type:e.type,label:e.type};
+      });
+      if(parsed.length) effects.push({name:s.name,effects:parsed,description:s.description||''});
+    }
+  }
+  stepDone();
+  let nodeName=null,filtColors=colors,filtTypo=typography,filtEff=effects;
+  if(nodeId){
+    setSt(_pi,'active');
+    try{
+      const nr=await figmaFetch(`files/${fileId}/nodes?ids=${encodeURIComponent(nodeId.replace('-',':'))}`,tok);
+      const tgt=nr.nodes?.[Object.keys(nr.nodes||{})[0]]?.document;
+      if(tgt){
+        nodeName=tgt.name;
+        const used=collectStyleIds(tgt);
+        const filt=(arr,src)=>{const f=arr.filter(i=>{const s=src.find(x=>x.name===i.name);return s&&used.has(s.key)});return f.length?f:arr};
+        filtColors=filt(colors,fillSt); filtTypo=filt(typography,textSt); filtEff=filt(effects,effSt);
+      }
+      stepDone();
+    }catch(e){stepErr();nodeName='(노드 분석 실패)';}
+  } else stepSkip();
+  setSt(_pi,'active');
+  let components=[];
+  try{const cr=await figmaFetch(`files/${fileId}/components`,tok);components=Object.values(cr.meta?.components||{}).map(c=>({name:c.name,description:c.description||''}));}catch(e){}
+  stepDone();
+  return{source:'figma',fileName:file.name,lastModified:file.lastModified,pages,colors:filtColors,typography:filtTypo,effects:filtEff,components,nodeId:nodeId||null,nodeName,totalStyles:styles.length};
+}
+
+// ═══════════════════════════
+// IMAGE COLOR EXTRACTOR
+// ═══════════════════════════
+function extractColorsFromImage(imgEl, numColors) {
+  const canvas = document.createElement('canvas');
+  const maxDim = 200;
+  const ratio = Math.min(maxDim / imgEl.naturalWidth, maxDim / imgEl.naturalHeight);
+  canvas.width = Math.round(imgEl.naturalWidth * ratio);
+  canvas.height = Math.round(imgEl.naturalHeight * ratio);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(imgEl, 0, 0, canvas.width, canvas.height);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+  const map = new Map();
+  for (let i = 0; i < data.length; i += 4) {
+    if (data[i + 3] < 128) continue;
+    const r = Math.round(data[i] / 20) * 20;
+    const g = Math.round(data[i + 1] / 20) * 20;
+    const b = Math.round(data[i + 2] / 20) * 20;
+    const key = `${r},${g},${b}`;
+    map.set(key, (map.get(key) || 0) + 1);
+  }
+
+  const sorted = [...map.entries()].sort((a, b) => b[1] - a[1]);
+  const selected = [];
+  const minDist = 45;
+
+  for (const [key] of sorted) {
+    if (selected.length >= numColors) break;
+    const [r, g, b] = key.split(',').map(Number);
+    const hex = '#' + [r, g, b].map(v => Math.min(255, v).toString(16).padStart(2, '0')).join('');
+    const tooClose = selected.some(h => {
+      const r2 = parseInt(h.slice(1, 3), 16), g2 = parseInt(h.slice(3, 5), 16), b2 = parseInt(h.slice(5, 7), 16);
+      return Math.sqrt((r - r2) ** 2 + (g - g2) ** 2 + (b - b2) ** 2) < minDist;
+    });
+    if (!tooClose) selected.push(hex);
+  }
+
+  return selected.map((hex, i) => ({
+    name: `이미지 색상 ${i + 1}`,
+    hex, opacity: 100, type: 'solid', description: ''
+  }));
+}
+
+// ═══════════════════════════
+// IMAGE DROP ZONE
+// ═══════════════════════════
+function initDropZone() {
+  const zone = document.getElementById('dropZone');
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault(); zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImageFile(file);
+  });
+  zone.addEventListener('click', () => document.getElementById('imgFile').click());
+}
+
+function loadImageFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('imgPreview');
+    img.onload = () => {
+      document.getElementById('imgPreviewArea').style.display = 'block';
+      document.getElementById('imgInfo').textContent =
+        `${img.naturalWidth} × ${img.naturalHeight}px · ${(file.size / 1024).toFixed(1)}KB`;
+      document.getElementById('imgFileName').textContent = file.name;
+    };
+    img.src = e.target.result;
+    img.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+document.getElementById('imgFile').addEventListener('change', function () {
+  if (this.files[0]) loadImageFile(this.files[0]);
+});
+
+// ═══════════════════════════
+// MAIN START
+// ═══════════════════════════
+async function start(){
+  document.getElementById('errMsg').style.display='none';
+  document.getElementById('corsWarn').style.display='none';
+  document.getElementById('genBtn').disabled=true;
+  document.getElementById('results').style.display='none';
+  D={}; origD=null; history=[]; changes=0; _pi=0; editMode=false;
+  document.getElementById('editToggleBtn').textContent='켜기';
+  ['undoBtn','resetBtn','saveBtn','loadBtn'].forEach(id=>document.getElementById(id).style.display='none');
+  try{
+    if(curSrc==='figma'){
+      const tok=document.getElementById('figmaToken').value.trim();
+      const fid=document.getElementById('fileId').value.trim();
+      const nid=document.getElementById('nodeId').value.trim();
+      if(!tok||!fid){setErr('토큰과 파일 ID를 입력해주세요.');document.getElementById('genBtn').disabled=false;return;}
+      initProg(['파일 정보 및 페이지 목록','스타일 목록 추출','스타일 상세값 (HEX·그라디언트·폰트)','노드 트리 분석 — 사용된 스타일 필터링','컴포넌트 목록 추출']);
+      setSt(0,'active');
+      const r=await analyzeFigma(tok,fid,nid);
+      Object.assign(D,r);
+    } else if(curSrc==='web'){
+      const url=document.getElementById('webUrl').value.trim();
+      if(!url){setErr('URL을 입력해주세요.');document.getElementById('genBtn').disabled=false;return;}
+      initProg(['HTML 가져오기','스타일시트 링크 파싱','외부 CSS 파일 로드','색상·폰트 추출']);
+      setSt(0,'active');
+      const r=await analyzeWeb(url);
+      D={source:'web',fileName:r.title,sourceUrl:r.sourceUrl,description:r.desc,colors:r.colors,typography:r.typography,effects:[],components:[],pages:[],vars:r.vars,spacingTokens:r.spacingTokens};
+    } else if(curSrc==='img'){
+      const imgEl = document.getElementById('imgPreview');
+      if(!imgEl.src || imgEl.style.display === 'none') {
+        setErr('이미지를 먼저 업로드해주세요.');
+        document.getElementById('genBtn').disabled = false;
+        return;
+      }
+      const numColors = parseInt(document.getElementById('colorCount').value);
+      initProg(['이미지 로드', '색상 추출 및 분석', '팔레트 생성']);
+      setSt(0, 'active'); stepDone();
+      setSt(_pi, 'active');
+      const colors = extractColorsFromImage(imgEl, numColors);
+      stepDone();
+      setSt(_pi, 'active');
+      D = {
+        source: 'img',
+        fileName: document.getElementById('imgFileName')?.textContent || '이미지 분석',
+        colors, typography: [], effects: [], components: [], pages: [], vars: {}, spacingTokens: []
+      };
+      stepDone();
+    } else {
+      const css=document.getElementById('cssInput').value.trim();
+      if(!css){setErr('CSS를 붙여넣어 주세요.');document.getElementById('genBtn').disabled=false;return;}
+      initProg(['CSS 파싱','색상·폰트·변수 추출','완료']);
+      setSt(0,'active');
+      const r=parseCSS(css);stepDone();setSt(_pi,'active');
+      D={source:'css',fileName:'CSS 분석 결과',colors:r.colors,typography:r.typography,effects:[],components:[],pages:[],vars:r.vars,spacingTokens:r.spacingTokens};
+      stepDone();setSt(_pi,'active');stepDone();
+    }
+    buildData();
+    renderAll();
+    document.getElementById('results').style.display='block';
+    updateChangeCnt();
+  }catch(err){
+    const cors=err.message.includes('Failed to fetch')||err.message.includes('NetworkError');
+    setErr(err.message,cors);
+    document.getElementById('genBtn').disabled=false;
+    for(let i=0;i<10;i++){const el=document.getElementById('ps'+i);if(el&&el.classList.contains('active')){setSt(i,'error');break;}}
+  }
+}
+
+// ═══════════════════════════
+// DATA PROCESSING
+// ═══════════════════════════
+function buildData(){
+  D.typography?.sort((a,b)=>b.fontSize-a.fontSize);
+  D.colorGroups=regroup(D.colors||[],c=>D.source==='figma'?(c.name.includes('/')?c.name.split('/')[0].trim():'기타'):getHueGroup(c.hex));
+  D.typoGroups=D.source==='figma'?regroup(D.typography||[],t=>t.name.includes('/')?t.name.split('/')[0].trim():'기타'):{'폰트':D.typography||[]};
+  const pal=(D.colors||[]).slice(0,8).map(c=>c.hex).join(', ');
+  const fnt=[...new Set((D.typography||[]).map(t=>t.fontFamily))].slice(0,3).join(', ');
+  if(!D._promptsEdited) D.prompts={};
+  const set=(k,v)=>{ if(!D._promptsEdited?.[k]) D.prompts[k]=v; };
+  set('midjourney',`/imagine prompt: professional UI/UX design system, color palette [${pal||'modern neutral'}], ${fnt||'sans-serif'} typography, clean minimal layout, high fidelity mockup, figma design style, 8k --ar 16:9 --v 6 --style raw --q 2`);
+  set('dalle',`Create a professional UI/UX mockup:\n• Color palette: ${pal||'neutral tones'}\n• Typography: ${fnt||'clean sans-serif'}\n• Style: minimal, clean hierarchy, flat design, soft shadows`);
+  set('stable',`professional app UI mockup, color scheme (${pal||'modern'}), ${fnt||'sans-serif'}, clean minimal, 4k, white background, subtle shadows, figma prototype`);
+  const cl=(D.colors||[]).slice(0,12).map(c=>`  - ${c.name}: ${c.hex.toUpperCase()}`).join('\n');
+  const tl=(D.typography||[]).slice(0,7).map(t=>`  - ${t.name}: ${t.fontFamily} ${t.fontSize}px W${t.fontWeight}`).join('\n');
+  const extra=D.source==='figma'?`\n[파일] ${D.fileName}\n[페이지] ${(D.pages||[]).map(p=>p.name).join(', ')}\n[컴포넌트] ${D.components?.length||0}개`:D.source==='web'?`\n[URL] ${D.sourceUrl}`:'';
+  set('ui',`아래 디자인 시스템으로 새 UI를 생성해주세요.${extra}\n\n[색상]\n${cl||'없음'}\n\n[타이포]\n${tl||'없음'}\n\n일관성 있는 UI를 만들어주세요.`);
+  const vars2=(D.colors||[]).slice(0,15).map(c=>`  --color-${c.name.toLowerCase().replace(/[\s\/]+/g,'-').replace(/[^a-z0-9\-]/g,'')}: ${c.hex.toUpperCase()};`).join('\n');
+  const cls=(D.typography||[]).slice(0,6).map(t=>{const cn='.'+t.name.toLowerCase().replace(/[\s\/]+/g,'-').replace(/[^a-z0-9\-]/g,'');return`${cn}{font-family:'${t.fontFamily}',sans-serif;font-size:${t.fontSize}px;font-weight:${t.fontWeight};line-height:${t.lineHeight?t.lineHeight+'px':'1.5'}}`}).join('\n');
+  set('css',`:root{\n${vars2||'/* 없음 */'}\n}\n\n/* Typography */\n${cls||'/* 없음 */'}`);
+  // Tokens
+  const tObj=buildSemanticTokens();
+  (D.effects||[]).forEach(e=>{ if(!tObj.shared.shadow) tObj.shared.shadow={}; tObj.shared.shadow[e.name.replace(/\//g,'.')]={$value:e.effects.map(x=>x.css||x.label).join('; '),$type:'shadow'}; });
+  D.tokensJson=JSON.stringify(tObj,null,2);
+}
+
+// ═══════════════════════════
+// RENDER
+// ═══════════════════════════
+function renderAll(){
+  document.getElementById('tab-comp').style.display=D.source==='figma'?'':'none';
+  document.getElementById('tab-eff').style.display=(D.effects?.length)?'':'none';
+  renderOverview();renderColors();renderTypo();renderComponents();renderEffects();renderTokens();renderPrompts();
+  genMasterPrompt();
+  ['colors','typography','components','effects'].forEach(id=>{
+    document.getElementById(id).classList.toggle('edit-mode',editMode);
+  });
+}
+
+function renderOverview(){
+  const scopeHtml=D.source==='figma'
+    ?(D.nodeId?`<div class="scope sc-f">🎯 <strong>특정 노드</strong> — ${esc(D.nodeName||D.nodeId)}</div>`:`<div class="scope sc-f">🔷 <strong>Figma 파일 전체</strong> — ${esc(D.fileName)}</div>`)
+    :D.source==='web'?`<div class="scope sc-w">🌐 <strong>웹페이지</strong> — ${esc(D.sourceUrl||D.fileName)}</div>`
+    :D.source==='img'?`<div class="scope sc-i">🖼️ <strong>이미지 분석</strong> — ${esc(D.fileName)}</div>`
+    :`<div class="scope sc-c">📝 <strong>CSS 직접 분석</strong></div>`;
+  const sd=D.source==='figma'
+    ?[['📄',D.pages?.length,'페이지'],['🎨',D.colors?.length,'색상'],['✍️',D.typography?.length,'타이포'],['✨',D.effects?.length,'이펙트'],['🧩',D.components?.length,'컴포넌트']]
+    :D.source==='img'
+    ?[['🎨',D.colors?.length,'색상'],['✍️',0,'폰트'],['📦',0,'CSS 변수'],['📐',0,'간격값'],['✨',0,'이펙트']]
+    :[['🎨',D.colors?.length,'색상'],['✍️',D.typography?.length,'폰트'],['📦',Object.keys(D.vars||{}).length,'CSS 변수'],['📐',D.spacingTokens?.length||0,'간격값'],['✨',D.effects?.length,'이펙트']];
+  const info=D.source==='figma'
+    ?`<div class="sec">파일 정보</div><table class="itbl"><tr><td>파일명</td><td>${esc(D.fileName)}</td></tr><tr><td>최종 수정</td><td>${D.lastModified?new Date(D.lastModified).toLocaleString('ko-KR'):'-'}</td></tr><tr><td>총 스타일</td><td>${D.totalStyles||'-'}개</td></tr></table>`
+    :D.source==='web'?`<div class="sec">페이지 정보</div><table class="itbl"><tr><td>제목</td><td>${esc(D.fileName)}</td></tr><tr><td>URL</td><td style="word-break:break-all">${esc(D.sourceUrl)}</td></tr></table>`:''
+  const pages=D.source==='figma'&&D.pages?.length?`<div class="sec" style="margin-top:18px">페이지 <span class="cnt">${D.pages.length}</span></div><div class="ptags">${D.pages.map(p=>`<span class="ptag">${esc(p.name)}</span>`).join('')}</div>`:''
+  const vars2=D.vars&&Object.keys(D.vars).length?`<div class="sec" style="margin-top:18px">CSS 변수 <span class="cnt">${Object.keys(D.vars).length}</span></div><div style="font-family:'Courier New',monospace;font-size:11px;color:#444;line-height:1.8;column-count:2;column-gap:16px">${Object.entries(D.vars).slice(0,40).map(([k,v])=>`<span style="color:#555">${esc(k)}</span>: <span style="color:#aaa">${esc(v)}</span>`).join('<br>')}</div>`:''
+  document.getElementById('overview').innerHTML=scopeHtml+`<div class="stats">${sd.map(([i,n,l])=>`<div class="stat"><div class="stat-n">${n||0}</div><div class="stat-l">${i} ${l}</div></div>`).join('')}</div>`+info+pages+vars2;
+}
+
+function modeLabel(mode){ return mode==='light' ? '라이트' : mode==='dark' ? '다크' : '공통'; }
+function inferColorMode(c){
+  const n = normStr([c?.name, c?.description].join(' '));
+  if(/dark|night|dim|inverse|on-dark|다크|야간|역상/.test(n)) return 'dark';
+  if(/light|day|bright|on-light|라이트|일반|기본/.test(n)) return 'light';
+  return 'both';
+}
+function getColorMode(c){ return c?.mode || inferColorMode(c); }
+function setColorMode(idx, mode){ editColorField(idx, 'mode', mode); }
+function getModeBuckets(){
+  const out={light:[],dark:[],both:[]};
+  (D.colors||[]).forEach(c=>{ const m=getColorMode(c); if(m==='light') out.light.push(c); else if(m==='dark') out.dark.push(c); else out.both.push(c); });
+  return out;
+}
+function renderColors(){
+  const el=document.getElementById('colors');
+  el.className='tc'+(el.classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+  if(!(D.colors?.length)){el.innerHTML='<p style="color:#333;font-size:13px">추출된 색상이 없습니다.</p>'+(editMode?`<button class="btn-add" onclick="addColor()">+ 색상 추가</button>`:'');return;}
+  let html='';
+  const allColors=D.colors;
+  for(const[grp,items] of Object.entries(D.colorGroups)){
+    html+=`<div class="sec">${esc(grp)} <span class="cnt">${items.length}</span></div><div class="cgrid">`;
+    for(const c of items){
+      const idx=allColors.indexOf(c);
+      const label=c.name.includes('/')?c.name.split('/').slice(1).join('/').trim():c.name;
+      const editedDot=c._edited?'<span class="edited-dot" title="편집됨"></span>':'';
+      const swatchBg=c.type==='gradient'?c.css:c.hex;
+      const mode=getColorMode(c);
+      const editControls=`<div class="item-edit">
+        <div class="ef"><label>이름</label><input value="${esc(c.name)}" onchange="editColorField(${idx},'name',this.value)" onblur="renderColors()"></div>
+        ${c.type==='solid'?`<div class="ef"><label>HEX</label><input value="${esc(c.hex)}" onchange="editColorField(${idx},'hex',this.value.startsWith('#')?this.value:'#'+this.value)"><input type="color" value="${c.hex}" oninput="editColorHex(${idx},this.value)" style="width:36px;padding:2px;flex-shrink:0"></div>`:''}
+        <div class="ef"><label>모드</label><select onchange="setColorMode(${idx},this.value)"><option value="both" ${mode==='both'?'selected':''}>공통</option><option value="light" ${mode==='light'?'selected':''}>라이트 전용</option><option value="dark" ${mode==='dark'?'selected':''}>다크 전용</option></select></div>
+        <div class="ef"><label>설명</label><input value="${esc(c.description||'')}" placeholder="설명 추가..." onchange="editColorField(${idx},'description',this.value)"></div>
+        <div class="ef"><label>메모</label><textarea class="note-area" rows="1" placeholder="내부 메모..." onchange="saveNote('color',${idx},this.value)">${esc(getNote('color',idx))}</textarea><button class="del-btn" onclick="deleteColor(${idx})">삭제</button></div>
+      </div>`;
+      html+=`<div class="ci">
+        <div class="csw" style="background:${swatchBg}">
+          ${c.type==='solid'?`<div class="cp-ov" onclick="document.getElementById('cp${idx}').click()">🎨 색상 변경<input type="color" class="color-input" id="cp${idx}" value="${c.hex}" oninput="editColorHex(${idx},this.value)"></div>`:''}
+          ${c.type==='gradient'?`<span class="cbadge">${c.gradientType?.includes('LINEAR')?'선형':'방사형'}</span>`:''}
+          ${c.opacity<100?`<span class="cbadge">${c.opacity}%</span>`:''}
+        </div>
+        <div class="cinfo">
+          <div class="cname" title="${esc(c.name)}">${esc(label)}${editedDot}</div>
+          <div class="chex">${c.type==='gradient'?c.stops?.map(s=>s.hex.toUpperCase()).join('→'):c.hex.toUpperCase()}</div>
+          <div class="mode-badge ${mode}">${modeLabel(mode)}</div>
+          ${c.description?`<div class="cdesc">${esc(c.description)}</div>`:''}
+        </div>
+        ${editControls}
+      </div>`;
+    }
+    html+='</div>';
+  }
+  if(editMode) html+=`<button class="btn-add" onclick="addColor()">+ 색상 추가</button>`;
+  el.innerHTML=html;
+}
+
+function renderTypo(){
+  const el=document.getElementById('typography');
+  el.className='tc'+(el.classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+  if(!(D.typography?.length)){el.innerHTML='<p style="color:#333;font-size:13px">추출된 타이포그래피가 없습니다.</p>'+(editMode?`<button class="btn-add" onclick="addTypo()">+ 폰트 스타일 추가</button>`:'');return;}
+  let html='';
+  for(const[grp,items] of Object.entries(D.typoGroups)){
+    html+=`<div class="sec">${esc(grp)} <span class="cnt">${items.length}</span></div>`;
+    for(const t of [...items].sort((a,b)=>b.fontSize-a.fontSize)){
+      const idx=D.typography.indexOf(t);
+      const lh=t.lineHeight?t.lineHeight+'px':'-';
+      const ls=t.letterSpacing?`LS ${t.letterSpacing}`:''
+      const editedDot=t._edited?'<span class="edited-dot" title="편집됨"></span>':'';
+      const editControls=`<div class="item-edit">
+        <div class="ef"><label>이름</label><input value="${esc(t.name)}" onchange="editTypoField(${idx},'name',this.value)" onblur="renderTypo()"></div>
+        <div class="ef"><label>폰트</label><input value="${esc(t.fontFamily)}" onchange="editTypoField(${idx},'fontFamily',this.value)" onblur="renderTypo()"></div>
+        <div class="ef"><label>크기</label><input type="number" value="${t.fontSize}" onchange="editTypoField(${idx},'fontSize',+this.value)" onblur="renderTypo()" style="max-width:80px"><label style="width:auto">굵기</label><select onchange="editTypoField(${idx},'fontWeight',+this.value)" onblur="renderTypo()">
+          ${[100,200,300,400,500,600,700,800,900].map(w=>`<option value="${w}"${t.fontWeight===w?' selected':''}>${w}</option>`).join('')}
+        </select></div>
+        <div class="ef"><label>행간</label><input type="number" value="${t.lineHeight||''}" placeholder="auto" onchange="editTypoField(${idx},'lineHeight',+this.value)" style="max-width:80px"><label style="width:auto">자간</label><input type="number" value="${t.letterSpacing||0}" step="0.1" onchange="editTypoField(${idx},'letterSpacing',+this.value)" style="max-width:80px"></div>
+        <div class="ef"><label>메모</label><textarea class="note-area" rows="1" placeholder="내부 메모..." onchange="saveNote('typo',${idx},this.value)">${esc(getNote('typo',idx))}</textarea><button class="del-btn" onclick="deleteTypo(${idx})">삭제</button></div>
+      </div>`;
+      html+=`<div class="fi">
+        <div class="fi-main">
+          <div style="font-size:11px;color:#3a3a3a;margin-bottom:7px">${esc(t.name)}${editedDot}</div>
+          <div class="fmeta">
+            <span class="ftag">${esc(t.fontFamily)}</span><span class="ftag">${t.fontSize}px</span>
+            <span class="ftag">W${t.fontWeight}</span><span class="ftag">LH ${lh}</span>
+            ${ls?`<span class="ftag">${ls}</span>`:''}
+          </div>
+          <div class="fprev" style="font-family:'${esc(t.fontFamily)}',sans-serif;font-size:${Math.min(t.fontSize,36)}px;font-weight:${t.fontWeight};line-height:1.3">가나다라 AaBbCc 0123</div>
+        </div>
+        ${editControls}
+      </div>`;
+    }
+  }
+  if(editMode) html+=`<button class="btn-add" onclick="addTypo()">+ 폰트 스타일 추가</button>`;
+  el.innerHTML=html;
+}
+
+function renderComponents(){
+  const el=document.getElementById('components');
+  el.className='tc'+(el.classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+  if(D.source!=='figma'){el.innerHTML='<p style="color:#333;font-size:13px">Figma 분석 시에만 컴포넌트를 추출합니다.</p>';return;}
+  if(!D.components?.length){el.innerHTML='<p style="color:#333;font-size:13px">퍼블릭 컴포넌트가 없거나 접근 권한이 없습니다.</p>'+(editMode?`<button class="btn-add" onclick="addComp()">+ 컴포넌트 추가</button>`:'');return;}
+  const groups=regroup(D.components,c=>c.name.includes('/')?c.name.split('/')[0].trim():'기타');
+  let html='';
+  for(const[grp,items] of Object.entries(groups)){
+    html+=`<div class="sec">${esc(grp)} <span class="cnt">${items.length}</span></div><div class="cgrd">`;
+    items.forEach(c=>{
+      const idx=D.components.indexOf(c);
+      const label=c.name.includes('/')?c.name.split('/').slice(1).join('/'):c.name;
+      const editedDot=c._edited?'<span class="edited-dot" title="편집됨"></span>':'';
+      const editControls=`<div class="item-edit">
+        <div class="ef"><label>이름</label><input value="${esc(c.name)}" onchange="editCompField(${idx},'name',this.value)" onblur="renderComponents()"></div>
+        <div class="ef"><label>설명</label><input value="${esc(c.description||'')}" placeholder="설명 추가..." onchange="editCompField(${idx},'description',this.value)"></div>
+        <div class="ef" style="justify-content:flex-end"><button class="del-btn" onclick="deleteComp(${idx})">삭제</button></div>
+      </div>`;
+      html+=`<div class="citem"><div class="citem-main"><div class="citem-n">${esc(label)}${editedDot}</div>${c.description?`<div class="citem-d">${esc(c.description)}</div>`:''}</div>${editControls}</div>`;
+    });
+    html+='</div>';
+  }
+  if(editMode) html+=`<button class="btn-add" onclick="addComp()">+ 컴포넌트 추가</button>`;
+  el.innerHTML=html;
+}
+
+function renderEffects(){
+  const el=document.getElementById('effects');
+  el.className='tc'+(el.classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+  if(!D.effects?.length){el.innerHTML='<p style="color:#333;font-size:13px">추출된 이펙트가 없습니다.</p>';return;}
+  let html=`<div class="sec">이펙트 스타일 <span class="cnt">${D.effects.length}</span></div>`;
+  D.effects.forEach((e,idx)=>{
+    const editedDot=e._edited?'<span class="edited-dot" title="편집됨"></span>':'';
+    const effsHtml=e.effects.map(ef=>{
+      if(ef.type==='DROP_SHADOW'||ef.type==='INNER_SHADOW'){
+        return`<div style="display:flex;align-items:center;gap:8px;font-size:11px;margin-bottom:5px"><div style="width:24px;height:24px;border-radius:5px;background:#1e1e1e;${ef.css.split(':').slice(1).join(':').replace(';','')}"></div><span style="color:#777">${ef.label}: ${ef.offsetX}px ${ef.offsetY}px / blur ${ef.blur}px / spread ${ef.spread}px</span></div>`;
+      }
+      return`<div style="font-size:11px;color:#666;margin-bottom:3px">${ef.label}: ${ef.blur}px</div>`;
+    }).join('');
+    const firstCss=e.effects.map(ef=>ef.css).filter(Boolean).join('\n');
+    const editControls=`<div class="item-edit">
+      <div class="ef"><label>이름</label><input value="${esc(e.name)}" onchange="editEffName(${idx},this.value)" onblur="renderEffects()"></div>
+      <div class="ef" style="justify-content:flex-end"><button class="del-btn" onclick="deleteEffect(${idx})">삭제</button></div>
+    </div>`;
+    html+=`<div class="eitem"><div class="eitem-main"><div style="font-size:11px;color:#444;margin-bottom:9px">${esc(e.name)}${editedDot}</div>${effsHtml}${firstCss?`<div class="ecss">${esc(firstCss)}</div>`:''}</div>${editControls}</div>`;
+  });
+  el.innerHTML=html;
+}
+
+function renderTokens(){
+  document.getElementById('tokens').innerHTML=`
+    <div class="sec">W3C Design Token Format</div>
+    <div class="tokbox">${esc(D.tokensJson)}</div>
+    <button class="btn-s" style="margin-top:7px" onclick="navigator.clipboard.writeText(D.tokensJson).then(()=>{this.textContent='✓ 복사됨';setTimeout(()=>this.textContent='복사',1500)})">복사</button>`;
+}
+
+function renderPrompts(){
+  const items=[
+    {key:'midjourney',label:'Midjourney',badge:'이미지 생성'},
+    {key:'dalle',label:'DALL-E',badge:'이미지 생성'},
+    {key:'stable',label:'Stable Diffusion',badge:'이미지 생성'},
+    {key:'ui',label:'AI 디자인 어시스턴트',badge:'UI 생성'},
+    {key:'css',label:'CSS 변수 + 타이포그래피',badge:'개발용'},
+  ];
+  document.getElementById('prompts').innerHTML=items.map(it=>`
+    <div class="pb">
+      <div class="plabel">${it.label} <span class="pbadge">${it.badge}</span>${D._promptsEdited?.[it.key]?'<span class="edited-dot" title="직접 편집됨"></span>':''}</div>
+      <button class="cpbtn" onclick="this.nextElementSibling.textContent&&navigator.clipboard.writeText(this.nextElementSibling.textContent).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='복사',1500)})">복사</button>
+      <div class="ptext" contenteditable="${editMode}" onblur="savePromptEdit('${it.key}',this)">${esc(D.prompts?.[it.key]||'')}</div>
+    </div>`).join('');
+  document.getElementById('prompts').className='tc'+(document.getElementById('prompts').classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+}
+
+// ═══════════════════════════
+// MASTER PROMPT
+// ═══════════════════════════
+function selectMPTarget(target, btn) {
+  mpTarget = target;
+  document.querySelectorAll('.mpt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  genMasterPrompt();
+}
+
+function genMasterPrompt() {
+  const screen = document.getElementById('mpScreen')?.value || '';
+  const style = document.getElementById('mpStyle')?.value || '미니멀, 모던';
+  const type = document.getElementById('mpType')?.value || '';
+  const extra = document.getElementById('mpExtra')?.value || '';
+
+  const colors = (D.colors || []).slice(0, 10).map(c => `  - ${c.name}: ${c.hex.toUpperCase()}`).join('\n');
+  const typo = (D.typography || []).slice(0, 6).map(t => `  - ${t.name}: ${t.fontFamily} ${t.fontSize}px W${t.fontWeight}`).join('\n');
+  const comps = (D.components || []).slice(0, 8).map(c => c.name).join(', ');
+  const pal = (D.colors || []).slice(0, 6).map(c => c.hex).join(', ');
+  const fonts = [...new Set((D.typography || []).map(t => t.fontFamily))].slice(0, 3).join(', ');
+  const screenLabel = screen || '화면';
+  const typeLabel = type || '애플리케이션';
+
+  let prompt = '';
+
+  if (mpTarget === 'pencil') {
+    prompt = `[Pencil 디자인 생성 프롬프트]
+
+화면: ${screenLabel}${type ? '\n서비스 유형: ' + type : ''}
+스타일: ${style}
+
+─── 디자인 시스템 ───
+
+색상 팔레트:
+${colors || '  (색상 정보 없음)'}
+
+타이포그래피:
+${typo || '  (폰트 정보 없음)'}
+${comps ? '\n주요 컴포넌트: ' + comps : ''}
+
+─── 생성 요청 ───
+
+위 디자인 시스템을 정확히 따르는 "${screenLabel}" 화면을 디자인해주세요.
+- 색상은 팔레트에 정의된 값만 사용하세요
+- 스타일 키워드: ${style}
+- 레이아웃: 반응형, 8px 그리드 기반
+- 컴포넌트 간 일관된 간격과 정렬을 유지하세요
+${extra ? '- ' + extra.split('\n').join('\n- ') : ''}`;
+
+  } else if (mpTarget === 'midjourney') {
+    prompt = `/imagine prompt: ${screenLabel} UI screen for ${typeLabel}, ${style} design style, color palette [${pal || 'modern colors'}], ${fonts || 'sans-serif'} typography, high fidelity mobile/web mockup, professional product design, clean layout, figma style, 8k resolution --ar 9:19 --v 6 --style raw --q 2`;
+
+  } else if (mpTarget === 'claude') {
+    prompt = `당신은 전문 UI/UX 디자이너입니다. 아래 디자인 시스템을 기반으로 "${screenLabel}" 화면의 완전한 UI를 설계해주세요.
+
+## 디자인 시스템
+
+**색상 팔레트**
+${colors || '(정보 없음)'}
+
+**타이포그래피**
+${typo || '(정보 없음)'}
+${comps ? '\n**컴포넌트**\n  ' + comps : ''}
+
+## 화면 요구사항
+
+- 화면명: ${screenLabel}
+- 서비스: ${typeLabel}
+- 스타일: ${style}
+${extra ? '- 추가 요구사항: ' + extra : ''}
+
+## 출력 형식
+
+완성된 HTML + CSS 코드로 구현해주세요.
+- 위 디자인 시스템의 색상·폰트를 CSS 변수로 정의하세요
+- 반응형 레이아웃 (모바일 우선)
+- 접근성 기준 준수 (적절한 대비율, aria 속성)`;
+
+  } else if (mpTarget === 'v0') {
+    prompt = `Create a ${screenLabel} page for a ${typeLabel} using the following design system:
+
+**Colors:**
+${colors || '(use modern neutral palette)'}
+
+**Typography:**
+${typo || '(use clean sans-serif)'}
+
+**Requirements:**
+- Style: ${style}
+- Use Tailwind CSS utility classes
+- Responsive layout (mobile-first)
+- Component-based structure (React)
+${extra ? '- ' + extra : ''}
+- Follow the exact color values from the design system above`;
+
+  } else if (mpTarget === 'gpt') {
+    prompt = `다음 디자인 시스템으로 "${screenLabel}" 화면의 UI를 설계해줘.
+
+[디자인 시스템]
+• 색상:
+${colors || '  없음'}
+• 폰트:
+${typo || '  없음'}
+
+[요구사항]
+• 서비스: ${typeLabel}
+• 스타일: ${style}
+${extra ? '• 추가: ' + extra : ''}
+
+HTML/CSS 코드로 구현해줘. 모바일과 데스크톱 모두 지원하고, 위 색상과 폰트를 정확히 사용해줘.`;
+
+  } else {
+    // custom
+    prompt = `[디자인 가이드 기반 프롬프트]
+
+화면: ${screenLabel}
+서비스: ${typeLabel}
+스타일: ${style}
+
+[색상]
+${colors || '없음'}
+
+[타이포그래피]
+${typo || '없음'}
+${comps ? '\n[컴포넌트]\n' + comps : ''}
+${extra ? '\n[추가 요구사항]\n' + extra : ''}`;
+  }
+
+  const el = document.getElementById('masterPromptOut');
+  if (el) el.textContent = prompt;
+  D._masterPrompt = prompt;
+}
+
+function copyMaster() {
+  const text = document.getElementById('masterPromptOut')?.textContent;
+  if (text) navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#master .cpbtn');
+    if (btn) { btn.textContent = '✓ 복사됨'; setTimeout(() => btn.textContent = '복사', 1800); }
+  });
+}
+
+function dlMasterPrompt() {
+  const text = D._masterPrompt || document.getElementById('masterPromptOut')?.textContent || '';
+  const screen = document.getElementById('mpScreen')?.value || '화면';
+  dlFile(`${(D.fileName||'guide').replace(/\s+/g,'_')}_${screen}_master_prompt.txt`, text, 'text/plain;charset=utf-8');
+}
+
+// ═══════════════════════════
+// DOWNLOAD
+// ═══════════════════════════
+function dlFile(name,content,type='text/markdown;charset=utf-8'){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;a.click();
+}
+function dlGuide(){
+  let md=`# ${D.fileName} — 디자인 가이드\n\n> 소스: ${D.source} | 생성일: ${new Date().toLocaleDateString('ko-KR')}${changes?' | 편집: '+changes+'개 변경':''}\n\n`;
+  md+=`## 개요\n\n|항목|수량|\n|---|---|\n|색상|${D.colors?.length||0}|\n|타이포|${D.typography?.length||0}|\n|이펙트|${D.effects?.length||0}|\n${D.source==='figma'?`|컴포넌트|${D.components?.length||0}|\n|페이지|${D.pages?.length||0}|\n`:''}\n`;
+  if(D.source==='figma'&&D.pages?.length) md+=`## 페이지\n\n${D.pages.map(p=>`- ${p.name}`).join('\n')}\n\n`;
+  md+=`## 색상 팔레트\n\n`;
+  for(const[g,items] of Object.entries(D.colorGroups||{})){
+    md+=`### ${g}\n\n|이름|값|설명|메모|\n|---|---|---|---|\n`;
+    items.forEach((c,i)=>{md+=`|${c.name}|${c.type==='gradient'?c.css:c.hex.toUpperCase()}|${c.description||'-'}|${getNote('color',D.colors.indexOf(c))||'-'}|\n`});
+    md+='\n';
+  }
+  md+=`## 타이포그래피\n\n`;
+  for(const[g,items] of Object.entries(D.typoGroups||{})){
+    md+=`### ${g}\n\n|이름|폰트|크기|굵기|행간|메모|\n|---|---|---|---|---|---|\n`;
+    [...items].sort((a,b)=>b.fontSize-a.fontSize).forEach(t=>{md+=`|${t.name}|${t.fontFamily}|${t.fontSize}px|${t.fontWeight}|${t.lineHeight?t.lineHeight+'px':'-'}|${getNote('typo',D.typography.indexOf(t))||'-'}|\n`});
+    md+='\n';
+  }
+  if(D.effects?.length){md+=`## 이펙트\n\n`;D.effects.forEach(e=>{md+=`### ${e.name}\n`;e.effects.forEach(ef=>md+=`- ${ef.label||ef.type}: \`${ef.css||''}\`\n`);md+='\n'});}
+  if(D.source==='figma'&&D.components?.length){md+=`## 컴포넌트 (${D.components.length}개)\n\n`;D.components.forEach(c=>md+=`- **${c.name}**${c.description?': '+c.description:''}\n`);}
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_design_guide.md',md);
+}
+function dlPrompts(){
+  let md=`# ${D.fileName} — AI 프롬프트 가이드\n\n> 생성일: ${new Date().toLocaleDateString('ko-KR')}\n\n`;
+  ['midjourney','dalle','stable','ui','css'].forEach(k=>{
+    const label={midjourney:'Midjourney',dalle:'DALL-E',stable:'Stable Diffusion',ui:'AI 디자인 어시스턴트',css:'CSS 변수'}[k];
+    md+=`## ${label}\n\`\`\`${k==='css'?'css':''}\n${D.prompts?.[k]||''}\n\`\`\`\n\n`;
+  });
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_prompt_guide.md',md);
+}
+function dlTokens(){
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_tokens.json',D.tokensJson,'application/json;charset=utf-8');
+}
+
+// ═══════════════════════════
+// INIT
+// ═══════════════════════════
+document.addEventListener('DOMContentLoaded', initDropZone);
+
+// ═══════════════════════════
+// V5 ENHANCEMENTS
+// ═══════════════════════════
+const STORAGE_KEY_V5 = 'dgv10_data';
+const UI_FILTER = { search:'', group:'', type:'' };
+
+function byId(id){ return document.getElementById(id); }
+function safeOn(id, evt, handler){
+  const el = byId(id);
+  if(el) el.addEventListener(evt, handler);
+  return el;
+}
+function normStr(v){ return String(v||'').toLowerCase(); }
+function hexToRgb(hex){
+  const m = String(hex||'').trim().replace('#','');
+  if(!/^[0-9a-fA-F]{6}$/.test(m)) return null;
+  return {r:parseInt(m.slice(0,2),16), g:parseInt(m.slice(2,4),16), b:parseInt(m.slice(4,6),16)};
+}
+function luminance(hex){
+  const rgb = hexToRgb(hex); if(!rgb) return null;
+  const a=[rgb.r,rgb.g,rgb.b].map(v=>{v/=255; return v<=0.03928 ? v/12.92 : Math.pow((v+0.055)/1.055,2.4);});
+  return 0.2126*a[0]+0.7152*a[1]+0.0722*a[2];
+}
+function contrastRatio(a,b){
+  const l1=luminance(a), l2=luminance(b);
+  if(l1==null||l2==null) return null;
+  const hi=Math.max(l1,l2), lo=Math.min(l1,l2);
+  return ((hi+0.05)/(lo+0.05));
+}
+function colorDistance(a,b){
+  const c1=hexToRgb(a), c2=hexToRgb(b); if(!c1||!c2) return Infinity;
+  return Math.sqrt((c1.r-c2.r)**2 + (c1.g-c2.g)**2 + (c1.b-c2.b)**2);
+}
+function semanticColorName(name, hex){
+  const n = normStr(name);
+  const lum = luminance(hex);
+  if(n.includes('primary') || n.includes('brand') || n.includes('main')) return 'color.action.primary';
+  if(n.includes('secondary') || n.includes('sub')) return 'color.action.secondary';
+  if(n.includes('success') || n.includes('green')) return 'color.status.success';
+  if(n.includes('warning') || n.includes('yellow') || n.includes('orange')) return 'color.status.warning';
+  if(n.includes('danger') || n.includes('error') || n.includes('red')) return 'color.status.danger';
+  if(n.includes('border') || n.includes('stroke') || n.includes('line')) return 'color.border.default';
+  if(n.includes('bg') || n.includes('background') || n.includes('surface')) return lum !== null && lum > 0.92 ? 'color.background.canvas' : 'color.background.surface';
+  if(n.includes('text') || n.includes('label')) return lum !== null && lum < 0.35 ? 'color.text.primary' : 'color.text.secondary';
+  if(lum !== null && lum > 0.95) return 'color.background.canvas';
+  if(lum !== null && lum < 0.18) return 'color.text.primary';
+  return 'color.alias.' + String(name||'token').toLowerCase().replace(/[\s\/]+/g,'.').replace(/[^a-z0-9.\-]/g,'');
+}
+function semanticTypographyName(t){
+  const n = normStr(t?.name);
+  const fs = Number(t?.fontSize || 0);
+  const fw = Number(t?.fontWeight || 400);
+  if(n.includes('display') || fs >= 32) return 'typography.display';
+  if(n.includes('headline') || n.includes('title') || fs >= 24) return 'typography.heading';
+  if(n.includes('body') || (fs >= 14 && fs <= 18)) return 'typography.body';
+  if(n.includes('caption') || fs <= 12) return 'typography.caption';
+  if(fw >= 600) return 'typography.label.strong';
+  return 'typography.label';
+}
+function getSemanticColorMaps(){
+  const maps={shared:{},light:{},dark:{}};
+  (D.colors||[]).forEach(c=>{
+    const key = semanticColorName(c.name, c.hex).replace(/^color\./,'');
+    const val = {$value: c.type === 'gradient' ? (c.css || c.hex) : (c.hex || ''), $type:'color', original: c.name};
+    const mode=getColorMode(c);
+    if(mode==='light') maps.light[key]=val;
+    else if(mode==='dark') maps.dark[key]=val;
+    else maps.shared[key]=val;
+  });
+  return maps;
+}
+function buildSemanticTokens(){
+  const maps=getSemanticColorMaps();
+  const typo={};
+  (D.typography||[]).forEach(t=>{
+    const key = semanticTypographyName(t).replace(/^typography\./,'');
+    typo[key] = {$value:{
+      fontFamily:t.fontFamily,
+      fontSize:(t.fontSize||0)+'px',
+      fontWeight:t.fontWeight||400,
+      lineHeight:t.lineHeight ? t.lineHeight+'px' : '1.5'
+    }, $type:'typography', original:t.name};
+  });
+  return {$schema:'https://design-tokens.github.io/community-group/format/', modes:{ light:{color:{...maps.shared,...maps.light}}, dark:{color:{...maps.shared,...maps.dark}} }, shared:{ color:maps.shared, typography:typo }};
+}
+function buildTailwindPreset(){
+  const maps=getSemanticColorMaps();
+  const lightColors={}, darkColors={};
+  Object.entries({...maps.shared,...maps.light}).forEach(([k,v])=>lightColors[k.replace(/\./g,'-')]=v.$value);
+  Object.entries({...maps.shared,...maps.dark}).forEach(([k,v])=>darkColors[k.replace(/\./g,'-')]=v.$value);
+  const fontFamily = {};
+  [...new Set((D.typography||[]).map(t=>t.fontFamily).filter(Boolean))].forEach(ff=>{
+    const key=ff.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+    fontFamily[key]=[ff,'sans-serif'];
+  });
+  const fontSize = {};
+  (D.typography||[]).forEach(t=>{
+    const key=String(t.name||'font').toLowerCase().replace(/[\s\/]+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    fontSize[key]=[(t.fontSize||14)+'px',{lineHeight: t.lineHeight ? (t.lineHeight+'px') : '1.5', fontWeight: String(t.fontWeight||400)}];
+  });
+  return `export default {
+  darkMode: ['class', '[data-theme="dark"]'],
+  theme: {
+    extend: {
+      colors: ${JSON.stringify(lightColors, null, 8)},
+      fontFamily: ${JSON.stringify(fontFamily, null, 8)},
+      fontSize: ${JSON.stringify(fontSize, null, 8)}
+    }
+  },
+  plugins: [
+    function({ addBase }) {
+      addBase({
+        ':root': ${JSON.stringify(Object.fromEntries(Object.entries(lightColors).map(([k,v])=>['--'+k,v])), null, 8)},
+        '[data-theme="dark"]': ${JSON.stringify(Object.fromEntries(Object.entries(darkColors).map(([k,v])=>['--'+k,v])), null, 8)}
+      });
+    }
+  ]
+};`;
+}
+function buildCssVariables(){
+  const maps=getSemanticColorMaps();
+  const block=(obj)=>Object.entries(obj).map(([k,v])=>`  --${k.replace(/\./g,'-')}: ${v.$value};`).join('\n');
+  const t = (D.typography||[]).map(x=>{
+    const k=String(x.name||'font').toLowerCase().replace(/[\s\/]+/g,'-').replace(/[^a-z0-9\-]/g,'');
+    return `  --font-${k}-family: '${x.fontFamily}', sans-serif;\n  --font-${k}-size: ${x.fontSize}px;\n  --font-${k}-weight: ${x.fontWeight};\n  --font-${k}-line-height: ${x.lineHeight ? x.lineHeight+'px' : '1.5'};`;
+  }).join('\n');
+  const light={...maps.shared,...maps.light};
+  const dark={...maps.shared,...maps.dark};
+  return `:root{\n${block(light) || '  /* no light colors */'}${t ? '\n'+t : ''}\n}\n\n[data-theme="dark"]{\n${block(dark) || '  /* no dark colors */'}\n}`;
+}
+
+function renderTokens(){
+  document.getElementById('tokens').innerHTML=`
+    <div class="sec">W3C Design Token Format</div>
+    <div class="tokbox">${esc(D.tokensJson)}</div>
+    <button class="btn-s" style="margin-top:7px" onclick="navigator.clipboard.writeText(D.tokensJson).then(()=>{this.textContent='✓ 복사됨';setTimeout(()=>this.textContent='복사',1500)})">복사</button>`;
+}
+
+function renderPrompts(){
+  const items=[
+    {key:'midjourney',label:'Midjourney',badge:'이미지 생성'},
+    {key:'dalle',label:'DALL-E',badge:'이미지 생성'},
+    {key:'stable',label:'Stable Diffusion',badge:'이미지 생성'},
+    {key:'ui',label:'AI 디자인 어시스턴트',badge:'UI 생성'},
+    {key:'css',label:'CSS 변수 + 타이포그래피',badge:'개발용'},
+  ];
+  document.getElementById('prompts').innerHTML=items.map(it=>`
+    <div class="pb">
+      <div class="plabel">${it.label} <span class="pbadge">${it.badge}</span>${D._promptsEdited?.[it.key]?'<span class="edited-dot" title="직접 편집됨"></span>':''}</div>
+      <button class="cpbtn" onclick="this.nextElementSibling.textContent&&navigator.clipboard.writeText(this.nextElementSibling.textContent).then(()=>{this.textContent='✓';setTimeout(()=>this.textContent='복사',1500)})">복사</button>
+      <div class="ptext" contenteditable="${editMode}" onblur="savePromptEdit('${it.key}',this)">${esc(D.prompts?.[it.key]||'')}</div>
+    </div>`).join('');
+  document.getElementById('prompts').className='tc'+(document.getElementById('prompts').classList.contains('on')?' on':'')+(editMode?' edit-mode':'');
+}
+
+// ═══════════════════════════
+// MASTER PROMPT
+// ═══════════════════════════
+function selectMPTarget(target, btn) {
+  mpTarget = target;
+  document.querySelectorAll('.mpt').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  genMasterPrompt();
+}
+
+function genMasterPrompt() {
+  const screen = document.getElementById('mpScreen')?.value || '';
+  const style = document.getElementById('mpStyle')?.value || '미니멀, 모던';
+  const type = document.getElementById('mpType')?.value || '';
+  const extra = document.getElementById('mpExtra')?.value || '';
+
+  const colors = (D.colors || []).slice(0, 10).map(c => `  - ${c.name}: ${c.hex.toUpperCase()}`).join('\n');
+  const typo = (D.typography || []).slice(0, 6).map(t => `  - ${t.name}: ${t.fontFamily} ${t.fontSize}px W${t.fontWeight}`).join('\n');
+  const comps = (D.components || []).slice(0, 8).map(c => c.name).join(', ');
+  const pal = (D.colors || []).slice(0, 6).map(c => c.hex).join(', ');
+  const fonts = [...new Set((D.typography || []).map(t => t.fontFamily))].slice(0, 3).join(', ');
+  const screenLabel = screen || '화면';
+  const typeLabel = type || '애플리케이션';
+
+  let prompt = '';
+
+  if (mpTarget === 'pencil') {
+    prompt = `[Pencil 디자인 생성 프롬프트]
+
+화면: ${screenLabel}${type ? '\n서비스 유형: ' + type : ''}
+스타일: ${style}
+
+─── 디자인 시스템 ───
+
+색상 팔레트:
+${colors || '  (색상 정보 없음)'}
+
+타이포그래피:
+${typo || '  (폰트 정보 없음)'}
+${comps ? '\n주요 컴포넌트: ' + comps : ''}
+
+─── 생성 요청 ───
+
+위 디자인 시스템을 정확히 따르는 "${screenLabel}" 화면을 디자인해주세요.
+- 색상은 팔레트에 정의된 값만 사용하세요
+- 스타일 키워드: ${style}
+- 레이아웃: 반응형, 8px 그리드 기반
+- 컴포넌트 간 일관된 간격과 정렬을 유지하세요
+${extra ? '- ' + extra.split('\n').join('\n- ') : ''}`;
+
+  } else if (mpTarget === 'midjourney') {
+    prompt = `/imagine prompt: ${screenLabel} UI screen for ${typeLabel}, ${style} design style, color palette [${pal || 'modern colors'}], ${fonts || 'sans-serif'} typography, high fidelity mobile/web mockup, professional product design, clean layout, figma style, 8k resolution --ar 9:19 --v 6 --style raw --q 2`;
+
+  } else if (mpTarget === 'claude') {
+    prompt = `당신은 전문 UI/UX 디자이너입니다. 아래 디자인 시스템을 기반으로 "${screenLabel}" 화면의 완전한 UI를 설계해주세요.
+
+## 디자인 시스템
+
+**색상 팔레트**
+${colors || '(정보 없음)'}
+
+**타이포그래피**
+${typo || '(정보 없음)'}
+${comps ? '\n**컴포넌트**\n  ' + comps : ''}
+
+## 화면 요구사항
+
+- 화면명: ${screenLabel}
+- 서비스: ${typeLabel}
+- 스타일: ${style}
+${extra ? '- 추가 요구사항: ' + extra : ''}
+
+## 출력 형식
+
+완성된 HTML + CSS 코드로 구현해주세요.
+- 위 디자인 시스템의 색상·폰트를 CSS 변수로 정의하세요
+- 반응형 레이아웃 (모바일 우선)
+- 접근성 기준 준수 (적절한 대비율, aria 속성)`;
+
+  } else if (mpTarget === 'v0') {
+    prompt = `Create a ${screenLabel} page for a ${typeLabel} using the following design system:
+
+**Colors:**
+${colors || '(use modern neutral palette)'}
+
+**Typography:**
+${typo || '(use clean sans-serif)'}
+
+**Requirements:**
+- Style: ${style}
+- Use Tailwind CSS utility classes
+- Responsive layout (mobile-first)
+- Component-based structure (React)
+${extra ? '- ' + extra : ''}
+- Follow the exact color values from the design system above`;
+
+  } else if (mpTarget === 'gpt') {
+    prompt = `다음 디자인 시스템으로 "${screenLabel}" 화면의 UI를 설계해줘.
+
+[디자인 시스템]
+• 색상:
+${colors || '  없음'}
+• 폰트:
+${typo || '  없음'}
+
+[요구사항]
+• 서비스: ${typeLabel}
+• 스타일: ${style}
+${extra ? '• 추가: ' + extra : ''}
+
+HTML/CSS 코드로 구현해줘. 모바일과 데스크톱 모두 지원하고, 위 색상과 폰트를 정확히 사용해줘.`;
+
+  } else {
+    // custom
+    prompt = `[디자인 가이드 기반 프롬프트]
+
+화면: ${screenLabel}
+서비스: ${typeLabel}
+스타일: ${style}
+
+[색상]
+${colors || '없음'}
+
+[타이포그래피]
+${typo || '없음'}
+${comps ? '\n[컴포넌트]\n' + comps : ''}
+${extra ? '\n[추가 요구사항]\n' + extra : ''}`;
+  }
+
+  const el = document.getElementById('masterPromptOut');
+  if (el) el.textContent = prompt;
+  D._masterPrompt = prompt;
+}
+
+function copyMaster() {
+  const text = document.getElementById('masterPromptOut')?.textContent;
+  if (text) navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#master .cpbtn');
+    if (btn) { btn.textContent = '✓ 복사됨'; setTimeout(() => btn.textContent = '복사', 1800); }
+  });
+}
+
+function dlMasterPrompt() {
+  const text = D._masterPrompt || document.getElementById('masterPromptOut')?.textContent || '';
+  const screen = document.getElementById('mpScreen')?.value || '화면';
+  dlFile(`${(D.fileName||'guide').replace(/\s+/g,'_')}_${screen}_master_prompt.txt`, text, 'text/plain;charset=utf-8');
+}
+
+// ═══════════════════════════
+// DOWNLOAD
+// ═══════════════════════════
+function dlFile(name,content,type='text/markdown;charset=utf-8'){
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name;a.click();
+}
+function dlGuide(){
+  let md=`# ${D.fileName} — 디자인 가이드\n\n> 소스: ${D.source} | 생성일: ${new Date().toLocaleDateString('ko-KR')}${changes?' | 편집: '+changes+'개 변경':''}\n\n`;
+  md+=`## 개요\n\n|항목|수량|\n|---|---|\n|색상|${D.colors?.length||0}|\n|타이포|${D.typography?.length||0}|\n|이펙트|${D.effects?.length||0}|\n${D.source==='figma'?`|컴포넌트|${D.components?.length||0}|\n|페이지|${D.pages?.length||0}|\n`:''}\n`;
+  if(D.source==='figma'&&D.pages?.length) md+=`## 페이지\n\n${D.pages.map(p=>`- ${p.name}`).join('\n')}\n\n`;
+  md+=`## 색상 팔레트\n\n`;
+  for(const[g,items] of Object.entries(D.colorGroups||{})){
+    md+=`### ${g}\n\n|이름|값|설명|메모|\n|---|---|---|---|\n`;
+    items.forEach((c,i)=>{md+=`|${c.name}|${c.type==='gradient'?c.css:c.hex.toUpperCase()}|${c.description||'-'}|${getNote('color',D.colors.indexOf(c))||'-'}|\n`});
+    md+='\n';
+  }
+  md+=`## 타이포그래피\n\n`;
+  for(const[g,items] of Object.entries(D.typoGroups||{})){
+    md+=`### ${g}\n\n|이름|폰트|크기|굵기|행간|메모|\n|---|---|---|---|---|---|\n`;
+    [...items].sort((a,b)=>b.fontSize-a.fontSize).forEach(t=>{md+=`|${t.name}|${t.fontFamily}|${t.fontSize}px|${t.fontWeight}|${t.lineHeight?t.lineHeight+'px':'-'}|${getNote('typo',D.typography.indexOf(t))||'-'}|\n`});
+    md+='\n';
+  }
+  if(D.effects?.length){md+=`## 이펙트\n\n`;D.effects.forEach(e=>{md+=`### ${e.name}\n`;e.effects.forEach(ef=>md+=`- ${ef.label||ef.type}: \`${ef.css||''}\`\n`);md+='\n'});}
+  if(D.source==='figma'&&D.components?.length){md+=`## 컴포넌트 (${D.components.length}개)\n\n`;D.components.forEach(c=>md+=`- **${c.name}**${c.description?': '+c.description:''}\n`);}
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_design_guide.md',md);
+}
+function dlPrompts(){
+  let md=`# ${D.fileName} — AI 프롬프트 가이드\n\n> 생성일: ${new Date().toLocaleDateString('ko-KR')}\n\n`;
+  ['midjourney','dalle','stable','ui','css'].forEach(k=>{
+    const label={midjourney:'Midjourney',dalle:'DALL-E',stable:'Stable Diffusion',ui:'AI 디자인 어시스턴트',css:'CSS 변수'}[k];
+    md+=`## ${label}\n\`\`\`${k==='css'?'css':''}\n${D.prompts?.[k]||''}\n\`\`\`\n\n`;
+  });
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_prompt_guide.md',md);
+}
+function dlTokens(){
+  dlFile(D.fileName.replace(/\s+/g,'_')+'_tokens.json',D.tokensJson,'application/json;charset=utf-8');
+}
+
+
+// (중복된 V5 enhancement 블록 제거)
+
+const STORAGE_KEY_V6 = 'dgv10_data';
+const V6 = {
+  dom: {},
+  requiredIds: ['genBtn','results','overview','colors','typography','tokens','prompts','globalSearch','groupFilter','typeFilter','runHealthBtn'],
+  flowChecks: [
+    {id:'genBtn', label:'분석 시작 버튼'},
+    {id:'editToggleBtn', label:'편집 토글 버튼'},
+    {id:'saveBtn', label:'로컬 저장 버튼'},
+    {id:'loadBtn', label:'저장본 불러오기 버튼'},
+    {id:'runHealthBtn', label:'UI 상태 점검 버튼'}
+  ]
+};
+function v6ById(id){ return document.getElementById(id); }
+function v6CacheDom(){
+  V6.requiredIds.forEach(id=>{ V6.dom[id]=v6ById(id); });
+}
+function v6DomStatus(){
+  return V6.requiredIds.map(id=>({id, ok: !!v6ById(id)}));
+}
+function commitEdit(mutator, opts={}){
+  if(typeof mutator !== 'function') return;
+  history.push(deepCopy(D));
+  mutator();
+  changes++;
+  if(opts.markEdited && opts.collection && Number.isInteger(opts.index) && D[opts.collection] && D[opts.collection][opts.index]){
+    D[opts.collection][opts.index]._edited = true;
+  }
+  if(opts.afterMutate) opts.afterMutate();
+  updateChangeCnt();
+  if(opts.render === 'all'){
+    buildData();
+    renderAll();
+  }else if(Array.isArray(opts.renderers)){
+    if(opts.rebuild!==false) buildData();
+    opts.renderers.forEach(name=>{
+      if(name==='overview') renderOverview();
+      else if(name==='colors') renderColors();
+      else if(name==='typography') renderTypo();
+      else if(name==='components') renderComponents();
+      else if(name==='effects') renderEffects();
+      else if(name==='tokens') renderTokens();
+      else if(name==='prompts') renderPrompts();
+    });
+  }else{
+    buildData();
+    renderAll();
+  }
+  populateFilterOptions();
+  updateFilterBar();
+}
+function regroupColorsIfNeeded(){
+  D.colorGroups = regroup(D.colors || [], c => D.source==='figma' ? (c.name.includes('/')?c.name.split('/')[0].trim():'기타') : getHueGroup(c.hex));
+}
+
+// safer/localized overrides using common commitEdit
+editColorHex = function(idx, hex){
+  commitEdit(()=>{
+    if(!D.colors?.[idx]) return;
+    D.colors[idx].hex = hex;
+    D.colors[idx]._edited = true;
+    regroupColorsIfNeeded();
+  }, {renderers:['colors','overview','tokens','prompts'], rebuild:true});
+};
+editColorField = function(idx, field, val){
+  commitEdit(()=>{
+    if(!D.colors?.[idx]) return;
+    D.colors[idx][field] = val;
+    D.colors[idx]._edited = true;
+    if(field==='name' || field==='hex') regroupColorsIfNeeded();
+  }, {renderers:['colors','overview','tokens','prompts'], rebuild:true});
+};
+deleteColor = function(idx){
+  commitEdit(()=>{
+    if(!D.colors?.[idx]) return;
+    D.colors.splice(idx,1);
+    regroupColorsIfNeeded();
+  }, {renderers:['colors','overview','tokens','prompts'], rebuild:true});
+};
+addColor = function(){
+  commitEdit(()=>{
+    D.colors = D.colors || [];
+    D.colors.push({name:'새 색상',hex:'#6d28d9',opacity:100,type:'solid',description:'',_edited:true,_new:true});
+    regroupColorsIfNeeded();
+  }, {renderers:['colors','overview','tokens','prompts'], rebuild:true});
+};
+editTypoField = function(idx, field, val){
+  commitEdit(()=>{
+    if(!D.typography?.[idx]) return;
+    if(field==='fontSize'||field==='fontWeight'||field==='lineHeight'||field==='letterSpacing'){
+      const parsed = parseFloat(val);
+      val = Number.isFinite(parsed) ? parsed : val;
+    }
+    D.typography[idx][field] = val;
+    D.typography[idx]._edited = true;
+  }, {renderers:['typography','overview','tokens','prompts'], rebuild:true});
+};
+deleteTypo = function(idx){
+  commitEdit(()=>{
+    if(!D.typography?.[idx]) return;
+    D.typography.splice(idx,1);
+  }, {renderers:['typography','overview','tokens','prompts'], rebuild:true});
+};
+addTypo = function(){
+  commitEdit(()=>{
+    D.typography = D.typography || [];
+    D.typography.push({name:'새 텍스트 스타일',fontFamily:'Inter',fontSize:16,fontWeight:400,lineHeight:24,letterSpacing:0,description:'',_edited:true,_new:true});
+  }, {renderers:['typography','overview','tokens','prompts'], rebuild:true});
+};
+editCompField = function(idx, field, val){
+  commitEdit(()=>{
+    if(!D.components?.[idx]) return;
+    D.components[idx][field] = val;
+    D.components[idx]._edited = true;
+  }, {renderers:['components','overview','tokens','prompts'], rebuild:true});
+};
+deleteComp = function(idx){
+  commitEdit(()=>{
+    if(!D.components?.[idx]) return;
+    D.components.splice(idx,1);
+  }, {renderers:['components','overview','tokens','prompts'], rebuild:true});
+};
+addComp = function(){
+  commitEdit(()=>{
+    D.components = D.components || [];
+    D.components.push({name:'새 컴포넌트',description:'',_edited:true,_new:true});
+  }, {renderers:['components','overview','tokens','prompts'], rebuild:true});
+};
+editEffName = function(idx, val){
+  commitEdit(()=>{
+    if(!D.effects?.[idx]) return;
+    D.effects[idx].name = val;
+    D.effects[idx]._edited = true;
+  }, {renderers:['effects','overview','tokens','prompts'], rebuild:true});
+};
+deleteEffect = function(idx){
+  commitEdit(()=>{
+    if(!D.effects?.[idx]) return;
+    D.effects.splice(idx,1);
+  }, {renderers:['effects','overview','tokens','prompts'], rebuild:true});
+};
+savePromptEdit = function(key, el){
+  D.prompts = D.prompts || {};
+  D.prompts[key] = el.textContent;
+  D._promptsEdited = D._promptsEdited || {};
+  D._promptsEdited[key] = true;
+  updateChangeCnt();
+};
+saveToLS = function(){
+  localStorage.setItem(STORAGE_KEY_V6, JSON.stringify(D));
+  localStorage.setItem(STORAGE_KEY_V5, JSON.stringify(D));
+  const btn=v6ById('saveBtn');
+  if(btn){ btn.textContent='✓ 저장됨'; setTimeout(()=>btn.textContent='💾 로컬 저장', 1800); }
+};
+loadFromLS = function(){
+  const raw = localStorage.getItem(STORAGE_KEY_V6) || localStorage.getItem(STORAGE_KEY_V5) || localStorage.getItem('dgv10_data');
+  if(!raw){ alert('저장된 데이터가 없습니다.'); return; }
+  if(!confirm('저장된 데이터를 불러오면 현재 결과가 대체됩니다. 계속하시겠습니까?')) return;
+  D = JSON.parse(raw);
+  origD = deepCopy(D);
+  changes = 0;
+  history = [];
+  buildData();
+  renderAll();
+  updateFilterBar();
+  populateFilterOptions();
+};
+
+function runUiHealthCheck(){
+  const domRows = v6DomStatus();
+  const flowRows = V6.flowChecks.map(item=>({label:item.label, ok: !!v6ById(item.id)}));
+  const summary = {
+    domOk: domRows.filter(x=>x.ok).length,
+    domTotal: domRows.length,
+    flowOk: flowRows.filter(x=>x.ok).length,
+    flowTotal: flowRows.length,
+    hasResults: !!(D && D.fileName),
+    editMode,
+    historyDepth: history.length,
+    changes
+  };
+  D._uiHealth = {summary, domRows, flowRows, checkedAt: new Date().toISOString()};
+  return D._uiHealth;
+}
+const _v6RenderOverviewBase = renderOverview;
+renderOverview = function(){
+  _v6RenderOverviewBase();
+  const el = v6ById('overview');
+  if(!el) return;
+  const health = runUiHealthCheck();
+  const html = `
+    <hr>
+    <div class="sec">🧪 시스템 진단</div>
+    <div class="audit-grid">
+      <div class="audit-card">
+        <h3>DOM 존재 확인</h3>
+        <div class="audit-list">
+          ${health.domRows.map(row=>`<div class="audit-item ${row.ok?'good':'bad'}">${row.ok?'정상':'누락'} · #${esc(row.id)}</div>`).join('')}
+        </div>
+      </div>
+      <div class="audit-card">
+        <h3>클릭 플로우 핵심 5개</h3>
+        <div class="audit-list">
+          ${health.flowRows.map(row=>`<div class="audit-item ${row.ok?'good':'bad'}">${row.ok?'준비됨':'점검 필요'} · ${esc(row.label)}</div>`).join('')}
+        </div>
+      </div>
+      <div class="audit-card">
+        <h3>상태 스냅샷</h3>
+        <div class="audit-list">
+          <div class="audit-item good">DOM: ${health.summary.domOk}/${health.summary.domTotal}</div>
+          <div class="audit-item ${health.summary.hasResults?'good':'warn'}">분석 결과: ${health.summary.hasResults?'있음':'없음'}</div>
+          <div class="audit-item ${health.summary.editMode?'warn':'good'}">편집 모드: ${health.summary.editMode?'ON':'OFF'}</div>
+          <div class="audit-item">히스토리: ${health.summary.historyDepth}</div>
+          <div class="audit-item">변경 건수: ${health.summary.changes}</div>
+        </div>
+      </div>
+    </div>
+  `;
+  el.insertAdjacentHTML('beforeend', html);
+};
+
+function bindV6Actions(){
+  document.addEventListener('click', (e)=>{
+    const tgt = e.target.closest('[data-action]');
+    if(!tgt) return;
+    const action = tgt.getAttribute('data-action');
+    if(action==='run-health'){
+      e.preventDefault();
+      runUiHealthCheck();
+      renderOverview();
+      showTab('overview');
+    }
+  });
+  const healthBtn = v6ById('runHealthBtn');
+  if(healthBtn) healthBtn.setAttribute('data-action','run-health');
+}
+function initV6Bindings(){
+  v6CacheDom();
+  bindV6Actions();
+}
+document.addEventListener('DOMContentLoaded', initV6Bindings);
+
+</script>
+</body>
+</html>

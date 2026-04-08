@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --accent:#2563EB;--accent-bg:#eff6ff;--accent-border:#bfdbfe;
+  --success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;
+  --warning:#ca8a04;--warning-bg:#fefce8;--warning-border:#fef08a;
+  --error:#dc2626;--error-bg:#fef2f2;--error-border:#fecaca;
+  --info:#0891b2;--info-bg:#ecfeff;--info-border:#a5f3fc;
+  --purple:#7c3aed;--purple-bg:#f5f3ff;--purple-border:#ddd6fe;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;
+  --r:4px;--rl:8px;
+}
+body{font-family:'Noto Sans KR',sans-serif;font-size:14px;color:var(--gray-700);background:var(--gray-100);}
+
+.tabs{display:flex;background:#1e293b;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:13px 16px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.42);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s;font-family:'Noto Sans KR',sans-serif;}
+.tab.active{color:white;border-bottom:3px solid #3b82f6;}
+.tab.sep{border-right:1px solid rgba(255,255,255,0.1);}
+.page{display:none;padding:20px;}
+.page.show{display:block;}
+
+/* 배지 */
+.pill{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;white-space:nowrap;flex-shrink:0;}
+.p-always{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+.p-req{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-border);}
+.p-cond{background:var(--warning-bg);color:var(--warning);border:1px solid var(--warning-border);}
+.p-opt{background:var(--gray-100);color:var(--gray-500);border:1px solid var(--gray-300);}
+.p-skip{background:var(--gray-100);color:var(--gray-400);border:1px solid var(--gray-200);}
+.p-rpt{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);}
+
+/* 블록 카드 */
+.bk-hd{background:#0f3352;border:1px solid #1e4a72;color:white;}
+.bk-q{background:#1e293b;border:1px solid #334155;color:white;}
+.bk-a{background:#064e3b;border:1px solid #065f46;color:white;}
+.bk-s{background:var(--info-bg);border:1px solid var(--info-border);}
+.bk-t1{background:var(--accent-bg);border:1px solid var(--accent-border);}
+.bk-t2{background:var(--purple-bg);border:1px solid var(--purple-border);}
+.bk-ch{background:var(--gray-50);border:1px solid var(--gray-200);}
+.bk-i{background:var(--success-bg);border:1px solid var(--success-border);}
+.bk-f{background:var(--warning-bg);border:1px solid var(--warning-border);}
+.bk-o{background:var(--purple-bg);border:1px solid var(--purple-border);}
+.bk-r{background:var(--warning-bg);border:1px solid #fcd34d;}
+.skip-op{opacity:0.25;}
+
+/* 플로우 */
+.fl-stack{display:flex;flex-direction:column;}
+.fl-item{display:flex;align-items:stretch;}
+.fl-conn{width:26px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;}
+.fl-dot{width:13px;height:13px;border-radius:50%;border:3px solid white;margin-top:12px;flex-shrink:0;}
+.fl-line{width:2px;flex:1;min-height:6px;background:var(--gray-300);}
+.fl-body{flex:1;padding-bottom:5px;}
+.fl-card{border-radius:var(--r);padding:9px 12px;}
+.fl-top{display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;}
+.bk-lbl{font-size:11px;font-weight:700;min-width:20px;flex-shrink:0;opacity:0.75;}
+.bk-nm{font-size:13px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bk-nm-w{color:white;}
+.bk-desc{font-size:11px;color:var(--gray-500);margin-top:3px;}
+.bk-s .bk-nm{color:var(--info);}
+.bk-t1 .bk-nm{color:#1d4ed8;}
+.bk-t2 .bk-nm{color:var(--purple);}
+.bk-ch .bk-nm{color:var(--gray-700);}
+.bk-i .bk-nm{color:#065f46;}
+.bk-f .bk-nm{color:#92400e;}
+.bk-o .bk-nm{color:var(--purple);}
+.bk-r .bk-nm{color:#92400e;}
+
+/* OV 3열 */
+.ov3{display:flex;gap:18px;align-items:flex-start;}
+.ovcol{width:200px;flex-shrink:0;}
+.ovcol.mid{flex:1;min-width:0;}
+.col-ttl{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;padding-bottom:7px;border-bottom:2px solid var(--gray-200);}
+.legend{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray-600);}
+.leg-dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+/* qtype */
+.qts{background:white;border:1px solid var(--gray-200);border-radius:var(--rl);overflow:hidden;margin-bottom:10px;}
+.qth{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--gray-50);border-bottom:1px solid var(--gray-200);}
+.qticon{width:26px;height:26px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.qttl{font-size:13px;font-weight:700;color:var(--gray-800);}
+.qteg{font-size:11px;color:var(--gray-400);margin-left:auto;}
+.fflow{display:flex;flex-direction:column;}
+.fbk{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--gray-100);font-size:13px;font-weight:500;}
+.fbk:last-child{border-bottom:none;}
+.fb-a{background:white;}
+.fb-t2{background:var(--purple-bg);}
+.fb-c{background:var(--warning-bg);}
+.fb-s{opacity:0.32;background:var(--gray-50);}
+.fk-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0;}
+.fk-nm{color:var(--gray-700);flex:1;}
+.fk-t2{color:var(--purple);font-weight:700;}
+.fk-note{font-size:11px;color:var(--gray-400);}
+
+/* spec */
+.spec-stack{display:flex;flex-direction:column;gap:5px;}
+.spec-row{background:white;border:1px solid var(--gray-200);border-radius:var(--r);padding:9px 11px;}
+.spec-row.t2hl{background:var(--purple-bg);border-color:var(--purple-border);}
+.spec-row.bothl{background:#fffbeb;border-color:#fcd34d;}
+.spec-nm{font-size:12px;font-weight:700;color:var(--gray-800);margin-bottom:3px;}
+.spec-nm.t2c{color:var(--purple);}
+.spec-pc{font-size:11px;color:var(--gray-500);}
+.spec-mo{font-size:11px;color:var(--info);}
+.spec-lim{font-size:11px;color:var(--warning);margin-top:1px;}
+
+/* 유형 페이지 */
+.pgl{display:flex;gap:18px;align-items:flex-start;}
+.lp{width:195px;flex-shrink:0;}
+.rp{flex:1;min-width:0;max-width:640px;}
+.pt{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:12px;padding-bottom:7px;border-bottom:2px solid var(--gray-200);}
+
+/* ===== v7 Preview Container ===== */
+.pv{background:#fff;border:1px solid var(--gray-200);border-radius:8px;padding:28px 24px;width:100%;}
+.pv-blocks{display:flex;flex-direction:column;gap:14px;}
+.pv-blocks .rb{margin-bottom:0;}
+@keyframes blockFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.pv-blocks .rb{animation:blockFadeIn .4s ease;}
+
+/* 블록 타입 인디케이터 태그 */
+.rb-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;display:inline-flex;margin-bottom:6px;letter-spacing:.3px;}
+
+/* Q 질문 버블 */
+.rb-user-q{background:var(--gray-100);border-radius:18px;padding:12px 18px;font-size:15px;color:var(--gray-800);font-weight:600;display:flex;align-items:center;gap:8px;align-self:flex-end;max-width:85%;}
+
+/* A 답변 텍스트 */
+.rb-ai-answer{font-size:15px;color:var(--gray-700);line-height:1.8;}
+.rb-ai-answer strong{color:var(--gray-900);}
+
+/* H 보고서 헤더 (v7 rpt-header) */
+.rpt-header{margin-bottom:4px;}
+.rpt-title{font-size:18px;font-weight:700;color:var(--gray-900);}
+.rpt-date{font-size:13px;color:var(--gray-500);margin-top:4px;}
+.rpt-meta-bar{margin-top:12px;padding:10px 16px;border-radius:var(--r);display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;flex-wrap:wrap;}
+
+/* S 숫자통계 (v7 스타일) */
+.rb-numstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;}
+.rb-numstat-item{text-align:center;padding:18px 14px;background:#fff;border-radius:var(--r);border:1px solid var(--gray-200);}
+.ns-val{font-size:28px;font-weight:700;letter-spacing:-.3px;color:var(--accent);}
+.ns-val.in{color:var(--info)!important;}.ns-val.out{color:var(--error)!important;}.ns-val.ok{color:var(--success)!important;}
+.ns-lbl{font-size:14px;color:var(--gray-500);margin-top:4px;font-weight:500;}
+.ns-diff{font-size:13px;margin-top:3px;font-weight:600;}
+.ns-diff.up{color:var(--success);}.ns-diff.down{color:var(--error);}
+
+/* T2 보라 하이라이트 */
+.rb-t2-wrap{border:1px solid var(--purple-border);border-radius:var(--rl);overflow:hidden;}
+.rb-t2-hd{background:var(--purple-bg);padding:8px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--purple-border);}
+.rb-t2-hd .t2-lbl{font-size:12px;font-weight:700;color:var(--purple);}
+.rb-t2-hd .t2-cnt{font-size:11px;color:var(--gray-400);}
+
+/* 공통 테이블 (v7 스타일) */
+.rb-table-wrap{overflow-x:auto;border:1px solid var(--gray-200);border-radius:var(--r);}
+.rb-table{width:100%;border-collapse:collapse;font-size:14px;table-layout:auto;}
+.rb-table th{background:var(--gray-100);color:var(--gray-700);font-weight:600;padding:10px 14px;font-size:13px;letter-spacing:.3px;border-bottom:1px solid var(--gray-200);white-space:nowrap;text-align:left;}
+.rb-table th.r,.rb-table td.r{text-align:right;}
+.rb-table td{padding:10px 14px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);white-space:nowrap;vertical-align:middle;line-height:1.5;}
+.rb-table tr:last-child td{border-bottom:none;}
+.rb-table tr:nth-child(even) td{background:var(--gray-50);}
+.rb-table tr:hover td{background:#f1f5f9;}
+.rb-t2-wrap .rb-table-wrap{border:none;border-radius:0;}
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:3px;font-size:13px;font-weight:600;gap:5px;}
+.badge-green{background:var(--success-bg);color:var(--success);}
+.badge-red{background:var(--error-bg);color:var(--error);}
+.badge-blue{background:var(--accent-bg);color:var(--accent);}
+.badge-gray{background:var(--gray-100);color:var(--gray-500);}
+.badge-in{background:var(--info-bg);color:var(--info);}
+.badge-out{background:var(--error-bg);color:var(--error);}
+.val-in{color:var(--info);font-weight:600;}
+.val-out{color:var(--error);font-weight:600;}
+.mono{font-family:'Consolas','Monaco',monospace;font-size:12px;color:var(--gray-400);}
+
+/* 인사이트 (v7 스타일 조정) */
+.ig-list{display:flex;flex-direction:column;gap:0;}
+.ig-item{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--gray-100);align-items:flex-start;}
+.ig-item:last-child{border-bottom:none;}
+.ig-item.pos{border-left:3px solid var(--success);}
+.ig-item.neu{border-left:3px solid var(--gray-300);}
+.ig-item.warn{border-left:3px solid var(--warning);}
+.ig-ico{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:1px;}
+.ig-ico.pos{background:var(--success-bg);color:var(--success);}
+.ig-ico.neu{background:var(--gray-100);color:var(--gray-500);}
+.ig-ico.warn{background:var(--warning-bg);color:var(--warning);}
+.ig-ttl{font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:4px;}
+.ig-body{font-size:14px;color:var(--gray-600);line-height:1.7;}
+.ig-wrap{border:1px solid var(--gray-200);border-radius:var(--r);overflow:hidden;}
+
+/* 차트 (v7 rb-chart 스타일) */
+.chart-box{max-width:100%;background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:16px 20px;}
+.chart-ttl{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:10px;}
+.bar-rows{display:flex;flex-direction:column;gap:8px;}
+.bar-r{display:flex;flex-direction:column;gap:3px;}
+.bar-meta{display:flex;justify-content:space-between;font-size:13px;color:var(--gray-600);font-weight:500;}
+.bar-bg{background:var(--gray-200);border-radius:6px;height:12px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:6px;}
+
+/* 도넛 차트 (CSS-only, v7 스타일) */
+.donut-wrap{display:flex;align-items:center;gap:28px;padding:4px 0;flex-wrap:wrap;}
+.donut-svg{width:140px;height:140px;flex-shrink:0;}
+.donut-ring{fill:none;stroke-width:28;stroke-linecap:round;}
+.donut-legend{display:flex;flex-direction:column;gap:8px;flex:1;min-width:140px;}
+.donut-leg{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--gray-700);}
+.donut-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.donut-val{margin-left:auto;font-weight:700;color:var(--gray-800);font-size:14px;}
+
+/* 출처 (v7 source-box 스타일) */
+.src-wrap{border:1px solid var(--gray-200);border-radius:var(--r);padding:14px 16px;background:var(--gray-50);}
+.src-title{font-size:15px;font-weight:700;color:var(--gray-700);margin-bottom:8px;}
+.src-kv{font-size:14px;color:var(--gray-600);line-height:1.7;}
+
+/* 관련질문 (v7 rounded button chips) */
+.rq-wrap{margin-top:4px;}
+.rq-title{font-size:14px;font-weight:600;color:var(--gray-500);margin-bottom:8px;}
+.rq-chips{display:flex;flex-wrap:wrap;gap:8px;}
+.rq-chip{padding:8px 14px;border:1px solid var(--gray-200);border-radius:20px;background:#fff;font-size:14px;color:var(--gray-700);cursor:pointer;font-family:inherit;text-align:left;transition:all .15s;}
+.rq-chip:hover{border-color:var(--accent);background:var(--accent-bg);}
+
+/* v7 액션 버튼 영역 */
+.act-wrap{border-top:1px solid var(--gray-200);padding-top:14px;margin-top:4px;}
+.act-title{font-size:13px;font-weight:600;color:var(--gray-500);margin-bottom:10px;}
+.act-row{display:flex;flex-wrap:wrap;gap:8px;}
+.act-btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border:1px solid var(--gray-200);border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:var(--gray-600);cursor:pointer;font-family:inherit;transition:all .15s;}
+.act-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg);}
+.act-btn.dl{color:var(--error);border-color:var(--error-border);}
+.act-btn.dl:hover{background:var(--error-bg);}
+.act-btn.xl{color:var(--success);border-color:var(--success-border);}
+.act-btn.xl:hover{background:var(--success-bg);}
+.act-btn.share{color:var(--accent);border-color:var(--accent-border);}
+.act-btn.share:hover{background:var(--accent-bg);}
+
+/* 필터 (v7 스타일) */
+.filt-wrap{border:1px solid var(--gray-200);border-radius:var(--r);overflow:hidden;}
+.filt-box{padding:14px 16px;background:var(--gray-50);}
+.filt-row{display:flex;gap:8px;margin-bottom:8px;align-items:center;}
+.filt-row:last-child{margin-bottom:0;}
+.filt-lbl{font-size:13px;color:var(--gray-500);width:72px;flex-shrink:0;font-weight:500;}
+.filt-val{font-size:13px;color:var(--gray-800);background:#fff;border:1px solid var(--gray-200);border-radius:var(--r);padding:7px 12px;flex:1;}
+
+/* === 깔끔한 UI 정렬/간격 고도화 === */
+body{letter-spacing:-0.01em;}
+.page{padding:16px;}
+
+.ov3,.pgl{min-width:0;}
+.ov3{display:flex;gap:14px;align-items:flex-start;flex-wrap:nowrap;}
+.ovcol{flex:0 0 214px;width:auto;min-width:0;}
+.ovcol.mid{flex:1 1 420px;min-width:300px;}
+
+.pgl{display:flex;gap:14px;align-items:flex-start;flex-wrap:nowrap;}
+.lp{flex:0 0 214px;width:auto;min-width:0;}
+.rp{flex:1 1 640px;max-width:none;min-width:300px;}
+
+.col-ttl,.pt{margin-bottom:10px;padding-bottom:8px;}
+.legend{gap:6px;margin-bottom:10px;}
+.fl-stack,.spec-stack,.fflow,.ig-list{gap:0;}
+.fl-body{flex:1;min-width:0;padding-bottom:6px;}
+.fl-card{border-radius:8px;padding:10px 12px;box-shadow:0 1px 0 rgba(15,23,42,.03);}
+.bk-desc{margin-top:4px;line-height:1.35;}
+.qts,.eb,.cf-blk{border-radius:10px;box-shadow:0 1px 0 rgba(15,23,42,.03);}
+.qts{margin-bottom:12px;}
+
+/* 블록명/배지를 한 줄로 정렬 */
+.fl-top{
+  display:grid;
+  grid-template-columns:20px minmax(0,1fr) auto;
+  align-items:center;
+  column-gap:8px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+.bk-lbl{min-width:20px;text-align:center;}
+.bk-nm{
+  font-size:13px;
+  font-weight:700;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  line-height:1.2;
+}
+.pill{
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:999px;
+  line-height:1.25;
+}
+
+.qth{
+  display:grid;
+  grid-template-columns:26px minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  padding:10px 12px;
+}
+.qttl{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.qteg{white-space:nowrap;flex-shrink:0;}
+
+.fbk{
+  display:grid;
+  grid-template-columns:9px minmax(0,1fr) auto;
+  align-items:center;
+  gap:8px;
+  padding:9px 14px;
+}
+.fk-nm{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fk-note{white-space:nowrap;flex-shrink:0;}
+
+.spec-row{padding:10px 11px;}
+
+/* 모바일 반응형 (v7 스타일) */
+.pv-blocks .rb-numstat{grid-template-columns:repeat(auto-fit,minmax(110px,1fr));}
+
+@media (max-width: 1200px){
+  .ov3,.pgl{flex-wrap:wrap;}
+  .ovcol,.ovcol.mid,.lp,.rp{flex:1 1 100%;min-width:0;}
+}
+
+@media (max-width: 768px){
+  .page{padding:12px;}
+  .ov3,.pgl{gap:12px;}
+  .ovcol,.lp{flex-basis:100%;}
+  .fl-card{padding:10px 11px;}
+  .qth{padding:9px 11px;}
+  .fbk{padding:9px 12px;}
+  .tabs{scroll-snap-type:x proximity;}
+  .tab{scroll-snap-align:start;}
+  .pv{padding:20px 16px;}
+  .pv-blocks .rb-numstat{grid-template-columns:1fr 1fr;}
+  .rb-user-q{max-width:95%;}
+}
+</style>
+</head>
+<body>
+<div style="background:var(--gray-100);min-height:100vh;">
+<div class="tabs">
+  <div class="tab active sep" onclick="go(0,this)">⊞ 블록 시스템</div>
+  <div class="tab" onclick="go(1,this)">① 계좌잔액</div>
+  <div class="tab" onclick="go(2,this)">② 거래 내역</div>
+  <div class="tab" onclick="go(3,this)">③ 자금 현황</div>
+  <div class="tab" onclick="go(4,this)">④ 비교·추세</div>
+  <div class="tab" onclick="go(5,this)">⑤ 재무 진단</div>
+  <div class="tab" onclick="go(6,this)">⑥ 보고서</div>
+</div>
+
+<div class="page show" id="pg0">
+  <div class="ov3">
+    <div class="ovcol">
+      <div class="col-ttl">블록 정의 및 순서</div>
+      <div class="legend">
+        <div class="leg"><div class="leg-dot" style="background:#16a34a;"></div>항상 노출</div>
+        <div class="leg"><div class="leg-dot" style="background:#7c3aed;"></div>T2 — 웬만하면 필수</div>
+        <div class="leg"><div class="leg-dot" style="background:#ca8a04;"></div>조건부</div>
+        <div class="leg"><div class="leg-dot" style="background:#9ca3af;"></div>선택</div>
+      </div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0f3352;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-hd"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">H</span><span class="bk-nm bk-nm-w">보고서 헤더</span><span class="pill p-rpt">보고서형</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div><div class="bk-desc">핵심 수치 2×2 카드</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">T1</span><span class="bk-nm">데이터 테이블</span><span class="pill p-cond">조건부</span></div><div class="bk-desc">집계·요약. 항목 5개↑</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#6b7280;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch"><div class="fl-top"><span class="bk-lbl" style="color:var(--gray-600)">C</span><span class="bk-nm">차트 영역</span><span class="pill p-opt">선택</span></div><div class="bk-desc">바/도넛. 비교·구성 질문</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트·알림</span><span class="pill p-always">항상</span></div><div class="bk-desc">긍정·중립·주의 구분</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#ca8a04;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-f"><div class="fl-top"><span class="bk-lbl" style="color:#92400e">F</span><span class="bk-nm">조회기간 설정</span><span class="pill p-cond">보고서형</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터 ★</span><span class="pill p-req">필수(웬만하면)</span></div><div class="bk-desc">F 다음. PC=테이블, Mobile=카드</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-o"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">O</span><span class="bk-nm">출처 정보</span><span class="pill p-cond">조건부</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#ca8a04;"></div></div><div class="fl-body"><div class="fl-card bk-r"><div class="fl-top"><span class="bk-lbl" style="color:#92400e">R</span><span class="bk-nm">관련 질문</span><span class="pill p-opt">선택</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="ovcol mid">
+      <div class="col-ttl">질문 유형별 블록 구성</div>
+      <div class="qts"><div class="qth"><div class="qticon" style="background:var(--accent-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><span class="qttl">① 계좌잔액</span><span class="qteg">"잔액 알려줘"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#1e293b;"></div><span class="fk-nm">Q → A → S</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#2563EB;"></div><span class="fk-nm">T1 계좌 목록</span><span class="fk-note">2개↑</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#16a34a;"></div><span class="fk-nm">I 인사이트</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블</span><span class="fk-note" style="color:var(--purple)">필수★</span></div><div class="fbk fb-c"><div class="fk-dot" style="background:#ca8a04;"></div><span class="fk-nm">O 출처 (외화시)</span><span class="fk-note">조건부</span></div></div></div>
+      <div class="qts"><div class="qth"><div class="qticon" style="background:var(--error-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--error)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg></div><span class="qttl">② 거래 내역</span><span class="qteg">"3월 거래내역"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#1e293b;"></div><span class="fk-nm">Q → A → S</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#2563EB;"></div><span class="fk-nm">T1 입출금별·일별 집계</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#16a34a;"></div><span class="fk-nm">I 인사이트</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블</span><span class="fk-note" style="color:var(--purple)">필수★</span></div></div></div>
+      <div class="qts"><div class="qth"><div class="qticon" style="background:var(--info-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div><span class="qttl">③ 자금 현황</span><span class="qteg">"자금현황"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#1e293b;"></div><span class="fk-nm">Q → A → S</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#2563EB;"></div><span class="fk-nm">T1 계좌별 잔액</span><span class="fk-note">5개↑</span></div><div class="fbk fb-s"><div class="fk-dot" style="background:#9ca3af;"></div><span class="fk-nm">C 차트</span><span class="fk-note">생략</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#16a34a;"></div><span class="fk-nm">I 인사이트</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블</span><span class="fk-note" style="color:var(--purple)">필수★</span></div><div class="fbk fb-c"><div class="fk-dot" style="background:#ca8a04;"></div><span class="fk-nm">O 출처 (외화시)</span><span class="fk-note">조건부</span></div></div></div>
+      <div class="qts"><div class="qth"><div class="qticon" style="background:var(--success-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2"><polyline points="23,6 13.5,15.5 8.5,10.5 1,18"/></svg></div><span class="qttl">④ 비교·추세</span><span class="qteg">"1주 vs 2주"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#1e293b;"></div><span class="fk-nm">Q → A → S</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#6b7280;"></div><span class="fk-nm">C 바차트 비교</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#2563EB;"></div><span class="fk-nm">T1 비교 테이블</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#16a34a;"></div><span class="fk-nm">I 증감 분석</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블</span><span class="fk-note" style="color:var(--purple)">필수★</span></div></div></div>
+      <div class="qts"><div class="qth"><div class="qticon" style="background:var(--warning-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><span class="qttl">⑤ 재무 진단</span><span class="qteg">"건전성 어때?"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#1e293b;"></div><span class="fk-nm">Q → A → S 점수카드</span><span class="fk-note">필수</span></div><div class="fbk fb-s"><div class="fk-dot" style="background:#9ca3af;"></div><span class="fk-nm">T1, C</span><span class="fk-note">생략</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#16a34a;"></div><span class="fk-nm">I 5개↑ 조치항목 포함</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블</span><span class="fk-note" style="color:var(--purple)">필수★</span></div><div class="fbk fb-c"><div class="fk-dot" style="background:#ca8a04;"></div><span class="fk-nm">O 산출 기준</span><span class="fk-note">조건부</span></div></div></div>
+      <div class="qts" style="margin-bottom:0;"><div class="qth"><div class="qticon" style="background:var(--purple-bg);"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div><span class="qttl">⑥ 보고서</span><span class="qteg">"보고서 만들어줘"</span></div><div class="fflow"><div class="fbk fb-a"><div class="fk-dot" style="background:#0f3352;"></div><span class="fk-nm">H 보고서 헤더</span><span class="fk-note">필수</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#0891b2;"></div><span class="fk-nm">S → T1 → C → I</span><span class="fk-note">순서 필수</span></div><div class="fbk fb-c"><div class="fk-dot" style="background:#ca8a04;"></div><span class="fk-nm">F 조회기간 설정</span><span class="fk-note">필수</span></div><div class="fbk fb-t2"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm fk-t2">T2 원본 테이블 (F 다음)</span><span class="fk-note" style="color:var(--purple)">필수★</span></div><div class="fbk fb-a"><div class="fk-dot" style="background:#7c3aed;"></div><span class="fk-nm">O 출처 → R 관련질문</span><span class="fk-note">필수+선택</span></div></div></div>
+    </div>
+    <div class="ovcol">
+      <div class="col-ttl">PC / 모바일 렌더링</div>
+      <div class="spec-stack">
+        <div class="spec-row"><div class="spec-nm">H 보고서 헤더</div><div class="spec-pc">PC: 그라디언트 배너</div><div class="spec-mo">Mobile: 동일</div></div>
+        <div class="spec-row"><div class="spec-nm">Q 질문부</div><div class="spec-pc">PC: 다크 배너</div><div class="spec-mo">Mobile: 동일</div></div>
+        <div class="spec-row"><div class="spec-nm">A 한줄 답변</div><div class="spec-pc">PC: 그린 배너</div><div class="spec-mo">Mobile: 동일</div></div>
+        <div class="spec-row"><div class="spec-nm">S 숫자통계 카드</div><div class="spec-pc">PC: 4열 메트릭</div><div class="spec-mo">Mobile: 2×2 그리드</div></div>
+        <div class="spec-row"><div class="spec-nm">T1 데이터 테이블</div><div class="spec-pc">PC: 전체 너비 테이블</div><div class="spec-mo">Mobile: 3열 이하 압축</div><div class="spec-lim">최대 20행</div></div>
+        <div class="spec-row"><div class="spec-nm">C 차트 영역</div><div class="spec-pc">PC: 바/도넛 차트</div><div class="spec-mo">Mobile: 도넛 권장</div></div>
+        <div class="spec-row"><div class="spec-nm">I 인사이트·알림</div><div class="spec-pc">PC: 좌측 컬러라인 카드</div><div class="spec-mo">Mobile: 동일</div></div>
+        <div class="spec-row"><div class="spec-nm">F 조회기간 설정</div><div class="spec-pc">PC: 인라인 필터 폼</div><div class="spec-mo">Mobile: 세로 스택</div></div>
+        <div class="spec-row t2hl"><div class="spec-nm t2c">T2 원본 데이터 ★</div><div class="spec-pc">PC: 전체 너비 테이블</div><div class="spec-mo">Mobile: 동일 (가로 스크롤)</div><div class="spec-lim">F 다음 위치 · 최대 50행</div></div>
+        <div class="spec-row"><div class="spec-nm">O 출처 정보</div><div class="spec-pc">PC: KV 테이블</div><div class="spec-mo">Mobile: 동일</div></div>
+        <div class="spec-row"><div class="spec-nm">R 관련 질문</div><div class="spec-pc">PC: 가로 칩 3개</div><div class="spec-mo">Mobile: 가로 스크롤</div></div>
+        <div class="spec-row bothl"><div class="spec-nm" style="color:#92400e;">공통 하단 고정</div><div class="spec-pc">추천질의 / PDF·Excel</div><div class="spec-mo">이메일·카카오·MMS / 신고</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg1">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 구성</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">T1</span><span class="bk-nm">계좌 목록</span><span class="pill p-cond">2개↑</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#9ca3af;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch skip-op"><div class="fl-top"><span class="bk-lbl" style="color:#9ca3af">C</span><span class="bk-nm">차트</span><span class="pill p-skip">생략</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터</span><span class="pill p-req">필수★</span></div><div class="bk-desc">I 다음 · 테이블 형식</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div></div><div class="fl-body"><div class="fl-card bk-o"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">O</span><span class="bk-nm">출처 정보</span><span class="pill p-cond">외화시</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <!-- Q 질문 버블 -->
+        <div class="rb rb-user-q">💬 "EUR 6.00 JPY 463.00 USD 222.00 KRW 잔액 알려줘"</div>
+        <div class="pv-blocks">
+          <!-- A 답변 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--success-bg);color:var(--success);">A</div>
+            <div class="rb-ai-answer">EUR 6.00·JPY 463.00·USD 222.00 보유 — 원화 환산 합계 약 <strong>354,851원</strong>입니다.</div>
+          </div>
+          <!-- S 숫자통계 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--info-bg);color:var(--info);">S</div>
+            <div class="rb-numstat"><div class="rb-numstat-item"><div class="ns-val in">339,771원</div><div class="ns-lbl">USD 환산</div></div><div class="rb-numstat-item"><div class="ns-val">10,616원</div><div class="ns-lbl">EUR 환산</div></div><div class="rb-numstat-item"><div class="ns-val">4,464원</div><div class="ns-lbl">JPY 환산</div></div><div class="rb-numstat-item"><div class="ns-val in">354,851원</div><div class="ns-lbl">합계</div></div></div>
+          </div>
+          <!-- T1 계좌 목록 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--accent-bg);color:var(--accent);">T1</div>
+            <div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>통화</th><th>보유수량</th><th>기준율</th><th class="r">원화환산</th></tr></thead><tbody><tr><td><span class="badge badge-blue">USD</span></td><td>222달러</td><td>1,530.50원</td><td class="r" style="font-weight:600;">339,771원</td></tr><tr><td><span class="badge badge-green">EUR</span></td><td>6.00유로</td><td>1,769.33원</td><td class="r" style="font-weight:600;">10,616원</td></tr><tr><td><span class="badge badge-gray">JPY</span></td><td>463엔</td><td>964.22원</td><td class="r" style="font-weight:600;">4,464원</td></tr></tbody></table></div>
+          </div>
+          <!-- C 도넛 차트 (PDF 수시입출계좌 잔액 스타일) -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--gray-100);color:var(--gray-600);">C</div>
+            <div class="chart-box">
+              <div class="chart-ttl">통화별 잔액 구성</div>
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 160 160">
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#e5e7eb" stroke-dasharray="377 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#2563EB" stroke-dasharray="360.2 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#0891b2" stroke-dasharray="6.0 377" stroke-dashoffset="-360.2" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#f59e0b" stroke-dasharray="1.7 377" stroke-dashoffset="-366.2" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#dc2626" stroke-dasharray="5.1 377" stroke-dashoffset="-367.9" transform="rotate(-90 80 80)"/>
+                  <text x="80" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">95.7%</text>
+                  <text x="80" y="94" text-anchor="middle" font-size="10" fill="#6b7280">KRW</text>
+                </svg>
+                <div class="donut-legend">
+                  <div class="donut-leg"><div class="donut-dot" style="background:#2563EB;"></div>KRW<span class="donut-val">1,628,770원</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#0891b2;"></div>USD<span class="donut-val">222.00</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#f59e0b;"></div>JPY<span class="donut-val">463.00</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#dc2626;"></div>EUR<span class="donut-val">6.00</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- I 인사이트 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div>
+            <div class="ig-wrap"><div class="ig-list"><div class="ig-item neu"><div class="ig-ico neu">·</div><div><div class="ig-ttl">USD 비중 95.7% — 달러 집중</div><div class="ig-body">외화의 대부분이 USD로 구성되어 있습니다.</div></div></div><div class="ig-item warn"><div class="ig-ico warn">!</div><div><div class="ig-ttl">환율 변동 시 원화 환산액 변동 가능</div><div class="ig-body">실제 환전 시 전신환 매도율 적용.</div></div></div></div></div>
+          </div>
+          <!-- T2 원본 데이터 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div>
+            <div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 (I 다음 위치)</span><span class="t2-cnt">전체 6계좌</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>회사명</th><th>계좌분류</th><th>은행명</th><th>통화코드</th><th>계좌번호</th><th class="r">총잔고</th></tr></thead><tbody><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>경남은행</td><td><span class="badge" style="background:var(--error-bg);color:var(--error)">EUR</span></td><td class="mono">082-052234-04021</td><td class="r val-in">1.00</td></tr><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>경남은행</td><td><span class="badge" style="background:#f0f9ff;color:#0369a1">JPY</span></td><td class="mono">082-052234-04022</td><td class="r val-in">463.00</td></tr><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>경남은행</td><td><span class="badge badge-blue">USD</span></td><td class="mono">082-052234-04023</td><td class="r val-in">222.00</td></tr><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>광주은행</td><td><span class="badge badge-gray">KRW</span></td><td class="mono">001-501040-19330</td><td class="r" style="color:var(--gray-500)">34,069</td></tr><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>국민은행</td><td><span class="badge badge-gray">KRW</span></td><td class="mono">926-101010-43684</td><td class="r val-in">1,122,840</td></tr><tr><td>(주)쿠콘글로벌지점</td><td>수시</td><td>국민은행</td><td><span class="badge badge-blue">USD</span></td><td class="mono">926-101010-43685</td><td class="r val-in">220.00</td></tr></tbody></table></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg2">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 구성</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div><div class="bk-desc">입금·출금·순변동·건수</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">T1</span><span class="bk-nm">데이터 테이블</span><span class="pill p-always">항상</span></div><div class="bk-desc">입출금별·일별 집계</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#9ca3af;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch skip-op"><div class="fl-top"><span class="bk-lbl" style="color:#9ca3af">C</span><span class="bk-nm">차트</span><span class="pill p-skip">생략</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터</span><span class="pill p-req">필수★</span></div><div class="bk-desc">I 다음 · 테이블 형식</div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <div class="rb rb-user-q">💬 "3월 2주차 거래내역 보여줘"</div>
+        <div class="pv-blocks">
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">A</div><div class="rb-ai-answer">3월 9~15일 총 9건 — 입금 37원, 출금 14원, 순 흑자 <strong>+23원</strong>입니다.</div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--info-bg);color:var(--info);">S</div><div class="rb-numstat"><div class="rb-numstat-item"><div class="ns-val in">37원</div><div class="ns-lbl">총 입금</div></div><div class="rb-numstat-item"><div class="ns-val out">14원</div><div class="ns-lbl">총 출금</div></div><div class="rb-numstat-item"><div class="ns-val ok">+23원</div><div class="ns-lbl">순 변동</div></div><div class="rb-numstat-item"><div class="ns-val">9건</div><div class="ns-lbl">거래 건수</div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--accent-bg);color:var(--accent);">T1</div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>날짜</th><th>건수</th><th>입금</th><th>출금</th><th class="r">순변동</th></tr></thead><tbody><tr><td>3월 11일(수)</td><td>2건</td><td style="color:var(--info);font-weight:600;">2원</td><td>0원</td><td class="r" style="color:var(--success);font-weight:600;">+2원</td></tr><tr><td>3월 15일(일)</td><td>7건</td><td style="color:var(--info);font-weight:600;">35원</td><td style="color:var(--error);font-weight:600;">14원</td><td class="r" style="color:var(--success);font-weight:600;">+21원</td></tr></tbody></table></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div><div class="ig-wrap"><div class="ig-list"><div class="ig-item pos"><div class="ig-ico pos">↑</div><div><div class="ig-ttl">입금이 출금보다 2.6배 많음</div><div class="ig-body">순 흑자 23원. 3/15 급여 포함 대규모 입금 발생.</div></div></div><div class="ig-item neu"><div class="ig-ico neu">·</div><div><div class="ig-ttl">3월 15일에 거래 78% 집중</div><div class="ig-body">거래는 2일간만 발생. 15일에 7건 집중.</div></div></div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div><div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 (I 다음 위치)</span><span class="t2-cnt">전체 9건</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>거래일시</th><th>구분</th><th>적요</th><th>계좌번호</th><th>은행</th><th class="r">거래금액</th><th class="r">잔액</th></tr></thead><tbody><tr><td>2026-03-15 04:10</td><td><span class="badge badge-in">입금</span></td><td>인터넷입금이체</td><td class="mono">926-101010-43684</td><td>국민은행</td><td class="r val-in">+1,872원</td><td class="r">1,872원</td></tr><tr><td>2026-03-15 04:14</td><td><span class="badge badge-in">입금</span></td><td>인터넷입금이체</td><td class="mono">926-101010-43684</td><td>국민은행</td><td class="r val-in">+1,883원</td><td class="r">1,883원</td></tr><tr><td>2026-03-15 04:15</td><td><span class="badge badge-in">입금</span></td><td>급여입금</td><td class="mono">926-101010-43684</td><td>국민은행</td><td class="r val-in">+1,904원</td><td class="r">1,904원</td></tr><tr><td>2026-03-11 08:40</td><td><span class="badge badge-in">입금</span></td><td>경남은행</td><td class="mono">082-052234-04021</td><td>기업은행</td><td class="r val-in">+505,662원</td><td class="r">505,662원</td></tr><tr><td>2026-03-15 04:10</td><td><span class="badge badge-out">출금</span></td><td>—</td><td class="mono">001-501040-19330</td><td>—</td><td class="r val-out">-2,068원</td><td class="r">2,068원</td></tr><tr><td>2026-03-15 04:13</td><td><span class="badge badge-out">출금</span></td><td>—</td><td class="mono">001-501040-19330</td><td>—</td><td class="r val-out">-2,057원</td><td class="r">2,057원</td></tr><tr><td>2026-03-15 04:17</td><td><span class="badge badge-out">출금</span></td><td>—</td><td class="mono">001-501040-19330</td><td>—</td><td class="r val-out">-2,056원</td><td class="r">2,056원</td></tr><tr><td>2026-03-11 08:40</td><td><span class="badge badge-in">입금</span></td><td>—</td><td class="mono">547-70059-570</td><td>—</td><td class="r val-in">+3,888원</td><td class="r">3,888원</td></tr></tbody></table></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg3">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 구성</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div><div class="bk-desc">잔액·부채·비율</div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">T1</span><span class="bk-nm">데이터 테이블</span><span class="pill p-cond">5개↑</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#9ca3af;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch skip-op"><div class="fl-top"><span class="bk-lbl" style="color:#9ca3af">C</span><span class="bk-nm">차트</span><span class="pill p-skip">생략</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터</span><span class="pill p-req">필수★</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div></div><div class="fl-body"><div class="fl-card bk-o"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">O</span><span class="bk-nm">출처 정보</span><span class="pill p-cond">외화시</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <div class="rb rb-user-q">💬 "자금현황"</div>
+        <div class="pv-blocks">
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">A</div><div class="rb-ai-answer">순자금보유잔액 <strong>152만 8,087원</strong> — 부채 0원, 재무건전성 최고 수준입니다.</div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--info-bg);color:var(--info);">S</div><div class="rb-numstat"><div class="rb-numstat-item"><div class="ns-val">152만</div><div class="ns-lbl">순자금보유잔액</div></div><div class="rb-numstat-item"><div class="ns-val">148만</div><div class="ns-lbl">원화 현금잔고</div></div><div class="rb-numstat-item"><div class="ns-val ok">0원</div><div class="ns-lbl">대출 잔액</div></div><div class="rb-numstat-item"><div class="ns-val ok">0.0%</div><div class="ns-lbl">부채비율</div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--accent-bg);color:var(--accent);">T1</div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>구분</th><th>통화</th><th class="r">잔액</th></tr></thead><tbody><tr><td>원화수시입출</td><td><span class="badge badge-gray">KRW</span></td><td class="r">1,486,662원</td></tr><tr><td>외화수시입출</td><td><span class="badge badge-blue">USD</span></td><td class="r">220달러</td></tr><tr><td>원화금융상품</td><td><span class="badge badge-gray">KRW</span></td><td class="r">40,000원</td></tr></tbody></table></div></div>
+          <!-- C 자금 구성 도넛 차트 -->
+          <div class="rb">
+            <div class="rb-tag" style="background:var(--gray-100);color:var(--gray-600);">C</div>
+            <div class="chart-box">
+              <div class="chart-ttl">자금 구성</div>
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 160 160">
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#e5e7eb" stroke-dasharray="377 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#2563EB" stroke-dasharray="366.5 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#7c3aed" stroke-dasharray="9.9 377" stroke-dashoffset="-366.5" transform="rotate(-90 80 80)"/>
+                  <text x="80" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#1f2937">97.4%</text>
+                  <text x="80" y="94" text-anchor="middle" font-size="10" fill="#6b7280">원화</text>
+                </svg>
+                <div class="donut-legend">
+                  <div class="donut-leg"><div class="donut-dot" style="background:#2563EB;"></div>원화 현금<span class="donut-val">1,486,662원</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#7c3aed;"></div>원화 금융상품<span class="donut-val">40,000원</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#0891b2;"></div>외화 (USD)<span class="donut-val">220달러</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div><div class="ig-wrap"><div class="ig-list"><div class="ig-item pos"><div class="ig-ico pos">✓</div><div><div class="ig-ttl">재무건전성 100점 / A등급</div><div class="ig-body">유동성·안정성 모두 최고 수준입니다.</div></div></div><div class="ig-item neu"><div class="ig-ico neu">·</div><div><div class="ig-ttl">오늘 거래 건수 0건</div><div class="ig-body">아직 입출금 거래가 발생하지 않았습니다.</div></div></div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div><div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 (I 다음 위치)</span><span class="t2-cnt">전체 6계좌</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>구분</th><th>통화</th><th>은행</th><th>계좌번호</th><th class="r">잔액</th></tr></thead><tbody><tr><td>원화수시입출</td><td><span class="badge badge-gray">KRW</span></td><td>국민은행</td><td class="mono">926-101010-43684</td><td class="r val-in">1,486,662원</td></tr><tr><td>외화수시입출</td><td><span class="badge badge-blue">USD</span></td><td>경남은행</td><td class="mono">082-052234-04021</td><td class="r val-in">220달러</td></tr><tr><td>외화수시입출</td><td><span class="badge" style="background:#f0f9ff;color:#0369a1">JPY</span></td><td>경남은행</td><td class="mono">082-052234-04022</td><td class="r val-in">1,202엔</td></tr><tr><td>원화금융상품</td><td><span class="badge badge-gray">KRW</span></td><td>광주은행</td><td class="mono">001-501040-19330</td><td class="r">40,000원</td></tr></tbody></table></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg4">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 구성</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#6b7280;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch"><div class="fl-top"><span class="bk-lbl" style="color:var(--gray-600)">C</span><span class="bk-nm">차트 영역</span><span class="pill p-req">필수</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">T1</span><span class="bk-nm">비교 테이블</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터</span><span class="pill p-req">필수★</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <div class="rb rb-user-q">💬 "3월 1주차 vs 2주차 비교해줘"</div>
+        <div class="pv-blocks">
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">A</div><div class="rb-ai-answer">2주차 입금 <strong>+147% 급증</strong> — 급여 유입이 주요 원인입니다.</div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--gray-100);color:var(--gray-600);">C</div><div class="chart-box"><div class="chart-ttl">주차별 입출금 비교</div><div class="bar-rows"><div class="bar-r"><div class="bar-meta"><span>1주차 입금</span><span>15원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#0891b2;width:40%;"></div></div></div><div class="bar-r"><div class="bar-meta"><span>2주차 입금</span><span>37원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#0891b2;width:100%;"></div></div></div><div class="bar-r"><div class="bar-meta"><span>1주차 출금</span><span>8원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#dc2626;width:22%;"></div></div></div><div class="bar-r"><div class="bar-meta"><span>2주차 출금</span><span>14원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#dc2626;width:38%;"></div></div></div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--accent-bg);color:var(--accent);">T1</div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>항목</th><th>1주차</th><th>2주차</th><th>증감</th></tr></thead><tbody><tr><td>입금</td><td>15원</td><td>37원</td><td><span class="badge badge-green">+147%</span></td></tr><tr><td>출금</td><td>8원</td><td>14원</td><td><span class="badge badge-red">+75%</span></td></tr><tr><td>건수</td><td>4건</td><td>9건</td><td><span class="badge badge-green">+5건</span></td></tr></tbody></table></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div><div class="ig-wrap"><div class="ig-list"><div class="ig-item pos"><div class="ig-ico pos">↑</div><div><div class="ig-ttl">2주차 입금 +147% 급증</div><div class="ig-body">급여 유입이 주요 원인.</div></div></div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div><div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 (I 다음 위치)</span><span class="t2-cnt">전체 13건</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>거래일시</th><th>구분</th><th>주차</th><th>계좌번호</th><th class="r">거래금액</th></tr></thead><tbody><tr><td>2026-03-15 04:15</td><td><span class="badge badge-in">입금</span></td><td>2주차</td><td class="mono">926-101010-43684</td><td class="r val-in">+1,904원</td></tr><tr><td>2026-03-11 08:40</td><td><span class="badge badge-in">입금</span></td><td>2주차</td><td class="mono">082-052234-04021</td><td class="r val-in">+505,662원</td></tr><tr><td>2026-03-15 04:10</td><td><span class="badge badge-out">출금</span></td><td>2주차</td><td class="mono">001-501040-19330</td><td class="r val-out">-2,068원</td></tr></tbody></table></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg5">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 구성</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#1e293b;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-q"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">Q</span><span class="bk-nm bk-nm-w">질문부</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#065f46;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-a"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">A</span><span class="bk-nm bk-nm-w">한줄 답변</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">S</span><span class="bk-nm">점수 카드</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#9ca3af;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch skip-op"><div class="fl-top"><span class="bk-lbl" style="color:#9ca3af">T1·C</span><span class="bk-nm">T1·차트</span><span class="pill p-skip">생략</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">I</span><span class="bk-nm">인사이트·알림경고</span><span class="pill p-always">5개↑</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">T2</span><span class="bk-nm">원본 데이터</span><span class="pill p-req">필수★</span></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div></div><div class="fl-body"><div class="fl-card bk-o"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">O</span><span class="bk-nm">출처 정보</span><span class="pill p-cond">조건부</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <div class="rb rb-user-q">💬 "재무건전성 어때?"</div>
+        <div class="pv-blocks">
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">A</div><div class="rb-ai-answer">재무건전성 <strong>100점 A등급</strong> — 유동성·안정성 최고 수준, 조치 필요 항목 없습니다.</div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--info-bg);color:var(--info);">S</div><div class="rb-numstat"><div class="rb-numstat-item"><div class="ns-val ok">100</div><div class="ns-lbl">종합건전성</div><div class="ns-diff up">A등급</div></div><div class="rb-numstat-item"><div class="ns-val ok">100</div><div class="ns-lbl">유동성</div></div><div class="rb-numstat-item"><div class="ns-val ok">100</div><div class="ns-lbl">안정성</div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div><div class="ig-wrap"><div class="ig-list"><div class="ig-item pos"><div class="ig-ico pos">✓</div><div><div class="ig-ttl">재무건전성 100점 / A등급</div><div class="ig-body">유동성·안정성 모두 최고 수준.</div></div></div><div class="ig-item warn"><div class="ig-ico warn">!</div><div><div class="ig-ttl">외화 비중 19.2% — 환율 모니터링 권장</div><div class="ig-body">USD·JPY·EUR 환산 353,370원. 환율 변동 주의.</div></div></div></div></div></div>
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div><div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 (I 다음 위치)</span><span class="t2-cnt">전체 6계좌</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>구분</th><th>통화</th><th>은행</th><th>계좌번호</th><th class="r">잔액</th></tr></thead><tbody><tr><td>원화수시입출</td><td><span class="badge badge-gray">KRW</span></td><td>국민은행</td><td class="mono">926-101010-43684</td><td class="r val-in">1,486,662원</td></tr><tr><td>외화수시입출</td><td><span class="badge badge-blue">USD</span></td><td>경남은행</td><td class="mono">082-052234-04021</td><td class="r val-in">220달러</td></tr><tr><td>원화금융상품</td><td><span class="badge badge-gray">KRW</span></td><td>광주은행</td><td class="mono">001-501040-19330</td><td class="r">40,000원</td></tr></tbody></table></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="pg6">
+  <div class="pgl">
+    <div class="lp"><div class="pt">블록 순서 (확정)</div>
+      <div class="fl-stack">
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0f3352;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-hd"><div class="fl-top"><span class="bk-lbl" style="color:rgba(255,255,255,.7)">1</span><span class="bk-nm bk-nm-w">보고서 헤더</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#0891b2;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-s"><div class="fl-top"><span class="bk-lbl" style="color:var(--info)">2</span><span class="bk-nm">숫자통계 카드</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#2563EB;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t1"><div class="fl-top"><span class="bk-lbl" style="color:#1d4ed8">3</span><span class="bk-nm">데이터 테이블</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#6b7280;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-ch"><div class="fl-top"><span class="bk-lbl" style="color:var(--gray-600)">4</span><span class="bk-nm">바차트 등 차트</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#16a34a;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-i"><div class="fl-top"><span class="bk-lbl" style="color:#065f46">5</span><span class="bk-nm">인사이트·알림경고</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#ca8a04;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-f"><div class="fl-top"><span class="bk-lbl" style="color:#92400e">6</span><span class="bk-nm">조회기간 설정</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-t2"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">7</span><span class="bk-nm">원본 데이터 T2</span><span class="pill p-req">필수★ F 다음</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#7c3aed;"></div><div class="fl-line"></div></div><div class="fl-body"><div class="fl-card bk-o"><div class="fl-top"><span class="bk-lbl" style="color:var(--purple)">8</span><span class="bk-nm">출처 정보</span><span class="pill p-always">항상</span></div></div></div></div>
+        <div class="fl-item"><div class="fl-conn"><div class="fl-dot" style="background:#ca8a04;"></div></div><div class="fl-body"><div class="fl-card bk-r"><div class="fl-top"><span class="bk-lbl" style="color:#92400e">9</span><span class="bk-nm">관련 질문</span><span class="pill p-opt">선택</span></div></div></div></div>
+      </div>
+    </div>
+    <div class="rp"><div class="pt">실제 예시</div>
+      <div class="pv">
+        <div class="pv-blocks">
+          <!-- H 보고서 헤더 (v7 rpt-header 스타일) -->
+          <div class="rb">
+            <div class="rb-tag" style="background:#e2e8f0;color:#0f3352;">H</div>
+            <div class="rpt-header">
+              <div class="rpt-title">3월 2째주 거래 요약 보고서</div>
+              <div class="rpt-date">업케시씨씨엔에스주식회사</div>
+              <div class="rpt-meta-bar" style="background:#eff6ff;border-left:3px solid var(--accent);color:var(--accent);">기준기간: <strong>2026-03-09 ~ 2026-03-15</strong> &nbsp;|&nbsp; 작성일: 2026-04-01</div>
+            </div>
+          </div>
+          <!-- S 숫자통계 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--info-bg);color:var(--info);">S</div><div class="rb-numstat"><div class="rb-numstat-item"><div class="ns-val in">37원</div><div class="ns-lbl">총 입금</div></div><div class="rb-numstat-item"><div class="ns-val out">14원</div><div class="ns-lbl">총 출금</div></div><div class="rb-numstat-item"><div class="ns-val ok">+23원</div><div class="ns-lbl">순 변동</div></div><div class="rb-numstat-item"><div class="ns-val">9건</div><div class="ns-lbl">거래 건수</div></div></div></div>
+          <!-- T1 데이터 테이블 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--accent-bg);color:var(--accent);">T1</div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>날짜</th><th>건수</th><th>입금</th><th>출금</th><th class="r">순변동</th></tr></thead><tbody><tr><td>3월 11일(수)</td><td>2건</td><td>2원</td><td>0원</td><td class="r" style="color:var(--success);font-weight:600;">+2원</td></tr><tr><td>3월 15일(일)</td><td>7건</td><td>35원</td><td>14원</td><td class="r" style="color:var(--success);font-weight:600;">+21원</td></tr></tbody></table></div></div>
+          <!-- C 바차트 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--gray-100);color:var(--gray-600);">C</div><div class="chart-box"><div class="chart-ttl">일별 입출금</div><div class="bar-rows"><div class="bar-r"><div class="bar-meta"><span>3/15 입금</span><span>35원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#0891b2;width:95%;"></div></div></div><div class="bar-r"><div class="bar-meta"><span>3/15 출금</span><span>14원</span></div><div class="bar-bg"><div class="bar-fill" style="background:#dc2626;width:38%;"></div></div></div></div></div></div>
+          <!-- C 도넛 차트 (입출금 비중) -->
+          <div class="rb"><div class="rb-tag" style="background:var(--gray-100);color:var(--gray-600);">C</div>
+            <div class="chart-box">
+              <div class="chart-ttl">입출금 비중</div>
+              <div class="donut-wrap">
+                <svg class="donut-svg" viewBox="0 0 160 160">
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#e5e7eb" stroke-dasharray="377 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#0891b2" stroke-dasharray="274 377" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle class="donut-ring" cx="80" cy="80" r="60" stroke="#dc2626" stroke-dasharray="103 377" stroke-dashoffset="-274" transform="rotate(-90 80 80)"/>
+                  <text x="80" y="76" text-anchor="middle" font-size="16" font-weight="700" fill="#0891b2">72.5%</text>
+                  <text x="80" y="94" text-anchor="middle" font-size="10" fill="#6b7280">입금</text>
+                </svg>
+                <div class="donut-legend">
+                  <div class="donut-leg"><div class="donut-dot" style="background:#0891b2;"></div>입금<span class="donut-val">37원 (72.5%)</span></div>
+                  <div class="donut-leg"><div class="donut-dot" style="background:#dc2626;"></div>출금<span class="donut-val">14원 (27.5%)</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- I 인사이트 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--success-bg);color:var(--success);">I</div><div class="ig-wrap"><div class="ig-list"><div class="ig-item pos"><div class="ig-ico pos">↑</div><div><div class="ig-ttl">입금이 출금보다 2.6배 많음</div><div class="ig-body">순 흑자 23원.</div></div></div></div></div></div>
+          <!-- F 조회기간 설정 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--warning-bg);color:#92400e;">F</div><div class="filt-wrap"><div class="filt-box"><div class="filt-row"><div class="filt-lbl">조회 대상</div><div class="filt-val">거래내역</div></div><div class="filt-row"><div class="filt-lbl">기간</div><div class="filt-val">2026-03-09 ~ 2026-03-15</div></div></div></div></div>
+          <!-- T2 원본 데이터 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">T2</div><div class="rb-t2-wrap"><div class="rb-t2-hd"><span class="t2-lbl">원본 데이터 T2 (F 바로 다음)</span><span class="t2-cnt">전체 9건</span></div><div class="rb-table-wrap"><table class="rb-table"><thead><tr><th>거래일시</th><th>구분</th><th>적요</th><th>계좌번호</th><th>은행</th><th class="r">거래금액</th><th class="r">잔액</th></tr></thead><tbody><tr><td>2026-03-15 04:15</td><td><span class="badge badge-in">입금</span></td><td>급여입금</td><td class="mono">926-101010-43684</td><td>국민은행</td><td class="r val-in">+1,904원</td><td class="r">1,904원</td></tr><tr><td>2026-03-11 08:40</td><td><span class="badge badge-in">입금</span></td><td>경남은행</td><td class="mono">082-052234-04021</td><td>기업은행</td><td class="r val-in">+505,662원</td><td class="r">505,662원</td></tr><tr><td>2026-03-15 04:10</td><td><span class="badge badge-out">출금</span></td><td>—</td><td class="mono">001-501040-19330</td><td>—</td><td class="r val-out">-2,068원</td><td class="r">2,068원</td></tr></tbody></table></div></div></div>
+          <!-- O 출처 정보 -->
+          <div class="rb"><div class="rb-tag" style="background:var(--purple-bg);color:var(--purple);">O</div><div class="src-wrap"><div class="src-title">출처 정보</div><div class="src-kv">데이터 출처: <strong>WEBCASH AI SERVICE</strong><br>기준일: <strong>2026년 4월 1일</strong></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+
+<script>
+const pages=document.querySelectorAll('.page');
+const tabs=document.querySelectorAll('.tab');
+
+function go(i,el){
+  pages.forEach((p,j)=>p.classList.toggle('show',j===i));
+  tabs.forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// v7 스타일 공통 하단 블록을 각 페이지의 pv-blocks에 추가
+document.addEventListener('DOMContentLoaded', () => {
+  const bottomHTML = `
+    <div class="rb rq-wrap">
+      <div class="rb-tag" style="background:var(--warning-bg);color:#92400e;">R</div>
+      <div class="rq-title">관련 질문</div>
+      <div class="rq-chips">
+        <button class="rq-chip">3월 1째주와 비교해줄 수 있니?</button>
+        <button class="rq-chip">3월 전체 월별 거래 현황 보고 싶어</button>
+        <button class="rq-chip">특정 계좌별 거래 내역 상세히 보여줄 수 있니?</button>
+      </div>
+    </div>
+    <div class="rb act-wrap">
+      <div class="act-title">액션</div>
+      <div class="act-row">
+        <button class="act-btn dl">📄 PDF 다운로드</button>
+        <button class="act-btn xl">📊 Excel 다운로드</button>
+        <button class="act-btn share">✉ 이메일</button>
+        <button class="act-btn share">💬 카카오톡</button>
+        <button class="act-btn share">📱 MMS</button>
+        <button class="act-btn">🚩 신고하기</button>
+      </div>
+    </div>`;
+  document.querySelectorAll('.pv-blocks').forEach(el => {
+    el.insertAdjacentHTML('beforeend', bottomHTML);
+  });
+});
+</script>
+</body>
+</html>

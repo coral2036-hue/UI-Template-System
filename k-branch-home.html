@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1280">
+<title>K-Branch 기업인터넷뱅킹</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Pretendard', 'Noto Sans KR', -apple-system, 'Malgun Gothic', sans-serif; background: #f0f2f5; color: #1a1a2e; font-size: 13px; }
+
+  /* GNB */
+  .gnb { display: flex; align-items: center; height: 56px; background: #01565B; padding: 0 24px; color: #fff; }
+  .gnb-logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; margin-right: 48px; }
+  .gnb-logo span { color: #209F85; }
+  .gnb-nav { display: flex; gap: 32px; flex: 1; }
+  .gnb-nav a { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 500; padding: 4px 0; transition: color 0.15s; }
+  .gnb-nav a:hover, .gnb-nav a.active { color: #fff; }
+  .gnb-user { display: flex; align-items: center; gap: 12px; font-size: 13px; }
+  .gnb-user .avatar { width: 32px; height: 32px; border-radius: 50%; background: #209F85; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 13px; }
+  .gnb-user .logout { color: rgba(255,255,255,0.6); font-size: 12px; cursor: pointer; }
+
+  /* Layout */
+  .layout { display: flex; height: calc(100vh - 56px); min-height: 844px; }
+
+  /* Sidebar */
+  .sidebar { width: 220px; background: #f8fafc; border-right: 1px solid #e2e8f0; padding: 16px 0; flex-shrink: 0; display: flex; flex-direction: column; }
+  .sidebar-section { margin-bottom: 8px; }
+  .sidebar-label { font-size: 11px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 20px 4px; }
+  .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: #64748b; cursor: pointer; transition: all 0.15s; border-left: 3px solid transparent; }
+  .sidebar-item:hover { background: #f1f5f9; color: #1a1a2e; }
+  .sidebar-item.active { background: #e6f7f4; color: #209F85; font-weight: 600; border-left-color: #209F85; }
+  .sidebar-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .sidebar-bottom { margin-top: auto; padding-top: 16px; border-top: 1px solid #e2e8f0; }
+
+  /* Main Content */
+  .main { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+
+  /* Quick Menu */
+  .quick-menu { display: flex; gap: 12px; }
+  .quick-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-weight: 500; color: #1a1a2e; cursor: pointer; transition: all 0.15s; }
+  .quick-btn:hover { border-color: #209F85; color: #209F85; background: #f0fdf9; }
+  .quick-btn svg { width: 18px; height: 18px; color: #209F85; }
+
+  /* KPI Cards */
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .kpi-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+  .kpi-label { font-size: 12px; color: #64748b; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .kpi-label svg { width: 16px; height: 16px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #1a1a2e; }
+  .kpi-value .unit { font-size: 14px; font-weight: 500; color: #64748b; margin-left: 2px; }
+  .kpi-card.accent-red .kpi-value { color: #e53935; }
+  .kpi-card.accent-primary .kpi-value { color: #209F85; }
+  .kpi-sub { font-size: 11px; color: #94a3b8; }
+
+  /* Dashboard Cards */
+  .dash-row { display: grid; gap: 16px; }
+  .dash-row.two { grid-template-columns: 1fr 1fr; }
+  .dash-row.three { grid-template-columns: 1fr 1fr 1fr; }
+  .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #e2e8f0; }
+  .card-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+  .card-more { font-size: 12px; color: #94a3b8; cursor: pointer; text-decoration: none; }
+  .card-more:hover { color: #209F85; }
+  .card-body { padding: 0; flex: 1; }
+
+  /* Table */
+  .tbl { width: 100%; border-collapse: collapse; }
+  .tbl th { background: #f8fafc; font-size: 12px; font-weight: 600; color: #64748b; text-align: left; padding: 8px 14px; border-bottom: 1px solid #e2e8f0; }
+  .tbl td { font-size: 13px; padding: 10px 14px; border-bottom: 1px solid #f1f5f9; color: #1a1a2e; }
+  .tbl tr:last-child td { border-bottom: none; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .badge-wait { background: #fff7ed; color: #ea580c; }
+  .badge-done { background: #f0fdf4; color: #16a34a; }
+  .badge-reject { background: #fef2f2; color: #dc2626; }
+  .amount { font-weight: 600; text-align: right; }
+  .amount.positive { color: #209F85; }
+
+  /* Account list */
+  .account-list { padding: 6px 0; }
+  .account-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-bottom: 1px solid #f1f5f9; }
+  .account-item:last-child { border-bottom: none; }
+  .account-name { font-size: 13px; font-weight: 500; }
+  .account-num { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .account-bal { font-size: 14px; font-weight: 700; color: #1a1a2e; text-align: right; }
+  .account-bal small { font-size: 11px; font-weight: 400; color: #94a3b8; }
+
+  /* Notice list */
+  .notice-list { padding: 6px 0; }
+  .notice-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-bottom: 1px solid #f1f5f9; }
+  .notice-item:last-child { border-bottom: none; }
+  .notice-title { font-size: 13px; color: #1a1a2e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+  .notice-tag { font-size: 11px; font-weight: 600; color: #209F85; margin-right: 6px; }
+  .notice-date { font-size: 11px; color: #94a3b8; flex-shrink: 0; }
+
+  /* Quick grid */
+  .fav-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #f1f5f9; }
+  .fav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 20px 10px; background: #fff; cursor: pointer; transition: background 0.15s; }
+  .fav-item:hover { background: #f0fdf9; }
+  .fav-icon { width: 36px; height: 36px; border-radius: 10px; background: #f0f9f7; display: flex; align-items: center; justify-content: center; }
+  .fav-icon svg { width: 18px; height: 18px; color: #209F85; }
+  .fav-label { font-size: 12px; font-weight: 500; color: #475569; }
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<div class="gnb">
+  <div class="gnb-logo"><span>K</span>-Branch</div>
+  <nav class="gnb-nav">
+    <a href="#" class="active">조회</a>
+    <a href="#">이체</a>
+    <a href="#">결재</a>
+    <a href="#">자금관리</a>
+    <a href="#">설정</a>
+  </nav>
+  <div class="gnb-user">
+    <div class="avatar">홍</div>
+    <div>
+      <div style="font-weight:600;">홍길동 님</div>
+      <div class="logout">로그아웃</div>
+    </div>
+  </div>
+</div>
+
+<!-- Layout -->
+<div class="layout">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">메인</div>
+      <div class="sidebar-item active">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        대시보드
+      </div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
+        계좌조회
+      </div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        이체
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">업무</div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M9 14l2 2 4-4"/></svg>
+        결재/승인
+      </div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        자금현황
+      </div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        거래내역
+      </div>
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        보고서
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        설정
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- Quick Menu -->
+    <div class="quick-menu">
+      <div class="quick-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M9 14l2 2 4-4"/></svg>
+        결재/승인
+      </div>
+      <div class="quick-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        건별이체
+      </div>
+      <div class="quick-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        거래내역조회
+      </div>
+      <div class="quick-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        자금현황
+      </div>
+      <div class="quick-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+        보고서
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-row">
+      <div class="kpi-card accent-red">
+        <div class="kpi-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          미결재
+        </div>
+        <div class="kpi-value">3<span class="unit">건</span></div>
+        <div class="kpi-sub">승인 대기 중인 건</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#209F85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+          오늘 이체
+        </div>
+        <div class="kpi-value">2<span class="unit">건</span></div>
+        <div class="kpi-sub">총 45,000,000원</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+          보유 계좌
+        </div>
+        <div class="kpi-value">12<span class="unit">개</span></div>
+        <div class="kpi-sub">수시입출금 5 · 정기 4 · 기타 3</div>
+      </div>
+      <div class="kpi-card accent-primary">
+        <div class="kpi-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#209F85" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+          총 잔액
+        </div>
+        <div class="kpi-value">1.2<span class="unit">억</span></div>
+        <div class="kpi-sub">전일 대비 +2,300만</div>
+      </div>
+    </div>
+
+    <!-- Dashboard Row 1: 결재현황 + 최근이체 -->
+    <div class="dash-row two">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">결재현황</span>
+          <a class="card-more" href="#">더보기 →</a>
+        </div>
+        <div class="card-body">
+          <table class="tbl">
+            <thead><tr><th>제목</th><th>요청자</th><th>금액</th><th>상태</th></tr></thead>
+            <tbody>
+              <tr><td>외주 용역비 지급</td><td>김재무</td><td class="amount">15,000,000</td><td><span class="badge badge-wait">대기</span></td></tr>
+              <tr><td>사무용품 구매</td><td>박총무</td><td class="amount">2,340,000</td><td><span class="badge badge-wait">대기</span></td></tr>
+              <tr><td>3월 급여 이체</td><td>이인사</td><td class="amount">87,500,000</td><td><span class="badge badge-done">승인</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">최근 이체</span>
+          <a class="card-more" href="#">더보기 →</a>
+        </div>
+        <div class="card-body">
+          <table class="tbl">
+            <thead><tr><th>일시</th><th>받는분</th><th>금액</th><th>상태</th></tr></thead>
+            <tbody>
+              <tr><td>03.20 09:15</td><td>(주)대한물류</td><td class="amount">25,000,000</td><td><span class="badge badge-done">완료</span></td></tr>
+              <tr><td>03.20 08:42</td><td>세진테크</td><td class="amount">20,000,000</td><td><span class="badge badge-done">완료</span></td></tr>
+              <tr><td>03.19 17:30</td><td>한솔기업</td><td class="amount">8,500,000</td><td><span class="badge badge-done">완료</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Row 2: 계좌잔액 + 공지사항 + 자주쓰는메뉴 -->
+    <div class="dash-row three">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">계좌 잔액</span>
+          <a class="card-more" href="#">전체보기 →</a>
+        </div>
+        <div class="card-body account-list">
+          <div class="account-item">
+            <div>
+              <div class="account-name">운영자금 계좌</div>
+              <div class="account-num">110-XXX-XXXX71</div>
+            </div>
+            <div class="account-bal">52,340,000<br><small>원</small></div>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-name">급여 계좌</div>
+              <div class="account-num">110-XXX-XXXX52</div>
+            </div>
+            <div class="account-bal">38,200,000<br><small>원</small></div>
+          </div>
+          <div class="account-item">
+            <div>
+              <div class="account-name">법인카드 결제</div>
+              <div class="account-num">110-XXX-XXXX93</div>
+            </div>
+            <div class="account-bal">15,460,000<br><small>원</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">공지사항</span>
+          <a class="card-more" href="#">더보기 →</a>
+        </div>
+        <div class="card-body notice-list">
+          <div class="notice-item">
+            <div><span class="notice-tag">[필독]</span><span class="notice-title">2026년 기업뱅킹 수수료 개편 안내</span></div>
+            <span class="notice-date">03.18</span>
+          </div>
+          <div class="notice-item">
+            <div><span class="notice-tag">[안내]</span><span class="notice-title">시스템 정기점검 안내 (3/25)</span></div>
+            <span class="notice-date">03.15</span>
+          </div>
+          <div class="notice-item">
+            <div><span class="notice-tag">[변경]</span><span class="notice-title">법인 전자서명 인증 방식 변경</span></div>
+            <span class="notice-date">03.12</span>
+          </div>
+          <div class="notice-item">
+            <div><span class="notice-tag">[안내]</span><span class="notice-title">외화계좌 서비스 확대 안내</span></div>
+            <span class="notice-date">03.10</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">자주 쓰는 메뉴</span>
+          <a class="card-more" href="#">편집 →</a>
+        </div>
+        <div class="card-body">
+          <div class="fav-grid">
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+              <span class="fav-label">건별이체</span>
+            </div>
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+              <span class="fav-label">계좌조회</span>
+            </div>
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M15 2H9a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1z"/><path d="M9 14l2 2 4-4"/></svg></div>
+              <span class="fav-label">결재내역</span>
+            </div>
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+              <span class="fav-label">거래내역</span>
+            </div>
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg></div>
+              <span class="fav-label">보고서</span>
+            </div>
+            <div class="fav-item">
+              <div class="fav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9"/></svg></div>
+              <span class="fav-label">설정</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+</body>
+</html>

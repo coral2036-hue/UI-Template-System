@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브랜치Q 카카오톡 플러스친구 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --kt-yellow: #FEE500;
+  --kt-brown: #3C1E1E;
+  --kt-chat-bg: #b2c7d9;
+  --kt-bubble-bot: #FEE500;
+  --kt-bubble-user: #fff;
+  --bq-teal: #209F85;
+  --bq-dark: #01565B;
+  --gray-50:#f9fafb;--gray-100:#f3f4f6;--gray-200:#e5e7eb;--gray-300:#d1d5db;
+  --gray-400:#9ca3af;--gray-500:#6b7280;--gray-600:#4b5563;--gray-700:#374151;--gray-800:#1f2937;--gray-900:#111827;
+  --accent:#2563EB;--accent-bg:#eff6ff;--accent-border:#bfdbfe;
+  --success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;
+  --warning:#ca8a04;--warning-bg:#fefce8;
+  --error:#dc2626;--error-bg:#fef2f2;--error-border:#fecaca;
+  --info:#0891b2;--info-bg:#ecfeff;
+  --radius:4px;--radius-lg:6px;--radius-xl:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard','Noto Sans KR',sans-serif;background:linear-gradient(135deg,#01565B 0%,#0a2e3d 50%,#1a1a2e 100%);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;color:var(--gray-700);}
+
+/* === Page Layout === */
+.demo-title{color:#fff;font-size:24px;font-weight:700;margin-bottom:6px;text-align:center;display:flex;align-items:center;gap:12px;justify-content:center;}
+.demo-title .logo-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:14px;font-weight:600;}
+.demo-subtitle{color:rgba(255,255,255,.6);font-size:14px;margin-bottom:20px;text-align:center;}
+
+/* Step Pills */
+.step-pills{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;justify-content:center;}
+.step-pill{padding:10px 20px;border-radius:20px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;border:2px solid rgba(255,255,255,.2);color:rgba(255,255,255,.6);background:transparent;font-family:inherit;}
+.step-pill:hover{border-color:rgba(255,255,255,.4);color:rgba(255,255,255,.8);}
+.step-pill.active{background:var(--bq-teal);border-color:var(--bq-teal);color:#fff;}
+.step-pill .pill-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.2);font-size:11px;margin-right:6px;}
+.step-pill.active .pill-num{background:rgba(255,255,255,.3);}
+
+/* === Phone Frame === */
+.phone-container{position:relative;}
+.phone-frame{width:375px;border-radius:36px;border:8px solid #1a1a1a;background:#fff;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.4),0 0 0 2px #333;position:relative;}
+.phone-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#1a1a1a;border-radius:0 0 16px 16px;z-index:10;}
+.phone-status-bar{height:48px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-size:13px;font-weight:600;color:#1a1a1a;position:relative;z-index:5;}
+.phone-status-bar .time{font-weight:700;}
+.phone-status-bar .icons{display:flex;gap:4px;align-items:center;font-size:12px;}
+.phone-home-bar{height:20px;display:flex;justify-content:center;align-items:center;background:#fff;}
+.phone-home-bar .bar{width:120px;height:4px;background:#1a1a1a;border-radius:2px;}
+
+/* Screen containers */
+.screen{display:none;height:640px;overflow:hidden;position:relative;}
+.screen.active{display:flex;flex-direction:column;}
+
+/* === KakaoTalk Chat Header (이제 모든 화면에서 공통 사용) === */
+.kt-header{background:var(--kt-yellow);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.kt-header .back-icon{font-size:20px;color:var(--kt-brown);cursor:pointer;}
+.kt-header .title{font-size:16px;font-weight:700;color:var(--kt-brown);flex:1;}
+.kt-header .icons{display:flex;gap:14px;color:var(--kt-brown);font-size:18px;}
+
+/* === Screen 1: Channel Home === */
+.s1-body{flex:1;overflow-y:auto;background:#fff;}
+.s1-profile{text-align:center;padding:32px 20px 20px;}
+.s1-avatar{width:72px;height:72px;border-radius:50%;background:var(--bq-teal);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;}
+.s1-avatar svg{width:40px;height:40px;}
+.s1-name{font-size:20px;font-weight:700;color:var(--gray-900);}
+.s1-category{font-size:13px;color:var(--gray-500);margin-top:4px;}
+.s1-friends{font-size:12px;color:var(--gray-400);margin-top:4px;}
+.s1-desc{font-size:14px;color:var(--gray-600);line-height:1.6;margin-top:12px;padding:0 16px;}
+
+.s1-actions{display:flex;gap:10px;padding:20px 24px;justify-content:center;}
+.s1-add-btn{flex:1;padding:14px;border-radius:10px;background:var(--kt-yellow);border:none;font-size:16px;font-weight:700;color:var(--kt-brown);cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;}
+.s1-add-btn:hover{filter:brightness(.95);}
+.s1-add-btn.added{background:var(--bq-teal);color:#fff;}
+.s1-notify-btn{padding:14px 20px;border-radius:10px;border:1px solid var(--gray-200);background:#fff;font-size:14px;font-weight:600;color:var(--gray-600);cursor:pointer;font-family:inherit;}
+
+.s1-menu{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:8px solid var(--gray-100);border-bottom:8px solid var(--gray-100);}
+.s1-menu-item{display:flex;flex-direction:column;align-items:center;gap:8px;padding:20px 10px;cursor:pointer;transition:background .15s;border-right:1px solid var(--gray-100);}
+.s1-menu-item:last-child{border-right:none;}
+.s1-menu-item:hover{background:var(--gray-50);}
+.s1-menu-item .mi-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.s1-menu-item .mi-label{font-size:13px;font-weight:600;color:var(--gray-700);}
+
+.s1-post{padding:16px 20px;border-top:1px solid var(--gray-100);}
+.s1-post-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:6px;}
+.s1-post-desc{font-size:13px;color:var(--gray-500);line-height:1.5;}
+
+/* === KakaoTalk Chat (Screens 2,3) === */
+.kt-body{flex:1;overflow-y:auto;background:var(--kt-chat-bg);padding:14px 14px;display:flex;flex-direction:column;gap:10px;}
+
+/* Chat bubbles */
+.kt-msg-group{display:flex;gap:8px;align-items:flex-start;}
+.kt-msg-group.user{justify-content:flex-end;}
+.kt-bot-avatar{width:36px;height:36px;border-radius:12px;background:var(--bq-teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kt-bot-avatar svg{width:20px;height:20px;}
+.kt-msg-col{display:flex;flex-direction:column;gap:4px;max-width:80%;}
+.kt-bot-name{font-size:12px;font-weight:600;color:var(--gray-700);}
+.kt-bubble-row{display:flex;align-items:flex-end;gap:4px;}
+.kt-msg-group.user .kt-bubble-row{flex-direction:row-reverse;}
+.kt-time{font-size:10px;color:rgba(0,0,0,.4);flex-shrink:0;white-space:nowrap;}
+
+.kt-bubble{border-radius:4px 16px 16px 16px;padding:10px 14px;font-size:14px;line-height:1.6;color:#333;word-break:break-word;white-space:pre-line;}
+.kt-bubble.bot{background:var(--kt-bubble-bot);}
+.kt-bubble.user{background:var(--kt-bubble-user);border-radius:16px 4px 16px 16px;}
+.kt-bubble.card{background:#fff;border-radius:12px;padding:0;overflow:hidden;min-width:240px;}
+
+/* Card bubble inner */
+.kt-card-inner{padding:14px 16px;}
+.kt-card-inner .card-title{font-size:15px;font-weight:700;color:var(--gray-800);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+
+/* Auth form card */
+.kt-auth-form{padding:16px;}
+.kt-auth-form .af-title{font-size:16px;font-weight:700;color:var(--gray-800);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.kt-auth-form .af-field{margin-bottom:12px;}
+.kt-auth-form .af-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:4px;}
+.kt-auth-form .af-input{width:100%;height:40px;border:1px solid var(--gray-200);border-radius:8px;padding:0 12px;font-size:14px;font-family:inherit;color:var(--gray-800);background:#fff;outline:none;}
+.kt-auth-form .af-input:focus{border-color:var(--bq-teal);}
+.kt-auth-form .af-btn{width:100%;height:44px;border:none;border-radius:8px;background:var(--kt-yellow);font-size:15px;font-weight:700;color:var(--kt-brown);cursor:pointer;font-family:inherit;margin-top:4px;transition:all .2s;}
+
+/* Success card */
+.kt-success-card{text-align:center;padding:24px 16px;}
+.kt-success-card .sc-icon{width:56px;height:56px;border-radius:50%;background:var(--success-bg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:28px;color:var(--success);}
+.kt-success-card .sc-title{font-size:18px;font-weight:700;color:var(--gray-800);margin-bottom:8px;}
+.kt-success-card .sc-desc{font-size:14px;color:var(--gray-500);line-height:1.6;margin-bottom:16px;}
+.kt-success-card .sc-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.kt-success-card .sc-action-btn{padding:10px 16px;border-radius:20px;border:1px solid var(--bq-teal);background:#fff;color:var(--bq-teal);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;}
+.kt-success-card .sc-action-btn:hover{background:var(--bq-teal);color:#fff;}
+
+/* Quick chips */
+.kt-chips{display:flex;gap:8px;padding:10px 14px;background:#fff;border-top:1px solid var(--gray-200);overflow-x:auto;flex-shrink:0;-webkit-overflow-scrolling:touch;}
+.kt-chips::-webkit-scrollbar{display:none;}
+.kt-chip{padding:8px 14px;border-radius:16px;border:1px solid var(--gray-200);background:#fff;font-size:13px;font-weight:500;color:var(--gray-600);cursor:pointer;white-space:nowrap;flex-shrink:0;font-family:inherit;transition:all .15s;}
+.kt-chip:hover{border-color:var(--bq-teal);color:var(--bq-teal);}
+.kt-chip.active{background:var(--bq-teal);color:#fff;border-color:var(--bq-teal);}
+
+/* Input bar */
+.kt-input-bar{display:flex;gap:8px;padding:8px 12px;background:#fff;align-items:center;flex-shrink:0;}
+.kt-input{flex:1;height:36px;border:1px solid var(--gray-200);border-radius:18px;padding:0 14px;font-size:14px;font-family:inherit;outline:none;background:var(--gray-50);}
+.kt-input:focus{border-color:var(--bq-teal);}
+.kt-send-btn{width:36px;height:36px;border-radius:50%;border:none;background:var(--bq-teal);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .1s;}
+.kt-send-btn:hover{transform:scale(1.05);}
+
+/* Typing indicator */
+.kt-typing{display:flex;align-items:center;gap:8px;}
+.kt-typing .dots{display:flex;gap:3px;}
+.kt-typing .dots span{width:6px;height:6px;background:rgba(0,0,0,.3);border-radius:50%;animation:dotBounce 1.2s infinite;}
+.kt-typing .dots span:nth-child(2){animation-delay:.2s;}
+.kt-typing .dots span:nth-child(3){animation-delay:.4s;}
+@keyframes dotBounce{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-5px);}}
+
+/* Report card (link preview style) */
+.kt-report-card{overflow:hidden;border-radius:12px;background:#fff;cursor:pointer;transition:transform .15s;}
+.kt-report-card:hover{transform:scale(1.01);}
+.kt-report-card .rc-thumb{height:80px;background:linear-gradient(135deg,var(--bq-teal),var(--bq-dark));display:flex;align-items:center;justify-content:center;color:#fff;font-size:36px;}
+.kt-report-card .rc-body{padding:12px 14px;}
+.kt-report-card .rc-title{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:4px;}
+.kt-report-card .rc-desc{font-size:12px;color:var(--gray-500);}
+.kt-report-card .rc-link{display:block;padding:10px 14px;border-top:1px solid var(--gray-100);font-size:13px;font-weight:600;color:var(--bq-teal);text-align:center;}
+
+/* === Screen 4: Report View === */
+.s4-body{flex:1;overflow-y:auto;background:var(--gray-50);padding:20px 16px;display:flex;flex-direction:column;gap:14px;}
+
+/* === Block Renderers (adapted for KT chat) === */
+.rb{margin-bottom:0;}
+.rb-summary{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.rb-summary-card{background:#fff;border:1px solid var(--gray-200);border-radius:var(--radius-lg);padding:12px 14px;}
+.rb-summary-card .sc-label{font-size:11px;color:var(--gray-500);margin-bottom:4px;font-weight:500;}
+.rb-summary-card .sc-value{font-size:18px;font-weight:700;color:var(--gray-900);letter-spacing:-.3px;}
+.rb-summary-card .sc-sub{font-size:11px;color:var(--gray-400);margin-top:2px;}
+.rb-summary-card .sc-sub.up{color:var(--success);}
+.rb-summary-card .sc-sub.down{color:var(--error);}
+.rb-summary-card.full{grid-column:1/-1;}
+
+.rb-numstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:8px;}
+.rb-numstat-item{text-align:center;padding:12px 8px;background:#fff;border-radius:var(--radius-lg);border:1px solid var(--gray-200);}
+.rb-numstat-item .ns-val{font-size:20px;font-weight:700;letter-spacing:-.3px;}
+.rb-numstat-item .ns-label{font-size:11px;color:var(--gray-500);margin-top:2px;font-weight:500;}
+.rb-numstat-item .ns-diff{font-size:11px;margin-top:2px;font-weight:600;}
+.ns-diff.up{color:var(--success);}
+.ns-diff.down{color:var(--error);}
+
+.rb-table-wrap{overflow-x:auto;border:1px solid var(--gray-200);border-radius:var(--radius-lg);}
+.rb-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:auto;}
+.rb-table th{background:var(--gray-100);color:var(--gray-700);font-weight:600;padding:8px 10px;font-size:11px;border-bottom:1px solid var(--gray-200);white-space:nowrap;}
+.rb-table td{padding:8px 10px;border-bottom:1px solid var(--gray-100);color:var(--gray-700);line-height:1.4;}
+.rb-table tr:last-child td{border-bottom:none;}
+.rb-table tr:nth-child(even) td{background:var(--gray-50);}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;}
+.badge-green{background:var(--success-bg);color:var(--success);}
+.badge-red{background:var(--error-bg);color:var(--error);}
+.badge-orange{background:var(--warning-bg);color:var(--warning);}
+.badge-blue{background:var(--accent-bg);color:var(--accent);}
+.badge-gray{background:var(--gray-100);color:var(--gray-500);}
+
+.rb-chart{margin-bottom:0;}
+.chart-title{font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:8px;}
+.chart-canvas-wrap{height:160px;position:relative;}
+
+.rb-callout{border-radius:var(--radius-lg);padding:12px 14px;font-size:13px;line-height:1.6;}
+.rb-callout.tip{background:var(--success-bg);border-left:3px solid var(--success);}
+.rb-callout.note{background:var(--accent-bg);border-left:3px solid var(--accent);}
+.rb-callout.important{background:var(--warning-bg);border-left:3px solid var(--warning);}
+.rb-callout .co-title{font-weight:700;margin-bottom:4px;color:var(--gray-800);}
+
+.rb-report-header{margin-bottom:4px;}
+.rb-report-header .rh-title{font-size:18px;font-weight:700;color:var(--gray-900);display:flex;align-items:center;gap:6px;}
+.rb-report-header .rh-sub{font-size:13px;color:var(--gray-500);margin-top:4px;}
+
+/* === Controls === */
+.controls{display:flex;gap:12px;align-items:center;margin-top:20px;}
+.step-dots{display:flex;gap:8px;}
+.step-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.2);cursor:pointer;transition:all .2s;}
+.step-dot.active{background:var(--bq-teal);transform:scale(1.3);}
+
+/* Animations */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+@keyframes blockFadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes scaleIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.anim-fade{animation:fadeIn .3s ease;}
+.anim-slide{animation:slideIn .3s ease;}
+
+/* === Screen 5: 알림톡 === */
+.alim-body{flex:1;overflow-y:auto;background:#f0f0f0;padding:12px 12px 20px;}
+.alim-section-label{font-size:12px;color:var(--gray-500);text-align:center;margin:12px 0 8px;font-weight:600;}
+.alim-card{background:#fff;border-radius:12px;overflow:hidden;margin-bottom:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);animation:fadeIn .4s ease;}
+.alim-card-header{display:flex;align-items:center;gap:10px;padding:12px 14px 10px;border-bottom:1px solid var(--gray-100);}
+.alim-card-logo{width:36px;height:36px;border-radius:10px;background:var(--bq-teal);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.alim-card-sender{font-size:13px;font-weight:700;color:var(--gray-800);}
+.alim-card-time{font-size:11px;color:var(--gray-400);margin-left:auto;}
+.alim-card-body{padding:12px 14px;}
+.alim-card-title{font-size:14px;font-weight:700;color:var(--gray-900);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.alim-card-title .alim-icon{font-size:16px;}
+.alim-card-text{font-size:13px;color:var(--gray-700);line-height:1.7;}
+.alim-kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--gray-100);}
+.alim-kv:last-of-type{border-bottom:none;}
+.alim-kv-label{font-size:12px;color:var(--gray-500);}
+.alim-kv-value{font-size:12px;font-weight:600;color:var(--gray-800);}
+.alim-kv-value.danger{color:var(--error);}
+.alim-kv-value.success{color:var(--success);}
+.alim-card-actions{display:flex;gap:8px;padding:10px 14px 12px;border-top:1px solid var(--gray-100);}
+.alim-btn{flex:1;padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s;}
+.alim-btn.primary{background:var(--kt-yellow);color:var(--kt-brown);}
+.alim-btn.secondary{background:var(--gray-100);color:var(--gray-700);}
+.alim-btn:hover{filter:brightness(.95);}
+
+/* === Report Download Bar === */
+.report-download-bar{display:flex;gap:10px;padding:14px 16px;border-top:1px solid var(--gray-200);background:#fff;flex-shrink:0;}
+.dl-btn{flex:1;padding:12px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s;}
+.dl-btn.excel{background:#217346;color:#fff;}
+.dl-btn.pdf{background:#e84c3d;color:#fff;}
+.dl-btn:hover{filter:brightness(.9);}
+.dl-btn:active{transform:scale(.97);}
+.dl-toast{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;font-size:12px;padding:7px 16px;border-radius:20px;white-space:nowrap;animation:fadeIn .2s ease;z-index:100;}
+</style>
+</head>
+<body>
+
+<div class="demo-title">
+  <span class="logo-badge">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#209F85"/><text x="12" y="16" text-anchor="middle" fill="#fff" font-size="11" font-weight="700" font-family="Pretendard">BQ</text></svg>
+    브랜치Q
+  </span>
+  카카오톡 플러스친구 서비스
+</div>
+<div class="demo-subtitle">카카오톡으로 금융 업무를 간편하게 처리하세요</div>
+
+<div class="step-pills" id="step-pills">
+  <button class="step-pill active" onclick="switchScreen(0)"><span class="pill-num">1</span>채널 홈</button>
+  <button class="step-pill" onclick="switchScreen(1)"><span class="pill-num">2</span>본인 인증</button>
+  <button class="step-pill" onclick="switchScreen(2)"><span class="pill-num">3</span>질의응답</button>
+  <button class="step-pill" onclick="switchScreen(3)"><span class="pill-num">4</span>보고서</button>
+  <button class="step-pill" onclick="switchScreen(4)"><span class="pill-num">5</span>알림톡</button>
+</div>
+
+<div class="phone-container">
+  <div class="phone-frame">
+    <div class="phone-notch"></div>
+    <div class="phone-status-bar">
+      <span class="time">10:28</span>
+      <span class="icons">
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 8h2v4H1zM5 5h2v7H5zM9 3h2v9H9zM13 0h2v12h-2z" fill="#1a1a1a"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 2C5.5 2 3.3 3 1.8 4.6l1.4 1.4C4.4 4.8 6.1 4 8 4s3.6.8 4.8 2l1.4-1.4C12.7 3 10.5 2 8 2zm0 4c-1.4 0-2.6.5-3.5 1.4L6 8.8C6.6 8.3 7.3 8 8 8s1.4.3 2 .8l1.5-1.4C10.6 6.5 9.4 6 8 6zm0 4c-.6 0-1 .4-1 1s.4 1 1 1 1-.4 1-1-.4-1-1-1z" fill="#1a1a1a"/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="21" height="10" rx="2" stroke="#1a1a1a" stroke-width="1" fill="none"/><rect x="22" y="4" width="2" height="4" rx="1" fill="#1a1a1a"/><rect x="2" y="3" width="14" height="6" rx="1" fill="#1a1a1a"/></svg>
+      </span>
+    </div>
+
+    <div class="screen active" id="screen-0">
+      <div class="kt-header">
+        <span class="back-icon" onclick="switchScreen(0)">&#10094;</span>
+        <span class="title">브랜치Q</span>
+        <span class="icons"><span>&#9776;</span></span>
+      </div>
+      <div class="s1-body">
+        <div class="s1-profile">
+          <div class="s1-avatar">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+              <text x="20" y="25" text-anchor="middle" fill="#fff" font-size="16" font-weight="700" font-family="Pretendard">BQ</text>
+            </svg>
+          </div>
+          <div class="s1-name">브랜치Q</div>
+          <div class="s1-category">금융 · AI 업무지원</div>
+          <div class="s1-friends">친구 1,247명</div>
+          <div class="s1-desc">카카오톡으로 간편하게 금융 업무를 처리하세요.<br>잔액 조회, 수납 내역, 매출 분석, 보고서까지<br>AI가 빠르고 정확하게 답변합니다.</div>
+        </div>
+        <div class="s1-actions">
+          <button class="s1-add-btn" id="add-friend-btn" onclick="addFriend()">
+            <span id="add-icon">&#43;</span> <span id="add-text">친구 추가</span>
+          </button>
+          <button class="s1-notify-btn">&#128276; 알림</button>
+        </div>
+        <div class="s1-post">
+          <div class="s1-post-title">&#128227; 서비스 소개</div>
+          <div class="s1-post-desc">브랜치Q는 브랜치의 업무를 AI로 지원하는 서비스입니다. 카카오톡으로 언제 어디서나 편리하게 업무를 처리하세요.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-1">
+      <div class="kt-header">
+        <span class="back-icon" onclick="switchScreen(0)">&#10094;</span>
+        <span class="title">브랜치Q</span>
+        <span class="icons"><span>&#9776;</span></span>
+      </div>
+      <div class="kt-body" id="auth-chat"></div>
+    </div>
+
+    <div class="screen" id="screen-2">
+      <div class="kt-header">
+        <span class="back-icon" onclick="switchScreen(0)">&#10094;</span>
+        <span class="title">브랜치Q</span>
+        <span class="icons"><span>&#9776;</span></span>
+      </div>
+      <div class="kt-body" id="chat-body"></div>
+      <div class="kt-chips" id="quick-chips">
+        <button class="kt-chip" data-conv="balance">&#128176; 잔액 조회</button>
+        <button class="kt-chip" data-conv="collection">&#128203; 수납 내역</button>
+        <button class="kt-chip" data-conv="sales">&#128200; 매출 현황</button>
+        <button class="kt-chip" data-conv="report">&#128196; 보고서</button>
+      </div>
+      <div class="kt-input-bar">
+        <input class="kt-input" id="chat-input" placeholder="메시지를 입력하세요" onkeydown="if(event.key==='Enter')sendChatMsg()">
+        <button class="kt-send-btn" onclick="sendChatMsg()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-3">
+      <div class="kt-header">
+        <span class="back-icon" onclick="switchScreen(2)">&#10094;</span>
+        <span class="title">브랜치Q</span>
+        <span class="icons"><span>&#9776;</span></span>
+      </div>
+      <div class="s4-body" id="report-body"></div>
+      <div class="report-download-bar" id="report-dl-bar" style="display:none;">
+        <button class="dl-btn excel" onclick="showDlToast('📊 엑셀 파일 다운로드 중...')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-3.5 8.5L8 14l1.5-3.5L11 14l3-5.5h1.5L12 15.5 10.5 12l-1 5.5z"/></svg>
+          엑셀 다운로드
+        </button>
+        <button class="dl-btn pdf" onclick="showDlToast('📄 PDF 파일 다운로드 중...')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-2 9H9v-6h2v6zm4 0h-2v-6h2v6z"/></svg>
+          PDF 다운로드
+        </button>
+      </div>
+    </div>
+
+    <div class="screen" id="screen-4">
+      <div class="kt-header">
+        <span class="back-icon" onclick="switchScreen(0)">&#10094;</span>
+        <span class="title">브랜치Q</span>
+        <span class="icons"><span>&#9776;</span></span>
+      </div>
+      <div class="alim-body" id="alim-body">
+        </div>
+    </div>
+
+    <div class="phone-home-bar"><div class="bar"></div></div>
+  </div>
+</div>
+
+<script>
+// ==========================================
+// Globals
+// ==========================================
+let currentScreen = 0;
+let autoPlaying = false;
+let cancelToken = false;
+let speedMultiplier = 1;
+let isAnimating = false;
+let _uid = 0;
+const uid = () => 'b' + (++_uid) + '_' + Date.now().toString(36);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const chartInstances = {};
+
+function dl(ms) {
+  return new Promise(r => {
+    const t = setTimeout(r, ms * speedMultiplier);
+    const check = setInterval(() => {
+      if (cancelToken) { clearTimeout(t); clearInterval(check); r(); }
+    }, 50);
+  });
+}
+
+// ==========================================
+// Block Renderers
+// ==========================================
+const R = {};
+const BADGE_COLORS = {green:'badge-green',red:'badge-red',orange:'badge-orange',blue:'badge-blue',gray:'badge-gray'};
+
+R['number-stat'] = (d, bid) => {
+  let h = '<div class="rb rb-numstat">';
+  (d.items||[]).forEach(it => {
+    h += `<div class="rb-numstat-item"><div class="ns-val" style="color:${it.color||'var(--bq-teal)'}">${esc(it.value)}</div><div class="ns-label">${esc(it.label)}</div>${it.diff?`<div class="ns-diff ${it.diffDir==='up'?'up':'down'}">${it.diffDir==='up'?'&#9650;':'&#9660;'} ${esc(it.diff)}</div>`:''}</div>`;
+  });
+  return h + '</div>';
+};
+
+R['summary-cards'] = (d, bid) => {
+  let h = '<div class="rb rb-summary">';
+  (d.cards||[]).forEach(c => {
+    const cls = c.full ? ' full' : '';
+    h += `<div class="rb-summary-card${cls}"><div class="sc-label">${esc(c.label)}</div><div class="sc-value">${esc(c.value)}</div>${c.sub?`<div class="sc-sub${c.subColor?' '+c.subColor:''}">${esc(c.sub)}</div>`:''}</div>`;
+  });
+  return h + '</div>';
+};
+
+R['data-table'] = (d, bid) => {
+  let h = `<div class="rb">${d.caption?`<div style="font-size:14px;font-weight:700;color:var(--gray-800);margin-bottom:8px;">${esc(d.caption)}</div>`:''}`;
+  h += '<div class="rb-table-wrap"><table class="rb-table"><thead><tr>';
+  (d.columns||[]).forEach(c => { h += `<th style="text-align:${c.align||'left'}">${esc(c.label)}</th>`; });
+  h += '</tr></thead><tbody>';
+  (d.rows||[]).forEach(row => {
+    h += '<tr>';
+    (d.columns||[]).forEach(c => {
+      const val = row[c.key] || '';
+      if (c.type === 'badge' && typeof val === 'object') {
+        h += `<td style="text-align:${c.align||'left'}"><span class="badge ${BADGE_COLORS[val.color]||'badge-gray'}">${esc(val.text)}</span></td>`;
+      } else {
+        h += `<td style="text-align:${c.align||'left'}">${esc(String(val))}</td>`;
+      }
+    });
+    h += '</tr>';
+  });
+  return h + '</tbody></table></div></div>';
+};
+
+R['bar-chart'] = (d, bid) => `<div class="rb rb-chart">${d.title?`<div class="chart-title">${esc(d.title)}</div>`:''}<div class="chart-canvas-wrap"><canvas id="chart-${bid}"></canvas></div></div>`;
+
+R['callout'] = (d, bid) => {
+  const t = d.type || 'note';
+  return `<div class="rb rb-callout ${t}">${d.title?`<div class="co-title">${esc(d.title)}</div>`:''}${esc(d.text)}</div>`;
+};
+
+R['report-header'] = (d, bid) => `<div class="rb rb-report-header"><div class="rh-title">${d.icon?`<span>${d.icon}</span>`:''}${esc(d.title)}</div>${d.subtitle?`<div class="rh-sub">${esc(d.subtitle)}</div>`:''}</div>`;
+
+function initChart(bid, type, d) {
+  const cv = document.getElementById('chart-' + bid);
+  if (!cv) return;
+  if (chartInstances[bid]) chartInstances[bid].destroy();
+  const cfg = {
+    type,
+    data: {
+      labels: d.labels || [],
+      datasets: (d.datasets || []).map(ds => ({
+        ...ds,
+        borderRadius: type === 'bar' ? 6 : undefined,
+        tension: type === 'line' ? 0.3 : undefined,
+        pointRadius: type === 'line' ? 3 : undefined,
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: (d.datasets || []).length > 1, labels: { font: { size: 11 } } } },
+      scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 10 } } }, x: { grid: { display: false }, ticks: { font: { size: 10 } } } }
+    }
+  };
+  chartInstances[bid] = new Chart(cv, cfg);
+}
+
+// ==========================================
+// KT Chat Helpers
+// ==========================================
+function createBotGroup(container) {
+  const group = document.createElement('div');
+  group.className = 'kt-msg-group anim-fade';
+  group.innerHTML = `
+    <div class="kt-bot-avatar"><svg width="20" height="20" viewBox="0 0 20 20"><text x="10" y="14" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Pretendard">BQ</text></svg></div>
+    <div class="kt-msg-col"><div class="kt-bot-name">브랜치Q</div></div>`;
+  container.appendChild(group);
+  return group.querySelector('.kt-msg-col');
+}
+
+function addBotBubble(col, text) {
+  const row = document.createElement('div');
+  row.className = 'kt-bubble-row';
+  const now = new Date();
+  const timeStr = now.getHours() >= 12 ?
+    `오후 ${(now.getHours()-12)||12}:${String(now.getMinutes()).padStart(2,'0')}` :
+    `오전 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  row.innerHTML = `<div class="kt-bubble bot">${text}</div><span class="kt-time">${timeStr}</span>`;
+  col.appendChild(row);
+  return row;
+}
+
+function addBotCard(col, html) {
+  const row = document.createElement('div');
+  row.className = 'kt-bubble-row';
+  row.innerHTML = `<div class="kt-bubble card"><div class="kt-card-inner">${html}</div></div>`;
+  row.style.animation = 'blockFadeIn .4s ease';
+  col.appendChild(row);
+  return row;
+}
+
+function addUserBubble(container, text) {
+  const group = document.createElement('div');
+  group.className = 'kt-msg-group user anim-fade';
+  const now = new Date();
+  const timeStr = now.getHours() >= 12 ?
+    `오후 ${(now.getHours()-12)||12}:${String(now.getMinutes()).padStart(2,'0')}` :
+    `오전 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  group.innerHTML = `<div class="kt-msg-col"><div class="kt-bubble-row"><span class="kt-time">${timeStr}</span><div class="kt-bubble user">${esc(text)}</div></div></div>`;
+  container.appendChild(group);
+}
+
+function showTyping(container) {
+  const group = document.createElement('div');
+  group.className = 'kt-msg-group anim-fade';
+  group.innerHTML = `
+    <div class="kt-bot-avatar"><svg width="20" height="20" viewBox="0 0 20 20"><text x="10" y="14" text-anchor="middle" fill="#fff" font-size="8" font-weight="700" font-family="Pretendard">BQ</text></svg></div>
+    <div class="kt-msg-col"><div class="kt-bubble bot kt-typing"><span class="dots"><span></span><span></span><span></span></span></div></div>`;
+  container.appendChild(group);
+  scrollToBottom(container);
+  return group;
+}
+
+function scrollToBottom(el) {
+  el.scrollTop = el.scrollHeight;
+}
+
+function appendBlock(container, block) {
+  const bid = uid();
+  const renderer = R[block.type];
+  if (!renderer) return;
+  const div = document.createElement('div');
+  div.style.animation = 'blockFadeIn .4s ease';
+  div.innerHTML = renderer(block.data, bid);
+  container.appendChild(div);
+  if (block.type === 'bar-chart') setTimeout(() => initChart(bid, 'bar', block.data), 100);
+  if (block.type === 'line-chart') setTimeout(() => initChart(bid, 'line', block.data), 100);
+}
+
+// ==========================================
+// Screen Navigation
+// ==========================================
+function switchScreen(idx) {
+  if (isAnimating) return;
+  cancelToken = true;
+  setTimeout(() => { cancelToken = false; }, 100);
+
+  currentScreen = idx;
+  document.querySelectorAll('.screen').forEach((s, i) => s.classList.toggle('active', i === idx));
+  document.querySelectorAll('.step-pill').forEach((p, i) => p.classList.toggle('active', i === idx));
+  document.querySelectorAll('.step-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+
+  // Initialize screens on entry (after cancelToken resets at 100ms)
+  setTimeout(() => {
+    if (idx === 1) initAuthScreen();
+    if (idx === 2) initChatScreen();
+    if (idx === 3) initReportScreen();
+    if (idx === 4) initAlimScreen();
+  }, 120);
+}
+
+// ==========================================
+// Screen 1: Channel Home
+// ==========================================
+function addFriend() {
+  const btn = document.getElementById('add-friend-btn');
+  if (btn.classList.contains('added')) return;
+  btn.classList.add('added');
+  document.getElementById('add-icon').textContent = '✓';
+  document.getElementById('add-text').textContent = '추가됨';
+  setTimeout(() => switchScreen(1), 1200);
+}
+
+// ==========================================
+// Screen 2: Authentication
+// ==========================================
+let authPlayed = false;
+async function initAuthScreen() {
+  if (authPlayed) return;
+  authPlayed = true;
+  const chat = document.getElementById('auth-chat');
+  chat.innerHTML = '';
+
+  // Bot welcome
+  const typing1 = showTyping(chat);
+  await dl(1200);
+  typing1.remove();
+
+  const col1 = createBotGroup(chat);
+  addBotBubble(col1, '브랜치Q에 오신 것을 환영합니다! 🎉\n서비스 이용을 위해 간단한 본인인증이 필요합니다.');
+  scrollToBottom(chat);
+  await dl(800);
+
+  // Auth form card
+  const formHtml = `
+    <div class="kt-auth-form">
+      <div class="af-title">&#128274; 본인 인증</div>
+      <div class="af-field">
+        <div class="af-label">사업자번호</div>
+        <input class="af-input" id="af-bizno" value="" placeholder="사업자번호를 입력하세요">
+      </div>
+      <div class="af-field">
+        <div class="af-label">휴대폰</div>
+        <input class="af-input" id="af-phone" value="" placeholder="휴대폰 번호">
+      </div>
+      <button class="af-btn" id="af-submit-btn">인증번호 요청</button>
+    </div>`;
+  addBotCard(col1, formHtml);
+  scrollToBottom(chat);
+  await dl(600);
+
+  // Auto-fill animation
+  await autoType('af-bizno', '123-45-67890', 50);
+  await dl(300);
+  await autoType('af-phone', '010-****-5678', 50);
+  await dl(500);
+
+  // Press button
+  const submitBtn = document.getElementById('af-submit-btn');
+  if (submitBtn) {
+    submitBtn.style.background = '#e6d200';
+    await dl(200);
+    submitBtn.style.background = '';
+    submitBtn.textContent = '전송됨 ✓';
+  }
+  scrollToBottom(chat);
+  await dl(800);
+
+  // Bot asks for code
+  const typing2 = showTyping(chat);
+  await dl(1000);
+  typing2.remove();
+
+  const col2 = createBotGroup(chat);
+  addBotBubble(col2, '인증번호 6자리를 입력해주세요.');
+  scrollToBottom(chat);
+  await dl(600);
+
+  // User enters code
+  addUserBubble(chat, '123456');
+  scrollToBottom(chat);
+  await dl(800);
+
+  // Success card
+  const typing3 = showTyping(chat);
+  await dl(1000);
+  typing3.remove();
+
+  const col3 = createBotGroup(chat);
+  const successHtml = `
+    <div class="kt-success-card">
+      <div class="sc-icon">&#10003;</div>
+      <div class="sc-title">인증 완료!</div>
+      <div class="sc-desc">(주)한빛상사님, 환영합니다.<br>이제 카카오톡으로 편리하게<br>업무를 처리하세요.</div>
+      <div class="sc-actions">
+        <button class="sc-action-btn" onclick="switchScreen(2)">&#128176; 잔액 조회</button>
+        <button class="sc-action-btn" onclick="switchScreen(2)">&#128203; 수납 내역</button>
+        <button class="sc-action-btn" onclick="switchScreen(3)">&#128196; 보고서</button>
+      </div>
+    </div>`;
+  addBotCard(col3, successHtml);
+  scrollToBottom(chat);
+}
+
+async function autoType(inputId, text, speed) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.value = '';
+  for (let i = 0; i < text.length; i++) {
+    if (cancelToken) { el.value = text; return; }
+    el.value += text[i];
+    await dl(speed);
+  }
+}
+
+// ==========================================
+// Screen 3: Chat Q&A
+// ==========================================
+const CONVERSATIONS = {
+  balance: {
+    user: '오늘 통장 잔액 얼마야?',
+    botText: '오늘(2026.03.31) 기준 잔액 현황입니다.',
+    blocks: [
+      { type: 'summary-cards', data: { cards: [
+        { label: '보통예금', value: '125,340,000원', sub: 'NH 301-****-1234' },
+        { label: '정기예금', value: '500,000,000원', sub: '만기 2026.06.30' },
+        { label: '총 잔액', value: '625,340,000원', sub: '▲ 전일 대비 +12,500,000원', subColor: 'up', full: true }
+      ]}}
+    ]
+  },
+  collection: {
+    user: 'A 사업부 수납 내역 건수 및 금액 알려줘',
+    botText: 'A 사업부 수납 내역을 조회했습니다.',
+    blocks: [
+      { type: 'number-stat', data: { items: [
+        { value: '47건', label: '수납 건수', color: 'var(--accent)', diff: '+8건', diffDir: 'up' },
+        { value: '2,345만', label: '수납 금액', color: 'var(--bq-teal)', diff: '+15.3%', diffDir: 'up' },
+        { value: '3건', label: '미수납', color: 'var(--error)' }
+      ]}},
+      { type: 'data-table', data: {
+        caption: '최근 수납 내역',
+        columns: [
+          { key: 'date', label: '날짜', align: 'center' },
+          { key: 'client', label: '거래처' },
+          { key: 'amount', label: '금액', align: 'right' },
+          { key: 'status', label: '상태', align: 'center', type: 'badge' }
+        ],
+        rows: [
+          { date: '03-31', client: '(주)한빛상사', amount: '850만원', status: { text: '완료', color: 'green' } },
+          { date: '03-31', client: '(주)대한물류', amount: '420만원', status: { text: '완료', color: 'green' } },
+          { date: '03-30', client: '(주)미래건설', amount: '315만원', status: { text: '완료', color: 'green' } },
+          { date: '03-30', client: '(주)신한유통', amount: '260만원', status: { text: '대기', color: 'orange' } },
+          { date: '03-29', client: '(주)우리산업', amount: '500만원', status: { text: '완료', color: 'green' } }
+        ]
+      }}
+    ]
+  },
+  sales: {
+    user: '어제 얼마 팔렸어?',
+    botText: '어제(2026.03.30) 매출 현황입니다.',
+    blocks: [
+      { type: 'summary-cards', data: { cards: [
+        { label: '총 매출', value: '8,750만원', sub: '▲ 전일 대비 +12.3%', subColor: 'up' },
+        { label: '거래 건수', value: '134건', sub: '▲ 전일 대비 +18건', subColor: 'up' },
+        { label: '평균 거래액', value: '65.3만원', sub: '▽ 전일 대비 -2.1%', subColor: 'down' },
+        { label: '최대 거래', value: '1,200만원', sub: '(주)한빛상사' }
+      ]}}
+    ]
+  },
+  report: {
+    user: '이번 달 보고서 보내줘',
+    botText: '3월 월간 보고서를 생성했습니다.',
+    blocks: [] // will add report card separately
+  }
+};
+
+let chatPlayed = false;
+let chatBusy = false;
+
+function initChatScreen() {
+  if (chatPlayed) return;
+  chatPlayed = true;
+  const body = document.getElementById('chat-body');
+  body.innerHTML = '';
+
+  // Welcome message
+  const col = createBotGroup(body);
+  addBotBubble(col, '안녕하세요, (주)한빛상사님! 🙂\n무엇이든 물어보세요.');
+  scrollToBottom(body);
+
+  // Wire up chips
+  document.querySelectorAll('.kt-chip').forEach(chip => {
+    chip.onclick = () => {
+      const convId = chip.dataset.conv;
+      if (!chatBusy) playConversation(convId);
+    };
+  });
+}
+
+async function playConversation(convId) {
+  if (chatBusy || cancelToken) return;
+  chatBusy = true;
+  const body = document.getElementById('chat-body');
+  const conv = CONVERSATIONS[convId];
+  if (!conv) { chatBusy = false; return; }
+
+  // Highlight chip
+  document.querySelectorAll('.kt-chip').forEach(c => c.classList.remove('active'));
+  const activeChip = document.querySelector(`.kt-chip[data-conv="${convId}"]`);
+  if (activeChip) activeChip.classList.add('active');
+
+  // User message
+  addUserBubble(body, conv.user);
+  scrollToBottom(body);
+  await dl(800);
+
+  // Typing
+  const typing = showTyping(body);
+  await dl(1500);
+  typing.remove();
+
+  // Bot response
+  const col = createBotGroup(body);
+  addBotBubble(col, conv.botText);
+  scrollToBottom(body);
+
+  if (convId === 'report') {
+    await dl(400);
+    // Report card (link preview)
+    const reportRow = document.createElement('div');
+    reportRow.className = 'kt-bubble-row';
+    reportRow.innerHTML = `<div class="kt-report-card" onclick="switchScreen(3)">
+      <div class="rc-thumb">&#128202;</div>
+      <div class="rc-body">
+        <div class="rc-title">2026년 3월 월간 업무 보고서</div>
+        <div class="rc-desc">(주)한빛상사 · 생성일 2026.03.31</div>
+      </div>
+      <div class="rc-link">자세히 보기 &#8250;</div>
+    </div>`;
+    reportRow.style.animation = 'blockFadeIn .4s ease';
+    col.appendChild(reportRow);
+    scrollToBottom(body);
+  } else {
+    for (const block of conv.blocks) {
+      await dl(400);
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'kt-bubble-row';
+      const cardInner = document.createElement('div');
+      cardInner.className = 'kt-bubble card';
+      const inner = document.createElement('div');
+      inner.className = 'kt-card-inner';
+      appendBlock(inner, block);
+      cardInner.appendChild(inner);
+      cardDiv.appendChild(cardInner);
+      cardDiv.style.animation = 'blockFadeIn .4s ease';
+      col.appendChild(cardDiv);
+      scrollToBottom(body);
+    }
+  }
+
+  await dl(300);
+  if (activeChip) activeChip.classList.remove('active');
+  chatBusy = false;
+}
+
+function sendChatMsg() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text || chatBusy) return;
+  input.value = '';
+
+  const body = document.getElementById('chat-body');
+  addUserBubble(body, text);
+  scrollToBottom(body);
+
+  // Check if matches any conversation
+  const lower = text.toLowerCase();
+  if (lower.includes('잔액')) { playConversation('balance'); return; }
+  if (lower.includes('수납')) { playConversation('collection'); return; }
+  if (lower.includes('팔') || lower.includes('매출')) { playConversation('sales'); return; }
+  if (lower.includes('보고서')) { playConversation('report'); return; }
+
+  // Generic response
+  chatBusy = true;
+  setTimeout(async () => {
+    const typing = showTyping(body);
+    await dl(1000);
+    typing.remove();
+    const col = createBotGroup(body);
+    addBotBubble(col, '죄송합니다. 해당 질문은 아직 준비 중입니다.\n아래 빠른 메뉴를 이용해 주세요. 😊');
+    scrollToBottom(body);
+    chatBusy = false;
+  }, 300);
+}
+
+// ==========================================
+// Screen 4: Report
+// ==========================================
+let reportPlayed = false;
+async function initReportScreen() {
+  if (reportPlayed) return;
+  reportPlayed = true;
+  const body = document.getElementById('report-body');
+  body.innerHTML = '';
+
+  const blocks = [
+    { type: 'report-header', data: { icon: '📊', title: '2026년 3월 월간 업무 보고서', subtitle: '(주)한빛상사 · 작성일 2026.03.31' }},
+    { type: 'number-stat', data: { items: [
+      { value: '2.38억', label: '총 매출', color: 'var(--accent)', diff: '+6.2%', diffDir: 'up' },
+      { value: '1.82억', label: '총 수납', color: 'var(--bq-teal)', diff: '+5.8%', diffDir: 'up' },
+      { value: '5,640만', label: '미수납', color: 'var(--error)', diff: '-2.1%', diffDir: 'down' },
+      { value: '76.3%', label: '수납률', color: 'var(--gray-500)' }
+    ]}},
+    { type: 'bar-chart', data: {
+      title: '월별 매출 추이',
+      labels: ['1월', '2월', '3월'],
+      datasets: [{ label: '매출(억)', data: [2.05, 2.24, 2.38], backgroundColor: ['#93bbfd', '#60a5fa', '#2563EB'] }]
+    }},
+    { type: 'data-table', data: {
+      caption: '부서별 실적 현황',
+      columns: [
+        { key: 'dept', label: '부서' },
+        { key: 'sales', label: '매출', align: 'right' },
+        { key: 'collection', label: '수납', align: 'right' },
+        { key: 'uncollected', label: '미수납', align: 'right' },
+        { key: 'rate', label: '수납률', align: 'center' }
+      ],
+      rows: [
+        { dept: 'A사업부', sales: '9,520만', collection: '8,120만', uncollected: '1,400만', rate: '85.3%' },
+        { dept: 'B사업부', sales: '7,340만', collection: '5,280만', uncollected: '2,060만', rate: '71.9%' },
+        { dept: 'C사업부', sales: '5,100만', collection: '3,840만', uncollected: '1,260만', rate: '75.3%' },
+        { dept: '관리부', sales: '1,840만', collection: '960만', uncollected: '880만', rate: '52.2%' }
+      ]
+    }},
+    { type: 'callout', data: { type: 'tip', title: 'AI 분석 의견', text: '3월 수납률이 전월 대비 5.2% 개선되었습니다. A사업부의 성과가 두드러지며, 관리부의 수납률(52.2%)은 집중 관리가 필요합니다.' }}
+  ];
+
+  for (const block of blocks) {
+    await dl(300);
+    if (cancelToken) {
+      // Render remaining immediately
+      blocks.forEach(b => appendBlock(body, b));
+      scrollToBottom(body);
+      document.getElementById('report-dl-bar').style.display = 'flex';
+      return;
+    }
+    appendBlock(body, block);
+    scrollToBottom(body);
+  }
+  document.getElementById('report-dl-bar').style.display = 'flex';
+}
+
+// ==========================================
+// Screen 5: 알림톡
+// ==========================================
+let alimPlayed = false;
+async function initAlimScreen() {
+  if (alimPlayed) return;
+  alimPlayed = true;
+  const body = document.getElementById('alim-body');
+  body.innerHTML = '';
+
+  const notifications = [
+    {
+      delay: 200,
+      time: '오전 8:42',
+      title: '⚠️ 잔액 부족 알림',
+      titleColor: 'var(--error)',
+      items: [
+        { label: '계좌번호', value: '123-4567-8901' },
+        { label: '현재 잔액', value: '₩ 180,000', cls: 'danger' },
+        { label: '기준 잔액', value: '₩ 500,000', cls: '' },
+        { label: '부족액', value: '₩ 320,000', cls: 'danger' }
+      ],
+      text: '설정하신 기준 잔액 이하로 잔액이 감소했습니다.\n입금 또는 이체를 통해 잔액을 보충해 주세요.',
+      actions: [{ label: '잔액 확인', cls: 'primary' }, { label: '나중에', cls: 'secondary' }]
+    },
+    {
+      delay: 500,
+      time: '오전 9:15',
+      title: '📋 수납 마감 임박 알림',
+      titleColor: 'var(--warning)',
+      items: [
+        { label: '마감일', value: '2026.03.31 (오늘)' },
+        { label: '미수납 건수', value: '12건', cls: 'danger' },
+        { label: '미수납 금액', value: '₩ 5,640만', cls: 'danger' },
+        { label: '수납률', value: '76.3%', cls: '' }
+      ],
+      text: '오늘이 3월 수납 마감일입니다. 미수납 내역을 확인하고 처리해 주세요.',
+      actions: [{ label: '수납 내역 확인', cls: 'primary' }, { label: '보고서 보기', cls: 'secondary' }]
+    },
+    {
+      delay: 500,
+      time: '오전 10:03',
+      title: '✅ 입금 완료 알림',
+      titleColor: 'var(--success)',
+      items: [
+        { label: '입금 계좌', value: '123-4567-8901' },
+        { label: '입금액', value: '₩ 2,000,000', cls: 'success' },
+        { label: '입금 후 잔액', value: '₩ 2,180,000', cls: 'success' },
+        { label: '입금처', value: '(주)한빛상사' }
+      ],
+      text: '입금이 정상 처리되었습니다. 자세한 내역은 거래 내역에서 확인하세요.',
+      actions: [{ label: '거래 내역 확인', cls: 'primary' }, { label: '닫기', cls: 'secondary' }]
+    }
+  ];
+
+  function renderCard(notif) {
+    const card = document.createElement('div');
+    card.className = 'alim-card';
+    card.innerHTML = `
+      <div class="alim-card-header">
+        <div class="alim-card-logo">BQ</div>
+        <div>
+          <div class="alim-card-sender">브랜치Q 알림</div>
+        </div>
+        <div class="alim-card-time">${notif.time}</div>
+      </div>
+      <div class="alim-card-body">
+        <div class="alim-card-title" style="color:${notif.titleColor}">
+          <span>${notif.title}</span>
+        </div>
+        <div style="margin:10px 0 8px;">
+          ${notif.items.map(it => `
+            <div class="alim-kv">
+              <span class="alim-kv-label">${it.label}</span>
+              <span class="alim-kv-value${it.cls ? ' ' + it.cls : ''}">${it.value}</span>
+            </div>`).join('')}
+        </div>
+        <div class="alim-card-text" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--gray-100)">${notif.text.replace(/\n/g,'<br>')}</div>
+      </div>
+      <div class="alim-card-actions">
+        ${notif.actions.map(a => `<button class="alim-btn ${a.cls}" onclick="this.textContent='✓ 확인됨';this.style.opacity='.6'">${a.label}</button>`).join('')}
+      </div>
+    `;
+    body.appendChild(card);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  let rendered = 0;
+  for (const notif of notifications) {
+    await dl(notif.delay);
+    if (cancelToken) {
+      // render all remaining immediately
+      notifications.slice(rendered).forEach(n => renderCard(n));
+      return;
+    }
+    renderCard(notif);
+    rendered++;
+  }
+}
+
+// ==========================================
+// Report Download
+// ==========================================
+function showDlToast(msg) {
+  const frame = document.querySelector('.phone-frame');
+  const old = frame.querySelector('.dl-toast');
+  if (old) old.remove();
+  const toast = document.createElement('div');
+  toast.className = 'dl-toast';
+  toast.textContent = msg;
+  frame.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' && currentScreen < 4) switchScreen(currentScreen + 1);
+  if (e.key === 'ArrowLeft' && currentScreen > 0) switchScreen(currentScreen - 1);
+});
+</script>
+</body>
+</html>
