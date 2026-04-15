@@ -1,0 +1,40 @@
+ * Serving Flask app 'web_app'
+ * Debug mode: on
+2026-04-14 17:34:21,213 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:34:21,214 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:34:21,214 - INFO -  * Restarting with stat
+2026-04-14 17:34:21,655 - WARNING -  * Debugger is active!
+2026-04-14 17:34:21,661 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:25,560 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:40:25,694 - INFO -  * Restarting with stat
+2026-04-14 17:40:26,174 - WARNING -  * Debugger is active!
+2026-04-14 17:40:26,182 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:33,425 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:40:33,507 - INFO -  * Restarting with stat
+2026-04-14 17:40:33,941 - WARNING -  * Debugger is active!
+2026-04-14 17:40:33,949 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:14,920 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:46:15,036 - INFO -  * Restarting with stat
+2026-04-14 17:46:15,579 - WARNING -  * Debugger is active!
+2026-04-14 17:46:15,586 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:17,696 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:46:17,788 - INFO -  * Restarting with stat
+2026-04-14 17:46:18,349 - WARNING -  * Debugger is active!
+2026-04-14 17:46:18,360 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:42,704 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:52:42,825 - INFO -  * Restarting with stat
+2026-04-14 17:52:43,739 - WARNING -  * Debugger is active!
+2026-04-14 17:52:43,750 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:53,815 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\web_app.py', reloading
+2026-04-14 17:55:53,967 - INFO -  * Restarting with stat
+2026-04-14 17:55:54,912 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,928 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,056 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,188 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,852 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,865 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:02,040 - INFO -  * Detected change in 'C:\\Users\\±è±¤Çö\\Desktop\\Å¬·ÎµåÀÛ¾÷¹°\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:02,209 - INFO -  * Restarting with stat
+2026-04-14 17:56:03,028 - WARNING -  * Debugger is active!
+2026-04-14 17:56:03,041 - INFO -  * Debugger PIN: 510-286-577

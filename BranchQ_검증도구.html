@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BranchQ 검증 도구</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Noto Sans KR',sans-serif; background:#0F172A; color:#E2E8F0; display:flex; height:100vh; overflow:hidden; }
+
+/* Left panel - Controls */
+.panel { width:360px; background:#1E293B; border-right:1px solid #334155; display:flex; flex-direction:column; overflow:hidden; }
+.panel-header { padding:16px 20px; border-bottom:1px solid #334155; }
+.panel-header h1 { font-size:18px; font-weight:700; color:#F8FAFC; }
+.panel-header p { font-size:12px; color:#94A3B8; margin-top:4px; }
+
+.section { padding:16px 20px; border-bottom:1px solid #334155; }
+.section h2 { font-size:13px; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:12px; }
+
+.btn-group { display:flex; flex-wrap:wrap; gap:6px; }
+.btn { padding:8px 14px; border-radius:8px; border:1px solid #334155; background:#0F172A; color:#CBD5E1; font-size:13px; cursor:pointer; transition:all 0.15s; font-family:inherit; }
+.btn:hover { background:#334155; color:#F8FAFC; }
+.btn.active { background:#2563EB; border-color:#2563EB; color:#fff; }
+.btn.btn-sm { padding:5px 10px; font-size:11px; }
+
+/* Status */
+.status { padding:12px 20px; background:#0F172A; border-bottom:1px solid #334155; }
+.status-row { display:flex; align-items:center; gap:8px; font-size:12px; color:#94A3B8; }
+.status-dot { width:8px; height:8px; border-radius:50%; background:#16A34A; flex-shrink:0; }
+.status-dot.off { background:#DC2626; }
+
+/* Checklist */
+.checklist { flex:1; overflow-y:auto; padding:16px 20px; }
+.check-group { margin-bottom:16px; }
+.check-group h3 { font-size:12px; font-weight:700; color:#64748B; margin-bottom:8px; }
+.check-item { display:flex; align-items:flex-start; gap:8px; padding:4px 0; font-size:13px; color:#CBD5E1; cursor:pointer; }
+.check-item input { margin-top:2px; accent-color:#2563EB; cursor:pointer; }
+.check-item.checked { color:#64748B; text-decoration:line-through; }
+
+.progress-bar { position:sticky; bottom:0; padding:12px 20px; background:#1E293B; border-top:1px solid #334155; }
+.progress-track { height:6px; background:#0F172A; border-radius:3px; overflow:hidden; }
+.progress-fill { height:100%; background:#2563EB; border-radius:3px; transition:width 0.3s; }
+.progress-text { font-size:11px; color:#94A3B8; margin-top:4px; text-align:right; }
+
+/* Right - Preview */
+.preview { flex:1; display:flex; flex-direction:column; }
+.preview-toolbar { height:40px; background:#1E293B; border-bottom:1px solid #334155; display:flex; align-items:center; gap:8px; padding:0 12px; }
+.preview-toolbar .dots { display:flex; gap:6px; }
+.preview-toolbar .dot { width:10px; height:10px; border-radius:50%; }
+.preview-toolbar .dot.r { background:#EF4444; }
+.preview-toolbar .dot.y { background:#EAB308; }
+.preview-toolbar .dot.g { background:#22C55E; }
+.preview-toolbar .url { flex:1; background:#0F172A; border:1px solid #334155; border-radius:6px; padding:4px 12px; font-size:12px; color:#94A3B8; font-family:'Inter',monospace; }
+.size-btns { display:flex; gap:4px; }
+.size-btn { padding:3px 8px; border-radius:4px; border:1px solid #334155; background:transparent; color:#94A3B8; font-size:10px; cursor:pointer; }
+.size-btn:hover,.size-btn.active { background:#334155; color:#F8FAFC; }
+
+iframe { flex:1; border:none; background:#F8FAFC; }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <div class="panel-header">
+    <h1>BranchQ 검증 도구</h1>
+    <p>React 프로토타입 검수용 / 씬별 테스트</p>
+  </div>
+
+  <div class="status">
+    <div class="status-row">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">서버 확인 중...</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>씬 전환</h2>
+    <div class="btn-group" id="sceneBtns">
+      <button class="btn active" data-scene="welcome" onclick="switchScene('welcome')">S0 Welcome</button>
+      <button class="btn" data-scene="general" onclick="switchScene('general')">S1 일반질의</button>
+      <button class="btn" data-scene="analysis" onclick="switchScene('analysis')">S2 분석</button>
+      <button class="btn" data-scene="forecast" onclick="switchScene('forecast')">S3 예측</button>
+      <button class="btn" data-scene="anomaly" onclick="switchScene('anomaly')">S4 이상거래</button>
+      <button class="btn" data-scene="consult" onclick="switchScene('consult')">S5 상담</button>
+      <button class="btn" data-scene="report" onclick="switchScene('report')">S6 보고서</button>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>검증 액션</h2>
+    <div class="btn-group">
+      <button class="btn btn-sm" onclick="testModal()">모달 테스트</button>
+      <button class="btn btn-sm" onclick="testPanel()">패널 테스트</button>
+      <button class="btn btn-sm" onclick="testSend()">메시지 전송</button>
+      <button class="btn btn-sm" onclick="reloadPreview()">새로고침</button>
+    </div>
+  </div>
+
+  <div class="checklist" id="checklist">
+    <!-- Generated by JS -->
+  </div>
+
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">0 / 0 완료</div>
+  </div>
+</div>
+
+<div class="preview">
+  <div class="preview-toolbar">
+    <div class="dots"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
+    <div class="url">http://localhost:5173</div>
+    <div class="size-btns">
+      <button class="size-btn active" onclick="resizePreview(1280,800)">Desktop</button>
+      <button class="size-btn" onclick="resizePreview(768,1024)">Tablet</button>
+      <button class="size-btn" onclick="resizePreview(375,812)">Mobile</button>
+    </div>
+  </div>
+  <iframe id="preview" src="http://localhost:5173"></iframe>
+</div>
+
+<script>
+const CHECKS = {
+  'A. 레이아웃': [
+    '사이드바 70px 너비, #1E293B 배경',
+    '헤더 56px 높이, BranchQ 로고',
+    '입력바 56px, 첨부+입력+전송 버튼',
+    '전체 배치 정상 (넘침 없음)',
+  ],
+  'B. S0 Welcome': [
+    'BranchQ 로고 + 부제 중앙 표시',
+    '카테고리 필 5개 렌더링',
+    '추천 질문 4개 카드',
+    '카드 클릭 → 대화 시작',
+  ],
+  'C. S1 일반질의': [
+    'User 버블 우측 파란색',
+    'DataTable 컬럼+데이터 표시',
+    '배지(승인=초록, 검토중=노랑)',
+    '금액 우측정렬 Inter Bold',
+  ],
+  'D. S2 분석': [
+    'ReportHeader 배지+제목',
+    'NumberStat 4개 (값 28px Bold)',
+    'PatternAnalysis 3단계 색상',
+    'BarChart 막대+라벨',
+  ],
+  'E. S3 예측': [
+    'DataTable 월별 예측 데이터',
+    'Callout important 타입',
+    'BarChart 그룹 막대 (입금/출금)',
+  ],
+  'F. S4 이상거래': [
+    '배지: 위험(빨강),주의(노랑),정상(초록)',
+    '점수: 95(빨강),82(주황),45(파랑)',
+    '"신고하기" 빨간 버튼',
+  ],
+  'G. S5 상담': [
+    'Steps 4단계 번호원형+연결선',
+    'SourceBox 다운로드 링크',
+    '"다운로드" 파란 버튼',
+  ],
+  'H. S6 보고서': [
+    'ApprovalBox 수평 결재선',
+    'NumberStat + DataTable + BarChart',
+    '"저장" 파란 버튼',
+  ],
+  'I. 모달': [
+    'M1 모델 선택 (라디오 3개)',
+    'M3 공유 (4개 옵션)',
+    'ESC 닫기 동작',
+    '외부 클릭 닫기',
+  ],
+  'J. 기타': [
+    'SubPanel 슬라이드 인/아웃',
+    'Toast 자동 소멸',
+    '콘솔 에러 0건',
+    '한글폰트 Noto Sans KR 확인',
+  ],
+};
+
+// Render checklist
+const container = document.getElementById('checklist');
+let totalChecks = 0;
+for (const [group, items] of Object.entries(CHECKS)) {
+  const div = document.createElement('div');
+  div.className = 'check-group';
+  div.innerHTML = `<h3>${group}</h3>` + items.map((item, i) => {
+    totalChecks++;
+    return `<label class="check-item"><input type="checkbox" onchange="updateProgress(this)"><span>${item}</span></label>`;
+  }).join('');
+  container.appendChild(div);
+}
+
+function updateProgress(el) {
+  el.parentElement.classList.toggle('checked', el.checked);
+  const checked = document.querySelectorAll('.checklist input:checked').length;
+  const pct = Math.round((checked / totalChecks) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${checked} / ${totalChecks} 완료 (${pct}%)`;
+}
+
+// Scene switching
+function switchScene(scene) {
+  document.querySelectorAll('#sceneBtns .btn').forEach(b => b.classList.toggle('active', b.dataset.scene === scene));
+  const iframe = document.getElementById('preview');
+  try {
+    const win = iframe.contentWindow;
+    if (scene === 'welcome') {
+      const btn = [...win.document.querySelectorAll('button')].find(b => b.textContent.includes('새 채팅'));
+      if (btn) btn.click();
+    } else {
+      const sel = win.document.querySelector('select');
+      if (sel) {
+        const setter = Object.getOwnPropertyDescriptor(win.HTMLSelectElement.prototype, 'value').set;
+        setter.call(sel, scene);
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    }
+  } catch(e) { console.log('iframe access error:', e); }
+}
+
+function testModal() {
+  try {
+    const win = document.getElementById('preview').contentWindow;
+    const btn = [...win.document.querySelectorAll('button')].find(b => b.textContent.trim() === 'GPT-4');
+    if (btn) btn.click();
+  } catch(e) {}
+}
+
+function testPanel() {
+  try {
+    const win = document.getElementById('preview').contentWindow;
+    const btn = [...win.document.querySelectorAll('button')].find(b => b.textContent.includes('최근'));
+    if (btn) btn.click();
+  } catch(e) {}
+}
+
+function testSend() {
+  try {
+    const win = document.getElementById('preview').contentWindow;
+    const input = win.document.querySelector('input[placeholder="질문을 입력하세요"]');
+    if (input) {
+      const setter = Object.getOwnPropertyDescriptor(win.HTMLInputElement.prototype, 'value').set;
+      setter.call(input, '테스트 메시지입니다');
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+      setTimeout(() => {
+        const sendBtn = [...win.document.querySelectorAll('button')].pop();
+        if (sendBtn) sendBtn.click();
+      }, 100);
+    }
+  } catch(e) {}
+}
+
+function reloadPreview() {
+  document.getElementById('preview').src = 'http://localhost:5173';
+}
+
+function resizePreview(w, h) {
+  const iframe = document.getElementById('preview');
+  document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (w <= 768) {
+    iframe.style.maxWidth = w + 'px';
+    iframe.style.margin = '0 auto';
+    iframe.style.height = h + 'px';
+  } else {
+    iframe.style.maxWidth = '';
+    iframe.style.margin = '';
+    iframe.style.height = '';
+  }
+}
+
+// Check server status
+const iframe = document.getElementById('preview');
+iframe.onload = () => {
+  document.getElementById('statusDot').className = 'status-dot';
+  document.getElementById('statusText').textContent = 'localhost:5173 연결됨';
+};
+iframe.onerror = () => {
+  document.getElementById('statusDot').className = 'status-dot off';
+  document.getElementById('statusText').textContent = '서버 미실행 — npm run dev 필요';
+};
+setTimeout(() => {
+  try {
+    iframe.contentWindow.document;
+    document.getElementById('statusDot').className = 'status-dot';
+    document.getElementById('statusText').textContent = 'localhost:5173 연결됨';
+  } catch(e) {
+    document.getElementById('statusDot').className = 'status-dot off';
+    document.getElementById('statusText').textContent = '서버 확인 필요 — npm run dev';
+  }
+}, 3000);
+</script>
+</body>
+</html>

@@ -1,0 +1,374 @@
+2026-04-14 17:27:28,190 - INFO - 파일에서 텍스트 추출 중: test_files\sample.txt
+2026-04-14 17:27:28,191 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:27:28,191 - INFO - 음성 변환 시작: test_files\sample_output.mp3
+2026-04-14 17:27:28,191 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:27:34,012 - INFO - 음성 변환 완료: test_files\sample_output.mp3 (0.32 MB)
+2026-04-14 17:27:34,013 - INFO - 변환 완료: test_files\sample.txt → test_files\sample_output.mp3
+2026-04-14 17:29:41,164 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:29:41,165 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:29:41,168 - INFO -  * Restarting with stat
+2026-04-14 17:29:41,917 - WARNING -  * Debugger is active!
+2026-04-14 17:29:41,927 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:30:02,594 - INFO - 127.0.0.1 - - [14/Apr/2026 17:30:02] "GET / HTTP/1.1" 200 -
+2026-04-14 17:33:34,950 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:34] "GET / HTTP/1.1" 200 -
+2026-04-14 17:33:35,188 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:35] "GET /static/style.css HTTP/1.1" 200 -
+2026-04-14 17:33:35,192 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:35] "GET /static/script.js HTTP/1.1" 200 -
+2026-04-14 17:33:35,251 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:35] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:33:35,257 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-04-14 17:33:51,448 - ERROR - 오류: 'OUTPUT_FOLDER'
+2026-04-14 17:33:51,449 - INFO - 127.0.0.1 - - [14/Apr/2026 17:33:51] "[35m[1mPOST /api/convert HTTP/1.1[0m" 500 -
+2026-04-14 17:34:08,837 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:34:08,939 - INFO -  * Restarting with stat
+2026-04-14 17:34:09,402 - WARNING -  * Debugger is active!
+2026-04-14 17:34:09,408 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:34:21,213 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:34:21,214 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:34:21,214 - INFO -  * Restarting with stat
+2026-04-14 17:34:21,655 - WARNING -  * Debugger is active!
+2026-04-14 17:34:21,661 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:34:22,683 - INFO - 127.0.0.1 - - [14/Apr/2026 17:34:22] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:34:49,365 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:34:49,385 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:34:49,385 - INFO - 음성 변환 시작: outputs\Q__8.mp3
+2026-04-14 17:34:49,385 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:35:41,234 - INFO - 음성 변환 완료: outputs\Q__8.mp3 (2.96 MB)
+2026-04-14 17:35:41,234 - INFO - 변환 완료: uploads\Q__8.docx → outputs\Q__8.mp3
+2026-04-14 17:35:41,234 - INFO - 변환 완료: Q__8.docx -> Q__8.mp3
+2026-04-14 17:35:41,236 - INFO - 127.0.0.1 - - [14/Apr/2026 17:35:41] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:38:17,286 - INFO - 127.0.0.1 - - [14/Apr/2026 17:38:17] "GET /api/download/Q__8.mp3 HTTP/1.1" 200 -
+2026-04-14 17:38:28,376 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:38:28,376 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:38:28,377 - INFO -  * Restarting with stat
+2026-04-14 17:38:28,955 - WARNING -  * Debugger is active!
+2026-04-14 17:38:28,963 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:38:36,174 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:38:36,195 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:38:36,196 - INFO - 음성 변환 시작: outputs\Q__8.mp3
+2026-04-14 17:38:36,196 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:38:44,278 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:38:44,279 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:38:44,279 - INFO - 음성 변환 시작: outputs\sample.mp3
+2026-04-14 17:38:44,279 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:38:52,237 - INFO - 음성 변환 완료: outputs\sample.mp3 (0.32 MB)
+2026-04-14 17:38:52,238 - INFO - 변환 완료: uploads\sample.txt → outputs\sample.mp3
+2026-04-14 17:38:52,238 - INFO - 변환 완료: sample.txt -> sample.mp3
+2026-04-14 17:38:52,238 - INFO - 127.0.0.1 - - [14/Apr/2026 17:38:52] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:39:27,677 - INFO - 음성 변환 완료: outputs\Q__8.mp3 (2.47 MB)
+2026-04-14 17:39:27,678 - INFO - 변환 완료: uploads\Q__8.docx → outputs\Q__8.mp3
+2026-04-14 17:39:27,678 - INFO - 변환 완료: Q__8.docx -> Q__8.mp3
+2026-04-14 17:39:27,679 - INFO - 127.0.0.1 - - [14/Apr/2026 17:39:27] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:39:31,295 - INFO - 127.0.0.1 - - [14/Apr/2026 17:39:31] "GET /api/download/Q__8.mp3 HTTP/1.1" 200 -
+2026-04-14 17:39:46,356 - INFO - 변환 중: slow 속도로 batch_output\sample_느림.mp3
+2026-04-14 17:39:46,356 - INFO - 파일에서 텍스트 추출 중: test_files/sample.txt
+2026-04-14 17:39:46,356 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:39:46,356 - INFO - 음성 변환 시작: batch_output\sample_느림.mp3
+2026-04-14 17:39:46,356 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:39:52,923 - INFO - 음성 변환 완료: batch_output\sample_느림.mp3 (0.38 MB)
+2026-04-14 17:39:52,923 - INFO - 완료: batch_output\sample_느림.mp3
+2026-04-14 17:39:52,923 - INFO - 변환 중: normal 속도로 batch_output\sample_보통.mp3
+2026-04-14 17:39:52,923 - INFO - 파일에서 텍스트 추출 중: test_files/sample.txt
+2026-04-14 17:39:52,924 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:39:52,924 - INFO - 음성 변환 시작: batch_output\sample_보통.mp3
+2026-04-14 17:39:52,924 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:39:58,789 - INFO - 음성 변환 완료: batch_output\sample_보통.mp3 (0.32 MB)
+2026-04-14 17:39:58,789 - INFO - 완료: batch_output\sample_보통.mp3
+2026-04-14 17:39:58,789 - INFO - 변환 중: fast 속도로 batch_output\sample_빠름.mp3
+2026-04-14 17:39:58,789 - INFO - 파일에서 텍스트 추출 중: test_files/sample.txt
+2026-04-14 17:39:58,790 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:39:58,790 - INFO - 음성 변환 시작: batch_output\sample_빠름.mp3
+2026-04-14 17:39:58,790 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:40:05,219 - INFO - 음성 변환 완료: batch_output\sample_빠름.mp3 (0.32 MB)
+2026-04-14 17:40:05,219 - INFO - 완료: batch_output\sample_빠름.mp3
+2026-04-14 17:40:25,560 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:25,694 - INFO -  * Restarting with stat
+2026-04-14 17:40:25,959 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:25,964 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:26,065 - INFO -  * Restarting with stat
+2026-04-14 17:40:26,079 - INFO -  * Restarting with stat
+2026-04-14 17:40:26,174 - WARNING -  * Debugger is active!
+2026-04-14 17:40:26,182 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:26,590 - WARNING -  * Debugger is active!
+2026-04-14 17:40:26,597 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:26,605 - WARNING -  * Debugger is active!
+2026-04-14 17:40:26,612 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:33,425 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:33,507 - INFO -  * Restarting with stat
+2026-04-14 17:40:33,827 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:33,828 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:40:33,941 - WARNING -  * Debugger is active!
+2026-04-14 17:40:33,948 - INFO -  * Restarting with stat
+2026-04-14 17:40:33,948 - INFO -  * Restarting with stat
+2026-04-14 17:40:33,949 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:34,438 - WARNING -  * Debugger is active!
+2026-04-14 17:40:34,439 - WARNING -  * Debugger is active!
+2026-04-14 17:40:34,446 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:40:34,447 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:41:25,548 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:41:25,548 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:41:25,550 - INFO -  * Restarting with stat
+2026-04-14 17:41:26,144 - WARNING -  * Debugger is active!
+2026-04-14 17:41:26,154 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:41:26,598 - INFO - 127.0.0.1 - - [14/Apr/2026 17:41:26] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:44:27,915 - INFO - 변환 중: slow 속도로 outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:44:27,916 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:44:27,919 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:44:27,919 - INFO - 음성 변환 시작: outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:44:27,919 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:44:33,901 - INFO - 음성 변환 완료: outputs\temp_sample\sample_느림.mp3 (0.38 MB)
+2026-04-14 17:44:33,901 - INFO - 완료: outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:44:33,901 - INFO - 변환 중: normal 속도로 outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:44:33,901 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:44:33,902 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:44:33,902 - INFO - 음성 변환 시작: outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:44:33,902 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:44:39,218 - INFO - 음성 변환 완료: outputs\temp_sample\sample_보통.mp3 (0.32 MB)
+2026-04-14 17:44:39,218 - INFO - 완료: outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:44:39,218 - INFO - 변환 중: fast 속도로 outputs\temp_sample\sample_빠름.mp3
+2026-04-14 17:44:39,218 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:44:39,219 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:44:39,219 - INFO - 음성 변환 시작: outputs\temp_sample\sample_빠름.mp3
+2026-04-14 17:44:39,219 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:44:44,566 - INFO - 음성 변환 완료: outputs\temp_sample\sample_빠름.mp3 (0.32 MB)
+2026-04-14 17:44:44,566 - INFO - 완료: outputs\temp_sample\sample_빠름.mp3
+2026-04-14 17:44:44,607 - INFO - 배치 변환 완료: sample.txt -> sample_여러버전.zip
+2026-04-14 17:44:44,608 - INFO - 127.0.0.1 - - [14/Apr/2026 17:44:44] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:45:13,823 - INFO - 127.0.0.1 - - [14/Apr/2026 17:45:13] "GET / HTTP/1.1" 200 -
+2026-04-14 17:45:14,016 - INFO - 127.0.0.1 - - [14/Apr/2026 17:45:14] "GET /static/script.js HTTP/1.1" 200 -
+2026-04-14 17:45:14,016 - INFO - 127.0.0.1 - - [14/Apr/2026 17:45:14] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-04-14 17:45:14,029 - INFO - 127.0.0.1 - - [14/Apr/2026 17:45:14] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:46:14,920 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:14,920 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:14,920 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:14,921 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:15,028 - INFO -  * Restarting with stat
+2026-04-14 17:46:15,031 - INFO -  * Restarting with stat
+2026-04-14 17:46:15,036 - INFO -  * Restarting with stat
+2026-04-14 17:46:15,039 - INFO -  * Restarting with stat
+2026-04-14 17:46:15,579 - WARNING -  * Debugger is active!
+2026-04-14 17:46:15,585 - WARNING -  * Debugger is active!
+2026-04-14 17:46:15,586 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:15,590 - WARNING -  * Debugger is active!
+2026-04-14 17:46:15,594 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:15,598 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:15,599 - WARNING -  * Debugger is active!
+2026-04-14 17:46:15,607 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:17,696 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:17,701 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:17,701 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:17,704 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:46:17,788 - INFO -  * Restarting with stat
+2026-04-14 17:46:17,806 - INFO -  * Restarting with stat
+2026-04-14 17:46:17,817 - INFO -  * Restarting with stat
+2026-04-14 17:46:17,822 - INFO -  * Restarting with stat
+2026-04-14 17:46:18,349 - WARNING -  * Debugger is active!
+2026-04-14 17:46:18,349 - WARNING -  * Debugger is active!
+2026-04-14 17:46:18,360 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:18,360 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:18,369 - WARNING -  * Debugger is active!
+2026-04-14 17:46:18,378 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:46:18,386 - WARNING -  * Debugger is active!
+2026-04-14 17:46:18,395 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:47:55,794 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:47:55,794 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:47:55,795 - INFO -  * Restarting with stat
+2026-04-14 17:47:56,500 - WARNING -  * Debugger is active!
+2026-04-14 17:47:56,510 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:47:57,094 - INFO - 127.0.0.1 - - [14/Apr/2026 17:47:57] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:48:03,379 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:48:03,382 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:48:03,383 - INFO - 음성 변환 시작: outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:48:03,383 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:48:09,364 - INFO - 음성 변환 완료: outputs\temp_sample\sample_느림.mp3 (0.38 MB)
+2026-04-14 17:48:09,365 - INFO - 생성: slow -> outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:48:09,365 - INFO - 음성 변환 시작: outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:48:09,365 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:48:14,210 - INFO - 음성 변환 완료: outputs\temp_sample\sample_보통.mp3 (0.32 MB)
+2026-04-14 17:48:14,211 - INFO - 생성: normal -> outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:48:14,249 - INFO - 배치 변환 완료: sample.txt -> sample_여러버전.zip
+2026-04-14 17:48:14,250 - INFO - 127.0.0.1 - - [14/Apr/2026 17:48:14] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:48:25,591 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:48:25,593 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:48:25,593 - INFO - 음성 변환 시작: outputs\sample.mp3
+2026-04-14 17:48:25,593 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:48:30,807 - INFO - 음성 변환 완료: outputs\sample.mp3 (0.32 MB)
+2026-04-14 17:48:30,807 - INFO - 변환 완료: uploads\sample.txt → outputs\sample.mp3
+2026-04-14 17:48:30,807 - INFO - 변환 완료: sample.txt -> sample.mp3
+2026-04-14 17:48:30,807 - INFO - 127.0.0.1 - - [14/Apr/2026 17:48:30] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:50:11,272 - INFO - 127.0.0.1 - - [14/Apr/2026 17:50:11] "GET / HTTP/1.1" 200 -
+2026-04-14 17:50:11,524 - INFO - 127.0.0.1 - - [14/Apr/2026 17:50:11] "GET /static/script.js HTTP/1.1" 200 -
+2026-04-14 17:50:11,530 - INFO - 127.0.0.1 - - [14/Apr/2026 17:50:11] "GET /static/style.css HTTP/1.1" 200 -
+2026-04-14 17:50:11,543 - INFO - 127.0.0.1 - - [14/Apr/2026 17:50:11] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:50:17,192 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:50:17,221 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:50:17,222 - INFO - 음성 변환 시작: outputs\temp_Q__8\Q__8_보통.mp3
+2026-04-14 17:50:17,222 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:51:17,055 - ERROR - 음성 변환 실패: 200 (OK) from TTS API. Probable cause: Unknown
+2026-04-14 17:51:17,055 - ERROR - 실패: normal - 200 (OK) from TTS API. Probable cause: Unknown
+2026-04-14 17:51:17,056 - INFO - 음성 변환 시작: outputs\temp_Q__8\Q__8_빠름.mp3
+2026-04-14 17:51:17,057 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:52:04,249 - INFO - 음성 변환 완료: outputs\temp_Q__8\Q__8_빠름.mp3 (2.47 MB)
+2026-04-14 17:52:04,249 - INFO - 생성: fast -> outputs\temp_Q__8\Q__8_빠름.mp3
+2026-04-14 17:52:04,336 - INFO - 배치 변환 완료: Q__8.docx -> Q__8_여러버전.zip
+2026-04-14 17:52:04,338 - INFO - 127.0.0.1 - - [14/Apr/2026 17:52:04] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:52:08,872 - INFO - 127.0.0.1 - - [14/Apr/2026 17:52:08] "[33mGET /api/download/Q__8_여러버전.zip HTTP/1.1[0m" 404 -
+2026-04-14 17:52:24,112 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:52:24,145 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:52:24,145 - INFO - 음성 변환 시작: outputs\Q__8.mp3
+2026-04-14 17:52:24,145 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:52:42,684 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:52:42,704 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:52:42,706 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:52:42,790 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:52:42,815 - INFO -  * Restarting with stat
+2026-04-14 17:52:42,825 - INFO -  * Restarting with stat
+2026-04-14 17:52:42,852 - INFO -  * Restarting with stat
+2026-04-14 17:52:42,948 - INFO -  * Restarting with stat
+2026-04-14 17:52:43,106 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:52:43,318 - INFO -  * Restarting with stat
+2026-04-14 17:52:43,699 - WARNING -  * Debugger is active!
+2026-04-14 17:52:43,709 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:43,728 - WARNING -  * Debugger is active!
+2026-04-14 17:52:43,739 - WARNING -  * Debugger is active!
+2026-04-14 17:52:43,739 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:43,750 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:43,788 - WARNING -  * Debugger is active!
+2026-04-14 17:52:43,800 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:44,019 - WARNING -  * Debugger is active!
+2026-04-14 17:52:44,030 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:47,241 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:52:47,241 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:52:47,242 - INFO -  * Restarting with stat
+2026-04-14 17:52:47,691 - WARNING -  * Debugger is active!
+2026-04-14 17:52:47,697 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:52:52,423 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:52:52,440 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:52:52,441 - INFO - 음성 변환 시작: outputs\Q__8.mp3
+2026-04-14 17:52:52,441 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:52:55,445 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:52:55,446 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:52:55,446 - INFO - 음성 변환 시작: outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:52:55,446 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:53:01,243 - INFO - 음성 변환 완료: outputs\temp_sample\sample_느림.mp3 (0.38 MB)
+2026-04-14 17:53:01,243 - INFO - 생성: slow -> outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:53:01,243 - INFO - 음성 변환 시작: outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:53:01,243 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:53:06,742 - INFO - 음성 변환 완료: outputs\temp_sample\sample_보통.mp3 (0.32 MB)
+2026-04-14 17:53:06,742 - INFO - 생성: normal -> outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:53:06,742 - INFO - 음성 변환 시작: outputs\temp_sample\sample_빠름.mp3
+2026-04-14 17:53:06,743 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:53:12,450 - INFO - 음성 변환 완료: outputs\temp_sample\sample_빠름.mp3 (0.32 MB)
+2026-04-14 17:53:12,451 - INFO - 생성: fast -> outputs\temp_sample\sample_빠름.mp3
+2026-04-14 17:53:12,485 - INFO - 배치 변환 완료: sample.txt -> sample_여러버전.zip
+2026-04-14 17:53:12,486 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:12] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:53:30,456 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:30] "GET / HTTP/1.1" 200 -
+2026-04-14 17:53:30,659 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:30] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2026-04-14 17:53:30,659 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:30] "[36mGET /static/script.js HTTP/1.1[0m" 304 -
+2026-04-14 17:53:30,674 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:30] "GET /api/status HTTP/1.1" 200 -
+2026-04-14 17:53:35,525 - INFO - 파일에서 텍스트 추출 중: uploads\Q__8.docx
+2026-04-14 17:53:35,547 - INFO - 텍스트 추출 완료: 1864 글자
+2026-04-14 17:53:35,547 - INFO - 음성 변환 시작: outputs\Q__8.mp3
+2026-04-14 17:53:35,547 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:53:43,172 - INFO - 음성 변환 완료: outputs\Q__8.mp3 (2.47 MB)
+2026-04-14 17:53:43,172 - INFO - 변환 완료: uploads\Q__8.docx → outputs\Q__8.mp3
+2026-04-14 17:53:43,173 - INFO - 변환 완료: Q__8.docx -> Q__8.mp3
+2026-04-14 17:53:43,174 - INFO - 127.0.0.1 - - [14/Apr/2026 17:53:43] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:54:22,164 - INFO - 음성 변환 완료: outputs\Q__8.mp3 (2.47 MB)
+2026-04-14 17:54:22,165 - INFO - 변환 완료: uploads\Q__8.docx → outputs\Q__8.mp3
+2026-04-14 17:54:22,165 - INFO - 변환 완료: Q__8.docx -> Q__8.mp3
+2026-04-14 17:54:22,166 - INFO - 127.0.0.1 - - [14/Apr/2026 17:54:22] "POST /api/convert HTTP/1.1" 200 -
+2026-04-14 17:54:26,642 - INFO - 127.0.0.1 - - [14/Apr/2026 17:54:26] "GET /api/download/Q__8.mp3 HTTP/1.1" 200 -
+2026-04-14 17:55:53,809 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:53,811 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:53,815 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:53,816 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:53,817 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:53,963 - INFO -  * Restarting with stat
+2026-04-14 17:55:53,967 - INFO -  * Restarting with stat
+2026-04-14 17:55:53,970 - INFO -  * Restarting with stat
+2026-04-14 17:55:53,971 - INFO -  * Restarting with stat
+2026-04-14 17:55:54,295 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\web_app.py', reloading
+2026-04-14 17:55:54,429 - INFO -  * Restarting with stat
+2026-04-14 17:55:54,771 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,778 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,798 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,806 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:54,812 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:54,822 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:54,912 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,921 - WARNING -  * Debugger is active!
+2026-04-14 17:55:54,928 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:54,941 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:55,311 - WARNING -  * Debugger is active!
+2026-04-14 17:55:55,319 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,023 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,025 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,027 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,056 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,081 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,162 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,163 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,164 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,188 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,215 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,412 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:55:57,551 - INFO -  * Restarting with stat
+2026-04-14 17:55:57,829 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,830 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,831 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,840 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,842 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,844 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,852 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,865 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:57,889 - WARNING -  * Debugger is active!
+2026-04-14 17:55:57,902 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:55:58,118 - WARNING -  * Debugger is active!
+2026-04-14 17:55:58,126 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:01,016 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:01,129 - INFO -  * Restarting with stat
+2026-04-14 17:56:01,224 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:01,337 - INFO -  * Restarting with stat
+2026-04-14 17:56:01,887 - WARNING -  * Debugger is active!
+2026-04-14 17:56:01,899 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:02,022 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:02,031 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:02,034 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:02,040 - INFO -  * Detected change in 'C:\\Users\\김광현\\Desktop\\클로드작업물\\document_to_speech_batch.py', reloading
+2026-04-14 17:56:02,163 - WARNING -  * Debugger is active!
+2026-04-14 17:56:02,175 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:02,200 - INFO -  * Restarting with stat
+2026-04-14 17:56:02,209 - INFO -  * Restarting with stat
+2026-04-14 17:56:02,219 - INFO -  * Restarting with stat
+2026-04-14 17:56:02,219 - INFO -  * Restarting with stat
+2026-04-14 17:56:02,983 - WARNING -  * Debugger is active!
+2026-04-14 17:56:02,988 - WARNING -  * Debugger is active!
+2026-04-14 17:56:02,999 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:03,005 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:03,028 - WARNING -  * Debugger is active!
+2026-04-14 17:56:03,036 - WARNING -  * Debugger is active!
+2026-04-14 17:56:03,041 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:03,051 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:07,297 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2026-04-14 17:56:07,297 - INFO - [33mPress CTRL+C to quit[0m
+2026-04-14 17:56:07,299 - INFO -  * Restarting with stat
+2026-04-14 17:56:07,806 - WARNING -  * Debugger is active!
+2026-04-14 17:56:07,814 - INFO -  * Debugger PIN: 510-286-577
+2026-04-14 17:56:11,945 - INFO - 파일에서 텍스트 추출 중: uploads\sample.txt
+2026-04-14 17:56:11,947 - INFO - 텍스트 추출 완료: 256 글자
+2026-04-14 17:56:11,947 - INFO - 음성 변환 시작: outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:56:11,947 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:56:18,059 - INFO - 음성 변환 완료: outputs\temp_sample\sample_느림.mp3 (0.38 MB)
+2026-04-14 17:56:18,059 - INFO - 생성: slow -> outputs\temp_sample\sample_느림.mp3
+2026-04-14 17:56:18,059 - INFO - 음성 변환 시작: outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:56:18,059 - INFO - 텍스트를 1개 청크로 분할
+2026-04-14 17:56:23,468 - INFO - 음성 변환 완료: outputs\temp_sample\sample_보통.mp3 (0.32 MB)
+2026-04-14 17:56:23,468 - INFO - 생성: normal -> outputs\temp_sample\sample_보통.mp3
+2026-04-14 17:56:23,493 - INFO - 배치 변환 완료: sample.txt -> sample_여러버전.zip
+2026-04-14 17:56:23,494 - INFO - 127.0.0.1 - - [14/Apr/2026 17:56:23] "POST /api/convert HTTP/1.1" 200 -

@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Branch Q 목업 제작 과정 리포트</title>
+<style>
+:root {
+  --primary: #1E293B;
+  --accent: #2563EB;
+  --accent-bg: #EFF6FF;
+  --accent-light: #DBEAFE;
+  --success: #16A34A;
+  --success-bg: #F0FDF4;
+  --warning: #CA8A04;
+  --warning-bg: #FEFCE8;
+  --error: #DC2626;
+  --error-bg: #FEF2F2;
+  --phase1: #7C3AED;
+  --phase2: #0EA5E9;
+  --phase3: #F59E0B;
+  --phase4: #16A34A;
+  --phase5: #EC4899;
+  --gray-50: #F8FAFC;
+  --gray-100: #F1F5F9;
+  --gray-200: #E2E8F0;
+  --gray-300: #CBD5E1;
+  --gray-400: #94A3B8;
+  --gray-500: #64748B;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1E293B;
+  --gray-900: #0F172A;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Pretendard','Noto Sans KR',-apple-system,BlinkMacSystemFont,sans-serif;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  line-height: 1.7;
+  font-size: 15px;
+  padding-bottom: 70px;
+}
+.page-wrapper { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+/* COVER */
+.cover {
+  background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #312E81 100%);
+  color:#fff; padding:80px 0 60px; text-align:center; position:relative; overflow:hidden;
+}
+.cover::before {
+  content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
+  background: radial-gradient(circle at 40% 60%, rgba(37,99,235,0.2) 0%, transparent 50%),
+              radial-gradient(circle at 70% 30%, rgba(124,58,237,0.15) 0%, transparent 50%);
+}
+.cover * { position:relative; }
+.cover-badge {
+  display:inline-block; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
+  border-radius:20px; padding:6px 18px; font-size:13px; letter-spacing:1px; margin-bottom:24px;
+}
+.cover h1 { font-size:36px; font-weight:800; margin-bottom:12px; }
+.cover-sub { font-size:17px; color:rgba(255,255,255,0.7); margin-bottom:32px; }
+.cover-meta { display:flex; justify-content:center; gap:32px; font-size:13px; color:rgba(255,255,255,0.5); }
+
+/* PAGE SLIDE */
+.page-slide { display:none; animation: fadeIn 0.3s ease; }
+.page-slide.active { display:block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* SECTION */
+.section {
+  background:#fff; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.06);
+  margin:24px 0; overflow:hidden;
+}
+.section-header {
+  display:flex; align-items:center; gap:12px; padding:20px 28px; border-bottom:1px solid var(--gray-200);
+}
+.section-num {
+  width:32px; height:32px; border-radius:8px; display:flex; align-items:center;
+  justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.section-header h2 { font-size:18px; font-weight:700; }
+.section-body { padding:28px; }
+.sub-heading {
+  font-size:15px; font-weight:700; color:var(--gray-800);
+  margin:24px 0 12px; padding-bottom:8px; border-bottom:2px solid var(--gray-200);
+}
+p { margin-bottom:12px; }
+p:last-child { margin-bottom:0; }
+
+/* TABLE */
+.tbl {
+  width:100%; border-collapse:separate; border-spacing:0;
+  border:1px solid var(--gray-200); border-radius:8px; overflow:hidden; margin:16px 0; font-size:14px;
+}
+.tbl thead th {
+  background:var(--gray-100); padding:12px 16px; text-align:left;
+  font-weight:600; font-size:13px; color:var(--gray-600); border-bottom:1px solid var(--gray-200);
+}
+.tbl tbody td { padding:11px 16px; border-bottom:1px solid var(--gray-100); }
+.tbl tbody tr:last-child td { border-bottom:none; }
+.tbl tbody tr:hover { background:var(--gray-50); }
+.tbl .cat { font-weight:600; color:var(--gray-700); white-space:nowrap; }
+
+/* TIMELINE */
+.timeline { position:relative; padding-left:32px; margin:20px 0; }
+.timeline::before {
+  content:''; position:absolute; left:11px; top:0; bottom:0; width:2px; background:var(--gray-200);
+}
+.tl-item { position:relative; margin-bottom:24px; }
+.tl-dot {
+  position:absolute; left:-32px; top:4px; width:22px; height:22px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff;
+}
+.tl-date { font-size:11px; color:var(--gray-400); font-weight:600; margin-bottom:2px; }
+.tl-title { font-size:14px; font-weight:700; color:var(--gray-800); margin-bottom:4px; }
+.tl-desc { font-size:13px; color:var(--gray-600); line-height:1.6; }
+.tl-file {
+  display:inline-block; background:var(--gray-100); border:1px solid var(--gray-200);
+  border-radius:4px; padding:2px 8px; font-size:11px; font-family:monospace; color:var(--gray-600); margin-top:4px;
+}
+
+/* CALLOUT */
+.callout { border-radius:8px; padding:16px 20px; margin:16px 0; font-size:13px; line-height:1.6; }
+.callout.info { background:#EFF6FF; border-left:4px solid var(--accent); color:var(--gray-700); }
+.callout.warn { background:var(--warning-bg); border-left:4px solid var(--warning); }
+.callout.success { background:var(--success-bg); border-left:4px solid var(--success); }
+.callout strong { font-weight:700; }
+
+/* BADGE */
+.badge { display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; font-weight:600; }
+.badge.p1 { background:#F3E8FF; color:var(--phase1); }
+.badge.p2 { background:#E0F2FE; color:var(--phase2); }
+.badge.p3 { background:#FEF3C7; color:var(--phase3); }
+.badge.p4 { background:var(--success-bg); color:var(--phase4); }
+.badge.p5 { background:#FCE7F3; color:var(--phase5); }
+
+/* STAT */
+.stat-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:20px 0; }
+.stat-card {
+  background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px;
+  padding:20px; text-align:center;
+}
+.stat-card .label { font-size:12px; color:var(--gray-500); margin-bottom:4px; }
+.stat-card .val { font-size:28px; font-weight:800; color:var(--accent); }
+.stat-card .note { font-size:11px; color:var(--gray-400); margin-top:4px; }
+
+/* FEATURE CARD */
+.feat-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin:16px 0; }
+.feat-card {
+  border:1px solid var(--gray-200); border-radius:8px; padding:16px; background:#fff;
+}
+.feat-card h4 { font-size:13px; font-weight:700; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.feat-card p { font-size:12px; color:var(--gray-600); margin:0; }
+
+/* TOC */
+.toc-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:20px; }
+.toc-item {
+  display:flex; align-items:center; gap:12px; padding:14px 16px;
+  border:1px solid var(--gray-200); border-radius:8px; cursor:pointer; transition:all 0.15s; background:#fff;
+}
+.toc-item:hover { background:var(--gray-50); border-color:var(--gray-300); transform:translateY(-1px); box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+.toc-num { width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:#fff; flex-shrink:0; }
+.toc-label { font-size:13px; font-weight:600; color:var(--gray-700); }
+
+/* PAGE NAV */
+.page-nav {
+  position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.96);
+  backdrop-filter:blur(10px); border-top:1px solid var(--gray-200); padding:12px 0; z-index:1000;
+  box-shadow:0 -2px 12px rgba(0,0,0,0.06);
+}
+.page-nav-inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; padding:0 24px; }
+.page-btn {
+  display:inline-flex; align-items:center; gap:6px; padding:8px 18px;
+  border:1px solid var(--gray-300); border-radius:8px; background:#fff; color:var(--gray-700);
+  font-size:13px; font-weight:600; cursor:pointer; transition:all 0.15s; user-select:none;
+}
+.page-btn:hover { background:var(--gray-100); }
+.page-btn:disabled { opacity:0.35; cursor:not-allowed; pointer-events:none; }
+.page-indicators { display:flex; align-items:center; gap:6px; }
+.page-dot { width:8px; height:8px; border-radius:50%; background:var(--gray-300); cursor:pointer; transition:all 0.2s; }
+.page-dot.active { width:24px; border-radius:4px; background:var(--accent); }
+.page-info { font-size:12px; color:var(--gray-500); text-align:center; }
+.page-info .cur { font-weight:700; color:var(--gray-800); font-size:14px; }
+
+/* FLOW */
+.flow-chain { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin:12px 0; }
+.flow-chip {
+  padding:6px 12px; border-radius:6px; font-size:11px; font-weight:600; white-space:nowrap;
+}
+.flow-arrow { color:var(--gray-400); font-size:14px; }
+
+@media print {
+  body { background:#fff; padding-bottom:0; }
+  .page-nav { display:none; }
+  .page-slide { display:block !important; }
+  .section { box-shadow:none; border:1px solid var(--gray-200); page-break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE 0: 표지+목차 -->
+<div class="page-slide active" data-page="0">
+<div class="cover">
+  <div class="page-wrapper">
+    <div class="cover-badge">DEVELOPMENT PROCESS REPORT</div>
+    <h1>Branch Q 목업 제작 과정</h1>
+    <p class="cover-sub">통합_시연용_v9.html이 만들어지기까지의 전체 개발 여정<br>— 초기 프롬프트 생성기에서 통합 시연 목업까지</p>
+    <div class="cover-meta">
+      <span>작성일: 2026.04.08</span>
+      <span>대상: 사내 보고용</span>
+      <span>총 파일: 20+개 HTML</span>
+      <span>작성: Claude Code (Opus 4.6)</span>
+    </div>
+  </div>
+</div>
+<div class="page-wrapper">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-900)">i</div>
+    <h2>목차</h2>
+  </div>
+  <div class="section-body">
+    <p style="color:var(--gray-500); font-size:13px;">아래 항목을 클릭하면 해당 페이지로 이동합니다.</p>
+    <div class="toc-grid">
+      <div class="toc-item" onclick="goPage(1)"><div class="toc-num" style="background:var(--gray-800)">1</div><div class="toc-label">전체 개발 흐름 요약</div></div>
+      <div class="toc-item" onclick="goPage(2)"><div class="toc-num" style="background:var(--phase1)">2</div><div class="toc-label">1단계: 내부 도구 (v25~v27)</div></div>
+      <div class="toc-item" onclick="goPage(3)"><div class="toc-num" style="background:var(--phase2)">3</div><div class="toc-label">2단계: UI 개선 반복 (v2~v12)</div></div>
+      <div class="toc-item" onclick="goPage(4)"><div class="toc-num" style="background:var(--phase3)">4</div><div class="toc-label">3단계: 디자인 탐색 + 참고 목업</div></div>
+      <div class="toc-item" onclick="goPage(5)"><div class="toc-num" style="background:var(--phase4)">5</div><div class="toc-label">4단계: 통합 시연용 (v1~v9)</div></div>
+      <div class="toc-item" onclick="goPage(6)"><div class="toc-num" style="background:var(--phase5)">6</div><div class="toc-label">5단계: 최종 v9의 주요 구성요소</div></div>
+      <div class="toc-item" onclick="goPage(7)"><div class="toc-num" style="background:var(--accent)">7</div><div class="toc-label">버전별 변경 추적표</div></div>
+      <div class="toc-item" onclick="goPage(8)"><div class="toc-num" style="background:var(--gray-500)">8</div><div class="toc-label">교훈 및 시사점</div></div>
+    </div>
+  </div>
+</div>
+</div>
+</div><!-- /page 0 -->
+
+<div class="page-wrapper">
+
+<!-- PAGE 1 -->
+<div class="page-slide" data-page="1">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-800)">1</div>
+    <h2>전체 개발 흐름 요약</h2>
+  </div>
+  <div class="section-body">
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="label">총 제작 기간</div>
+        <div class="val">~16일</div>
+        <div class="note">3/19 ~ 4/3</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">거쳐간 HTML 파일</div>
+        <div class="val">20+</div>
+        <div class="note">삭제된 중간 버전 포함</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">최종 파일 크기</div>
+        <div class="val">256KB</div>
+        <div class="note">통합_시연용_v9.html</div>
+      </div>
+      <div class="stat-card">
+        <div class="label">최종 코드 줄 수</div>
+        <div class="val">4,318</div>
+        <div class="note">HTML+CSS+JS 통합</div>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">5단계 개발 흐름</h3>
+    <div class="flow-chain">
+      <span class="flow-chip" style="background:#F3E8FF; color:var(--phase1);">1. 내부 도구</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-chip" style="background:#E0F2FE; color:var(--phase2);">2. UI 반복 개선</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-chip" style="background:#FEF3C7; color:var(--phase3);">3. 디자인 탐색</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-chip" style="background:var(--success-bg); color:var(--phase4);">4. 통합 시연용</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-chip" style="background:#FCE7F3; color:var(--phase5);">5. 최종 v9</span>
+    </div>
+
+    <table class="tbl">
+      <thead>
+        <tr><th>단계</th><th>기간</th><th>파일 수</th><th>핵심 작업</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge p1">1단계</span></td>
+          <td class="cat">3/19~3/20</td>
+          <td>2개</td>
+          <td>프롬프트 생성기 내부 도구 제작 (v25, v27)</td>
+        </tr>
+        <tr>
+          <td><span class="badge p2">2단계</span></td>
+          <td class="cat">3/19~3/25</td>
+          <td>9개</td>
+          <td>입력창, 패널, 간격, 멀티모델 등 UI 반복 개선 (v2~v12)</td>
+        </tr>
+        <tr>
+          <td><span class="badge p3">3단계</span></td>
+          <td class="cat">3/23~3/31</td>
+          <td>5개</td>
+          <td>뱅킹 홈, Before/After 비교, ChatGPT 스타일 탐색</td>
+        </tr>
+        <tr>
+          <td><span class="badge p4">4단계</span></td>
+          <td class="cat">3/26~4/3</td>
+          <td>5개</td>
+          <td>통합_시연용 v1→v2→v7→v8→v9 순차 통합</td>
+        </tr>
+        <tr>
+          <td><span class="badge p5">5단계</span></td>
+          <td class="cat">4/3</td>
+          <td>1개</td>
+          <td>최종 v9 완성 (256KB, 전체 기능 통합)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div><!-- /page 1 -->
+
+<!-- PAGE 2 -->
+<div class="page-slide" data-page="2">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--phase1)">2</div>
+    <h2>1단계: 내부 도구 제작 (3/19~3/20)</h2>
+  </div>
+  <div class="section-body">
+    <p>프로젝트의 시작은 "AI 금융 시스템의 UI를 프롬프트로 생성/관리하는 내부 도구"였습니다. 고객 화면이 아닌 <strong>개발자용 생성기</strong>입니다.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase1);">v25</div>
+        <div class="tl-date">2026.03.19</div>
+        <div class="tl-title">Branch UI 프롬프트 생성기 v25</div>
+        <div class="tl-desc">
+          3패널 구조(좌 240px + 중앙 + 우 288px)의 내부 도구. API 연동 배너, 탭 시스템, 접이식 패널 포함. UI 설정 폼으로 프롬프트를 생성하는 백엔드 도구.
+        </div>
+        <span class="tl-file">branch_ui_generator_html_v25_sample_data_editor.html (362KB)</span>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase1);">v27</div>
+        <div class="tl-date">2026.03.20</div>
+        <div class="tl-title">수협 Branch UI Generator v27</div>
+        <div class="tl-desc">
+          CSS 변수와 디자인 토큰 체계 도입. 색상/간격/폰트를 변수화하여 일관된 디자인 시스템 적용. 프리셋 그리드 추가. v25 대비 전반적 스타일 정돈.
+        </div>
+        <span class="tl-file">branch_ui_generator_v27.html (257KB)</span>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>이 단계의 의미:</strong> 아직 사용자 화면이 아닌 "도구의 도구"입니다. 하지만 여기서 만들어진 <strong>3패널 구조, CSS 변수 체계, 탭 인터페이스</strong>가 이후 모든 버전의 기본 뼈대가 됩니다.
+    </div>
+  </div>
+</div>
+</div><!-- /page 2 -->
+
+<!-- PAGE 3 -->
+<div class="page-slide" data-page="3">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--phase2)">3</div>
+    <h2>2단계: UI 반복 개선 (v2~v12)</h2>
+  </div>
+  <div class="section-body">
+    <p>내부 도구를 기반으로 <strong>9번의 버전 업데이트</strong>를 거치며 UI를 다듬었습니다. 각 버전은 파일 이름에 "뭘 고쳤는지"가 들어 있습니다.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v0</div>
+        <div class="tl-date">초기</div>
+        <div class="tl-title">branch_ui_generator_html (3)</div>
+        <div class="tl-desc">최초 버전. 3패널 레이아웃의 프롬프트 생성기. 우측 패널 288px.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v2</div>
+        <div class="tl-date">input_fix</div>
+        <div class="tl-title">입력창 개선</div>
+        <div class="tl-desc">우측 패널 288→340px 확장. 입력 높이 26→32px, 폰트 12px. placeholder 일관성, 포커스 상태 개선.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v3</div>
+        <div class="tl-date">panel_layout_fix</div>
+        <div class="tl-title">패널 배치 정리</div>
+        <div class="tl-desc">패널 헤더 스타일링, 접이식 동작 개선. 카드 패딩/간격 조정으로 시각적 위계 명확화.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v4</div>
+        <div class="tl-date">column_spacing_fix</div>
+        <div class="tl-title">컬럼 간격 수정</div>
+        <div class="tl-desc">Grid 기반 컬럼 배치 도입. 텍스트 줄바꿈 방지(nowrap). overflow:hidden으로 내용 넘침 방지.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v6</div>
+        <div class="tl-date">claude_gemini_safe</div>
+        <div class="tl-title">멀티 AI 모델 지원 시작</div>
+        <div class="tl-desc">API 배너에 Provider/Model 선택 드롭다운 추가. Claude, Gemini 등 다중 모델 선택 UI 첫 등장.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v7</div>
+        <div class="tl-date">layout_reflect_fix</div>
+        <div class="tl-title">레이아웃 미세 조정</div>
+        <div class="tl-desc">정렬/타입 선택기 스타일링 추가. 중앙 정렬 텍스트, 선택기 패딩 세분화.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v9</div>
+        <div class="tl-date">panel_reorg</div>
+        <div class="tl-title">패널 구조 재편성</div>
+        <div class="tl-desc">내부 패널 구조 대규모 재편. 우측 패널 360px 안착. 반응형 제약 조건 정리.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v11</div>
+        <div class="tl-date">multimodel_checked</div>
+        <div class="tl-title">멀티모델 검증 완료</div>
+        <div class="tl-desc">API 배너 flex-wrap 레이아웃. 최소 높이 32→44px. API 액션 래퍼 정리. Provider/Model 선택기 max-width 280px.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase2);">v12</div>
+        <div class="tl-date">modellist_fix</div>
+        <div class="tl-title">모델 목록 최종 정리</div>
+        <div class="tl-desc">모델 선택 목록 안정화. 통합 시연용으로 넘어가기 직전의 마지막 개선.</div>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>2단계 성과:</strong> 9번의 반복을 통해 입력창 → 패널 → 간격 → 멀티모델 순으로 UI가 안정화되었습니다. 특히 v6에서 멀티 AI 모델 지원이 처음 들어간 것이 이후 전체 시스템의 핵심 기능이 됩니다.
+    </div>
+  </div>
+</div>
+</div><!-- /page 3 -->
+
+<!-- PAGE 4 -->
+<div class="page-slide" data-page="4">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--phase3)">4</div>
+    <h2>3단계: 디자인 탐색 + 참고 목업 (3/23~3/31)</h2>
+  </div>
+  <div class="section-body">
+    <p>메인 개발과 병행하여 다양한 디자인 방향을 탐색했습니다. 뱅킹 홈, Before/After 비교, ChatGPT 스타일 등 여러 접근을 시도합니다.</p>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> k-branch-home.html</h4>
+        <p><strong>기업인터넷뱅킹 대시보드</strong> (3/23, 22KB)<br>
+        GNB 헤더(#01565B), 사이드바, KPI 카드, 계좌 목록, 공지사항. 전통적 뱅킹 UI로, 채팅 통합과는 별개의 디자인 탐색.</p>
+      </div>
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> mockup_before_s9.html</h4>
+        <p><strong>"개선 전" 비교용</strong> (3/31, 4.5KB)<br>
+        기존 Q&A 화면. 아바타 + 응답 박스 + 배지 형태. v9 이전의 모습을 기록한 비교 자료.</p>
+      </div>
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> mockup_after_s9.html</h4>
+        <p><strong>"개선 후" 비교용</strong> (3/31, 6KB)<br>
+        개선된 Q&A 화면. 출처 정보 박스, 향상된 스타일링. Before와 나란히 놓고 변화를 확인하는 용도.</p>
+      </div>
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> mockup_chatgpt_s4.html</h4>
+        <p><strong>ChatGPT 스타일 참고</strong> (3/31, 5KB)<br>
+        다크 테마(#212121) ChatGPT 인터페이스. 채팅 버블 + 모델 라벨. 업계 표준 UI를 참고한 디자인 탐색.</p>
+      </div>
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> 블록화_작업중.html</h4>
+        <p><strong>블록 다이어그램 편집기</strong> (4/1, 82KB)<br>
+        워크플로우 블록, 흐름 연결, 범례, Q타입 선택기. 내부 데이터 흐름 설계를 시각화하는 작업 파일.</p>
+      </div>
+      <div class="feat-card">
+        <h4><span style="color:var(--phase3);">&#9679;</span> multi_llm_chat.html</h4>
+        <p><strong>멀티 LLM 채팅 참조 구현</strong> (4/2, 347KB)<br>
+        "AI 하나로" 풀 구현. 70px 사이드바, 232px 히스토리 패널, 탭+패널 API 설정, 모델 티어 배지. <strong>v9의 직접적 원형.</strong></p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>이 단계의 의미:</strong> 단순히 하나의 디자인을 만든 것이 아니라, 뱅킹 대시보드 / ChatGPT 스타일 / Before-After 비교 / 블록 다이어그램 등 <strong>다양한 방향을 실험하고 비교</strong>한 뒤 최적의 구조를 선택했습니다. 특히 multi_llm_chat.html(347KB)이 v9(256KB)의 직접적인 모체가 됩니다.
+    </div>
+  </div>
+</div>
+</div><!-- /page 4 -->
+
+<!-- PAGE 5 -->
+<div class="page-slide" data-page="5">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--phase4)">5</div>
+    <h2>4단계: 통합 시연용 버전 (3/26~4/3)</h2>
+  </div>
+  <div class="section-body">
+    <p>지금까지의 모든 실험 결과를 하나의 파일로 통합하는 과정입니다. "AI 금융 업무 지원 시스템"이라는 이름으로 5개 버전을 거쳤습니다.</p>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase4);">v1</div>
+        <div class="tl-date">2026.03.26</div>
+        <div class="tl-title">통합_시연용.html (205KB)</div>
+        <div class="tl-desc">
+          첫 통합 버전. 70px 사이드바 + 채팅 영역 + 진행상태 표시기. AI 응답 블록(요약, 통계, 테이블) 통합. 기존 report_block_editor의 블록 스타일을 채팅 인터페이스에 합침.
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase4);">v2</div>
+        <div class="tl-date">2026.03.27</div>
+        <div class="tl-title">통합_시연용_v2.html (215KB)</div>
+        <div class="tl-desc">
+          스타일링 정돈 및 부품 구조 개선. 크기 증가(+10KB)는 더 세밀한 부품 구현을 의미.
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase4);">v7</div>
+        <div class="tl-date">2026.03.30</div>
+        <div class="tl-title">통합_시연용_v7_branchQ.html (214KB)</div>
+        <div class="tl-desc">
+          BranchQ 전용 브랜딩 적용. "수협"에서 "BranchQ"로 명칭/맥락 전환. UI 패턴은 유지하면서 브랜드 정체성 반영.
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase4);">v8</div>
+        <div class="tl-date">2026.04.01</div>
+        <div class="tl-title">통합_시연용_v8_branchQ.html (215KB)</div>
+        <div class="tl-desc">
+          v7 기반 미세 조정. UX 피드백 반영, 사소한 스타일 수정. v9 직전의 안정화 버전.
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--phase5);">v9</div>
+        <div class="tl-date">2026.04.03</div>
+        <div class="tl-title">통합_시연용_v9.html (256KB) — 최종</div>
+        <div class="tl-desc">
+          <strong>최종 목업.</strong> v8 대비 +41KB 대폭 증가. multi_llm_chat.html의 핵심 기능(멀티 LLM 선택, API 설정 모달, 모델 티어 배지)을 통합. 6개 업무 시나리오, 보고서 빌더, 공유 기능까지 모두 포함한 완성본.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout success">
+      <strong>크기 변화로 보는 진화:</strong> 205KB(v1) → 215KB(v2) → 214KB(v7) → 215KB(v8) → <strong>256KB(v9)</strong>. v1~v8은 안정화 과정(소폭 변화)이었고, v9에서 multi_llm_chat의 핵심 기능이 한꺼번에 합쳐지며 41KB가 증가했습니다.
+    </div>
+  </div>
+</div>
+</div><!-- /page 5 -->
+
+<!-- PAGE 6 -->
+<div class="page-slide" data-page="6">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--phase5)">6</div>
+    <h2>5단계: 최종 v9의 주요 구성요소</h2>
+  </div>
+  <div class="section-body">
+    <p>통합_시연용_v9.html에 포함된 핵심 구성요소입니다. 이 파일이 Figma와 Pencil.dev 디자인 작업의 <strong>공통 기준 파일</strong>이 됩니다.</p>
+
+    <div class="feat-grid">
+      <div class="feat-card">
+        <h4>&#9632; 사이드바 (70px)</h4>
+        <p>로고, 새 대화, 최근 질문, 맞춤 보고서, 설정, 로그아웃 메뉴. 아이콘+라벨 구조.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 서브패널 (232px)</h4>
+        <p>최근 질문 목록, 맞춤보고서, 사용설정. 사이드바 메뉴 클릭 시 열리는 2차 패널.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 헤더 (56px)</h4>
+        <p>"Branch Q" 타이틀 + 시나리오명 좌측. 도움말/알림 아이콘 우측.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 2줄 입력창</h4>
+        <p>6개 카테고리 탭 + 텍스트 입력 + 모델 선택기. 사용자 질문 입력의 핵심 부품.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 모델 선택기 드롭다운</h4>
+        <p>BranchQ(3종), Anthropic(3종), OpenAI(3종), Google(2종) 총 11개 모델. Free/Pro/Premium 티어 배지.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; AI 응답 블록 (14~16종)</h4>
+        <p>report-header, number-stat, data-table, bar-chart, line-chart, callout, steps, source-box 등.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; API 설정 모달</h4>
+        <p>4개 Provider 탭(BranchQ/Anthropic/OpenAI/Google). API 키 입력, 상태 배지, 3단계 설정 가이드.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 공유 기능</h4>
+        <p>MMS/카카오톡/이메일 전송. 카카오톡 미리보기(스마트폰 프레임), 이메일 미리보기(macOS 스타일).</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 보고서 빌더</h4>
+        <p>MD 에디터 + 미리보기 좌우 분할. 파일 가져오기, 기본 템플릿, 글자 수 카운터.</p>
+      </div>
+      <div class="feat-card">
+        <h4>&#9632; 6개 업무 시나리오</h4>
+        <p>일반질의, 분석질의, 예측질의, 이상거래, 상담, 보고서. 각각 다른 블록 조합으로 표현.</p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>v9가 기준 파일이 된 이유:</strong> 단일 HTML 파일에 전체 시스템의 모든 화면/부품/상태가 동작 가능하게 들어 있습니다. Figma와 Pencil.dev는 이 파일을 "참고 이미지가 아닌 실행 가능한 원본"으로 분석하여 디자인을 생성했습니다.
+    </div>
+  </div>
+</div>
+</div><!-- /page 6 -->
+
+<!-- PAGE 7 -->
+<div class="page-slide" data-page="7">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--accent)">7</div>
+    <h2>버전별 변경 추적표</h2>
+  </div>
+  <div class="section-body">
+    <table class="tbl">
+      <thead>
+        <tr><th>파일명</th><th>날짜</th><th>크기</th><th>핵심 변경</th><th>단계</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="cat">branch_ui_generator_v25</td><td>3/19</td><td>362KB</td>
+          <td>프롬프트 생성기 초기판. 3패널 구조 확립</td>
+          <td><span class="badge p1">1단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">branch_ui_generator_v27</td><td>3/20</td><td>257KB</td>
+          <td>CSS 변수 체계 도입, 디자인 토큰</td>
+          <td><span class="badge p1">1단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v2_input_fix</td><td>-</td><td>-</td>
+          <td>입력창 높이 26→32px, 우측 패널 288→340px</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v3_panel_layout_fix</td><td>-</td><td>-</td>
+          <td>패널 헤더 스타일, 접이식 동작 개선</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v4_column_spacing_fix</td><td>-</td><td>-</td>
+          <td>Grid 컬럼 도입, 넘침 방지</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v6_claude_gemini_safe</td><td>-</td><td>-</td>
+          <td>멀티 AI 모델 선택 UI 첫 등장</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v7_layout_reflect_fix</td><td>-</td><td>-</td>
+          <td>정렬/타입 선택기 미세 조정</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v9_panel_reorg</td><td>-</td><td>-</td>
+          <td>패널 구조 대규모 재편, 360px 확정</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v11_multimodel_checked</td><td>-</td><td>-</td>
+          <td>API 배너 flex-wrap, 높이 44px, 모델 선택 검증</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">v12_modellist_fix</td><td>-</td><td>-</td>
+          <td>모델 목록 최종 안정화</td>
+          <td><span class="badge p2">2단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">k-branch-home</td><td>3/23</td><td>22KB</td>
+          <td>뱅킹 대시보드 디자인 탐색</td>
+          <td><span class="badge p3">3단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">mockup_before/after_s9</td><td>3/31</td><td>4~6KB</td>
+          <td>개선 전후 비교용 목업</td>
+          <td><span class="badge p3">3단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">multi_llm_chat</td><td>4/2</td><td>347KB</td>
+          <td>멀티 LLM 풀 구현 — v9의 직접적 모체</td>
+          <td><span class="badge p3">3단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">통합_시연용 (v1)</td><td>3/26</td><td>205KB</td>
+          <td>첫 통합. 사이드바+채팅+블록 합침</td>
+          <td><span class="badge p4">4단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">통합_시연용_v2</td><td>3/27</td><td>215KB</td>
+          <td>스타일링 정돈, 부품 구조 개선</td>
+          <td><span class="badge p4">4단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">통합_시연용_v7_branchQ</td><td>3/30</td><td>214KB</td>
+          <td>BranchQ 브랜딩 적용</td>
+          <td><span class="badge p4">4단계</span></td>
+        </tr>
+        <tr>
+          <td class="cat">통합_시연용_v8_branchQ</td><td>4/1</td><td>215KB</td>
+          <td>UX 피드백 미세 조정</td>
+          <td><span class="badge p4">4단계</span></td>
+        </tr>
+        <tr style="background:var(--accent-bg); font-weight:700;">
+          <td class="cat">통합_시연용_v9</td><td>4/3</td><td>256KB</td>
+          <td>최종 완성. multi_llm_chat 기능 전면 통합</td>
+          <td><span class="badge p5">5단계</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div><!-- /page 7 -->
+
+<!-- PAGE 8 -->
+<div class="page-slide" data-page="8">
+<div class="section">
+  <div class="section-header">
+    <div class="section-num" style="background:var(--gray-500)">8</div>
+    <h2>교훈 및 시사점</h2>
+  </div>
+  <div class="section-body">
+    <h3 class="sub-heading">개발 과정에서 얻은 교훈</h3>
+
+    <div class="feat-grid">
+      <div class="feat-card" style="border-left:4px solid var(--phase1);">
+        <h4>작은 도구에서 시작하기</h4>
+        <p>v25 프롬프트 생성기라는 "도구의 도구"에서 시작. 내부 도구의 CSS 변수/패널 구조가 최종 제품의 뼈대가 되었습니다. 처음부터 완성품을 만들지 않고, 도구를 먼저 만들어 반복 효율을 높인 접근입니다.</p>
+      </div>
+      <div class="feat-card" style="border-left:4px solid var(--phase2);">
+        <h4>파일 이름에 "뭘 고쳤는지" 기록</h4>
+        <p>v2_input_fix, v4_column_spacing_fix 등 파일 이름 자체가 변경 이력입니다. 별도의 변경 로그 없이도 "어떤 순서로 뭘 고쳤는지" 추적이 가능합니다.</p>
+      </div>
+      <div class="feat-card" style="border-left:4px solid var(--phase3);">
+        <h4>다양한 디자인을 병행 탐색</h4>
+        <p>메인 개발과 별개로 뱅킹 홈/ChatGPT 스타일/Before-After 비교를 동시에 시도. 최적의 패턴을 고른 뒤 통합하는 방식이 결과물의 완성도를 높였습니다.</p>
+      </div>
+      <div class="feat-card" style="border-left:4px solid var(--phase4);">
+        <h4>안정화 기간을 충분히 가지기</h4>
+        <p>통합_시연용 v1~v8(3/26~4/1, 6일)은 크기가 거의 변하지 않았습니다. 기능 추가 없이 기존 코드를 다듬는 안정화 기간을 거친 뒤 v9에서 대규모 통합을 진행했습니다.</p>
+      </div>
+      <div class="feat-card" style="border-left:4px solid var(--phase5);">
+        <h4>참조 구현을 먼저 만들기</h4>
+        <p>multi_llm_chat.html(347KB)을 v9 하루 전에 완성. 이 "풀 기능 참조 구현"을 기준으로 통합_시연용에 필요한 부분만 선별하여 v9를 완성했습니다.</p>
+      </div>
+      <div class="feat-card" style="border-left:4px solid var(--accent);">
+        <h4>단일 HTML의 장점과 한계</h4>
+        <p>v9는 HTML+CSS+JS가 한 파일에 4,318줄. "파일 하나로 즉시 실행 가능"한 장점이 있지만, 실제 개발 시에는 React 컴포넌트 분리가 필요합니다. 이 목업은 "어떻게 보여야 하는가"의 기준이지 "어떻게 코딩해야 하는가"의 기준이 아닙니다.</p>
+      </div>
+    </div>
+
+    <h3 class="sub-heading">v9 이후: Figma/Pencil 디자인 작업으로</h3>
+    <div class="callout success">
+      <strong>v9 → 디자인 도구:</strong> 이 파일이 완성된 후, 동일한 프롬프트로 Figma와 Pencil.dev에 각각 디자인 작업을 진행했습니다. 그 결과가 <strong>"Figma vs Pencil.dev 비교 분석 리포트"</strong>에 정리되어 있습니다. v9의 품질이 곧 디자인 결과물의 품질 상한선이며, 16일간의 반복 개선이 이 상한선을 높인 것입니다.
+    </div>
+
+    <h3 class="sub-heading">파일 목록</h3>
+    <table class="tbl">
+      <tbody>
+        <tr><td class="cat">최종 기준 파일</td><td>통합_시연용_v9.html (256KB, 4,318줄)</td></tr>
+        <tr><td class="cat">직접 모체</td><td>multi_llm_chat.html (347KB)</td></tr>
+        <tr><td class="cat">초기 뼈대</td><td>branch_ui_generator_v25/v27</td></tr>
+        <tr><td class="cat">총 거친 버전</td><td>20개 이상의 HTML 파일</td></tr>
+        <tr><td class="cat">작성 도구</td><td>Claude Code (Opus 4.6, 1M context)</td></tr>
+        <tr><td class="cat">작성일</td><td>2026년 4월 8일</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div><!-- /page 8 -->
+
+</div><!-- /page-wrapper -->
+
+<!-- PAGE NAV -->
+<div class="page-nav">
+  <div class="page-nav-inner">
+    <button class="page-btn" id="prevBtn" onclick="prevPage()"><span class="arrow">&larr;</span> 이전</button>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+      <div class="page-indicators" id="pageIndicators"></div>
+      <div class="page-info"><span class="cur" id="pageNum">1</span> / <span id="totalPages">9</span></div>
+    </div>
+    <button class="page-btn" id="nextBtn" onclick="nextPage()">다음 <span class="arrow">&rarr;</span></button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const pages=document.querySelectorAll('.page-slide'), total=pages.length;
+  let cur=0;
+  document.getElementById('totalPages').textContent=total;
+  const ind=document.getElementById('pageIndicators');
+  for(let i=0;i<total;i++){
+    const d=document.createElement('div');
+    d.className='page-dot'+(i===0?' active':'');
+    d.onclick=function(){goPage(i)};
+    ind.appendChild(d);
+  }
+  function update(){
+    pages.forEach((p,i)=>p.classList.toggle('active',i===cur));
+    document.getElementById('pageNum').textContent=cur+1;
+    document.getElementById('prevBtn').disabled=cur===0;
+    document.getElementById('nextBtn').disabled=cur===total-1;
+    ind.querySelectorAll('.page-dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+    window.scrollTo({top:0,behavior:'instant'});
+  }
+  window.goPage=function(i){if(i>=0&&i<total){cur=i;update();}};
+  window.prevPage=function(){if(cur>0){cur--;update();}};
+  window.nextPage=function(){if(cur<total-1){cur++;update();}};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();prevPage();}
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();nextPage();}
+    if(e.key==='Home'){e.preventDefault();goPage(0);}
+    if(e.key==='End'){e.preventDefault();goPage(total-1);}
+  });
+  update();
+})();
+</script>
+
+</body>
+</html>

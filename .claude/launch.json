@@ -129,6 +129,18 @@
       "port": 5518
     },
     {
+      "name": "v15-ref",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),base=process.cwd();h.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);let fp=(u==='/')?p.join(base,'\\ud1b5\\ud569_\\uc2dc\\uc5f0\\uc6a9_v15.html'):p.join(base,u);const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5540,'127.0.0.1',()=>console.log('v15-ref on http://localhost:5540'))"],
+      "port": 5540
+    },
+    {
+      "name": "branchq-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "ai-chatbot-response"],
+      "port": 5173
+    },
+    {
       "name": "branchq-v7",
       "runtimeExecutable": "node",
       "runtimeArgs": ["-e", "const h=require('http'),f=require('fs'),p=require('path'),base=process.cwd();h.createServer((q,r)=>{const u=decodeURIComponent(q.url.split('?')[0]);let fp=(u==='/')?p.join(base,'\\ud1b5\\ud569_\\uc2dc\\uc5f0\\uc6a9_v7_branchQ.html'):p.join(base,u);const ext=p.extname(fp);const ct={'.html':'text/html','.js':'application/javascript','.css':'text/css','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml'}[ext]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){r.writeHead(404);r.end('Not found');return}r.writeHead(200,{'Content-Type':ct+(ct.startsWith('text')?'; charset=utf-8':'')});r.end(d)})}).listen(5516,'127.0.0.1',()=>console.log('branchq-v7 on http://localhost:5516'))"],
