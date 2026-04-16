@@ -154,7 +154,25 @@
       "Bash(ls -1 *.html)",
       "Bash(find \".claude/worktrees\" -name \"*.md\" -type f -delete)",
       "Bash(git add:*)",
-      "Bash(git commit -m '불필요한 파일 및 캐시 정리 \\(임시 폴더, 구버전 HTML, 중복 프로젝트 제거\\):*)"
+      "Bash(git commit -m '불필요한 파일 및 캐시 정리 \\(임시 폴더, 구버전 HTML, 중복 프로젝트 제거\\):*)",
+      "Bash(mv \"UI_TEMPLATE_SYSTEM.yaml\" \"UI_TEMPLATE_SYSTEM/templates/\")",
+      "Bash(mv \"generate_product_ui.py\" \"UI_TEMPLATE_SYSTEM/scripts/\")",
+      "Bash(mv \"UI_TEMPLATE_USAGE_GUIDE.md\" \"UI_TEMPLATE_SYSTEM/docs/\")",
+      "Bash(mv \"UI_CHANGE_MANAGEMENT.md\" \"UI_TEMPLATE_SYSTEM/docs/\")",
+      "Bash(mv \"examples/example_product_ui_config.json\" \"UI_TEMPLATE_SYSTEM/examples/\")",
+      "Bash(python scripts/executor.py --help)",
+      "Bash(python scripts/executor.py status)",
+      "Bash(python scripts/executor.py product list)",
+      "Bash(python scripts/executor.py metrics collect)",
+      "Bash(python scripts/executor.py deploy status)",
+      "Bash(python scripts/executor.py metrics trend --hours 24)",
+      "Bash(python scripts/executor_api.py --help)",
+      "Bash(python scripts/generate_product_ui.py --name \"신용카드\" --dbfunc \"bank_get_credit_card_info\" --template templates/UI_TEMPLATE_SYSTEM.yaml)",
+      "Bash(timeout 5 python scripts/executor_api.py --port 5000)",
+      "Bash(curl -s http://localhost:5000/api/status)",
+      "Bash(python scripts/executor.py deploy start --product futures --version 1.0.0 --stage canary)",
+      "Bash(python scripts/executor.py metrics trend --hours 1)",
+      "Bash(python scripts/executor.py rollback start --stage canary-50 --reason \"test\" --version 1.0.0)"
     ]
   }
 }

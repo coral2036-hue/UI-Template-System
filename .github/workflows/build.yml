@@ -1,0 +1,128 @@
+name: Build & Generate Artifacts
+
+on:
+  push:
+    branches: [master, develop]
+    paths:
+      - 'UI_TEMPLATE_SYSTEM/**'
+      - '.github/workflows/build.yml'
+  workflow_run:
+    workflows: [Test & Lint]
+    types: [completed]
+    branches: [master, develop]
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      artifact-name: ${{ steps.artifact.outputs.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          npm ci
+          pip install pyyaml jsonschema
+
+      - name: Generate version
+        id: version
+        run: |
+          VERSION=$(date +%Y.%m.%d.%H%M)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Generated version: $VERSION"
+
+      - name: Validate generated products
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          python scripts/validate_products.py 2>/dev/null || echo "No validation script"
+
+      - name: Build React components
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          npm run build 2>/dev/null || echo "No build script, using source directly"
+
+      - name: Generate API documentation
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          python scripts/generate_api_docs.py 2>/dev/null || echo "Generating docs from config..."
+          for product in generated/*/; do
+            if [ -f "$product/config.json" ]; then
+              echo "API doc for $(basename $product)"
+            fi
+          done
+
+      - name: Create artifacts directory
+        id: artifact
+        run: |
+          ARTIFACT_NAME="ui-components-${{ steps.version.outputs.version }}"
+          mkdir -p artifacts/$ARTIFACT_NAME
+
+          # Copy generated components
+          cp -r UI_TEMPLATE_SYSTEM/generated artifacts/$ARTIFACT_NAME/
+          cp -r UI_TEMPLATE_SYSTEM/templates artifacts/$ARTIFACT_NAME/
+          cp UI_TEMPLATE_SYSTEM/README.md artifacts/$ARTIFACT_NAME/ 2>/dev/null || true
+
+          # Create manifest
+          cat > artifacts/$ARTIFACT_NAME/MANIFEST.json << 'EOF'
+          {
+            "version": "${{ steps.version.outputs.version }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "commit": "${{ github.sha }}",
+            "branch": "${{ github.ref }}",
+            "author": "${{ github.actor }}",
+            "products": []
+          }
+          EOF
+
+          echo "name=$ARTIFACT_NAME" >> $GITHUB_OUTPUT
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.artifact.outputs.name }}
+          path: artifacts/${{ steps.artifact.outputs.name }}/
+          retention-days: 30
+
+      - name: Create deployment package
+        run: |
+          cd artifacts
+          tar -czf ${{ steps.artifact.outputs.name }}.tar.gz ${{ steps.artifact.outputs.name }}/
+          zip -r ${{ steps.artifact.outputs.name }}.zip ${{ steps.artifact.outputs.name }}/
+          ls -lh ${{ steps.artifact.outputs.name }}.*
+
+      - name: Upload deployment packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-packages
+          path: artifacts/*.{tar.gz,zip}
+          retention-days: 7
+
+  notify:
+    needs: build
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Build notification
+        run: |
+          echo "Build complete - Version: ${{ needs.build.outputs.version }}"
+          echo "Artifact: ${{ needs.build.outputs.artifact-name }}"

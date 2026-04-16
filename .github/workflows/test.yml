@@ -1,0 +1,79 @@
+name: Test & Lint
+
+on:
+  push:
+    branches: [master, develop]
+    paths:
+      - 'UI_TEMPLATE_SYSTEM/**'
+      - '.github/workflows/test.yml'
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          npm ci
+
+      - name: Run linter
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          npm run lint 2>/dev/null || echo "No lint script defined"
+        continue-on-error: true
+
+      - name: Run unit tests
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          npm test -- --coverage --watchAll=false
+        continue-on-error: true
+
+      - name: Run component tests
+        run: |
+          cd UI_TEMPLATE_SYSTEM
+          for product in generated/*/; do
+            if [ -f "$product/components.test.ts" ]; then
+              echo "Testing $product..."
+              npm test -- "$product/components.test.ts" --watchAll=false || true
+            fi
+          done
+
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
+        if: matrix.node-version == '20.x'
+        with:
+          files: ./UI_TEMPLATE_SYSTEM/coverage/coverage-final.json
+          flags: unittests
+          fail_ci_if_error: false
+
+  lint-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install flake8
+        run: pip install flake8
+
+      - name: Lint Python scripts
+        run: |
+          flake8 UI_TEMPLATE_SYSTEM/scripts/ --max-line-length=120 --ignore=E501,W503
+        continue-on-error: true

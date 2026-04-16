@@ -1,0 +1,728 @@
+{
+  "productId": "derivatives",
+  "productName": "선물거래",
+  "dbFunction": "branchq_get_all_derivatives_info",
+
+  "description": "선물 및 옵션 거래 포트폴리오 관리",
+  "category": "investment",
+  "status": "active",
+
+  "screens": {
+    "list": {
+      "title": "선물거래 목록",
+      "description": "진행 중인 모든 선물 계약 조회",
+
+      "summaryMetrics": [
+        {
+          "id": "total-entry",
+          "label": "총 진입액",
+          "value": "totalEntryAmount",
+          "format": "currency",
+          "icon": "wallet",
+          "color": "primary"
+        },
+        {
+          "id": "total-current",
+          "label": "총 평가액",
+          "value": "totalCurrentValue",
+          "format": "currency",
+          "icon": "chart",
+          "color": "primary"
+        },
+        {
+          "id": "total-pnl",
+          "label": "총 손익",
+          "value": "totalPnL",
+          "format": "currency",
+          "icon": "trending",
+          "color": "dynamic"
+        },
+        {
+          "id": "total-pnl-rate",
+          "label": "총 손익율",
+          "value": "totalPnLRate",
+          "format": "percentage",
+          "icon": "percent",
+          "color": "dynamic"
+        }
+      ],
+
+      "filterOptions": [
+        {
+          "id": "status-filter",
+          "label": "상태",
+          "type": "select",
+          "options": [
+            { "value": "all", "label": "전체" },
+            { "value": "open", "label": "진행중" },
+            { "value": "closed", "label": "종료됨" }
+          ]
+        },
+        {
+          "id": "pnl-filter",
+          "label": "손익",
+          "type": "radio",
+          "options": [
+            { "value": "all", "label": "전체" },
+            { "value": "profit", "label": "수익" },
+            { "value": "loss", "label": "손실" }
+          ]
+        }
+      ],
+
+      "listColumns": [
+        {
+          "field": "contractNo",
+          "label": "계약번호",
+          "width": "100px",
+          "sortable": true,
+          "searchable": true
+        },
+        {
+          "field": "productName",
+          "label": "상품",
+          "width": "120px",
+          "sortable": true
+        },
+        {
+          "field": "contractDate",
+          "label": "계약일",
+          "width": "100px",
+          "format": "date",
+          "sortable": true
+        },
+        {
+          "field": "entryPrice",
+          "label": "진입가",
+          "width": "100px",
+          "format": "number",
+          "align": "right",
+          "sortable": true
+        },
+        {
+          "field": "currentPrice",
+          "label": "현재가",
+          "width": "100px",
+          "format": "number",
+          "align": "right",
+          "sortable": true
+        },
+        {
+          "field": "quantity",
+          "label": "수량",
+          "width": "80px",
+          "format": "number",
+          "align": "right"
+        },
+        {
+          "field": "entryAmount",
+          "label": "진입액",
+          "width": "120px",
+          "format": "currency",
+          "align": "right"
+        },
+        {
+          "field": "currentValue",
+          "label": "평가액",
+          "width": "120px",
+          "format": "currency",
+          "align": "right"
+        },
+        {
+          "field": "pnlAmount",
+          "label": "손익",
+          "width": "120px",
+          "format": "currency",
+          "align": "right",
+          "color": "dynamic"
+        },
+        {
+          "field": "pnlRate",
+          "label": "손익율",
+          "width": "100px",
+          "format": "percentage",
+          "align": "right",
+          "color": "dynamic"
+        },
+        {
+          "field": "status",
+          "label": "상태",
+          "width": "80px",
+          "format": "badge"
+        }
+      ],
+
+      "rowActions": [
+        {
+          "id": "view",
+          "label": "상세보기",
+          "action": "navigate-detail",
+          "icon": "eye",
+          "variant": "ghost"
+        },
+        {
+          "id": "close",
+          "label": "청산",
+          "action": "close-position",
+          "icon": "x-circle",
+          "variant": "danger",
+          "confirm": "정말로 이 거래를 청산하시겠습니까?"
+        }
+      ],
+
+      "pagination": {
+        "enabled": true,
+        "defaultPageSize": 20,
+        "pageSizeOptions": [10, 20, 50, 100]
+      }
+    },
+
+    "detail": {
+      "title": "선물 거래 상세",
+      "description": "선물 거래의 상세 정보 및 분석",
+
+      "layout": {
+        "type": "two-column",
+        "leftWidth": "35%",
+        "rightWidth": "65%"
+      },
+
+      "infoPanel": {
+        "sections": [
+          {
+            "title": "계약 정보",
+            "collapsible": false,
+            "fields": [
+              {
+                "label": "계약번호",
+                "value": "${item.contractNo}",
+                "editable": false
+              },
+              {
+                "label": "상품명",
+                "value": "${item.productName}",
+                "editable": false
+              },
+              {
+                "label": "계약일",
+                "value": "${item.contractDate}",
+                "format": "date",
+                "editable": false
+              },
+              {
+                "label": "만기일",
+                "value": "${item.expiryDate}",
+                "format": "date",
+                "editable": false
+              }
+            ]
+          },
+          {
+            "title": "거래 정보",
+            "collapsible": false,
+            "fields": [
+              {
+                "label": "진입가",
+                "value": "${item.entryPrice}",
+                "format": "number",
+                "editable": false
+              },
+              {
+                "label": "수량",
+                "value": "${item.quantity}",
+                "editable": false
+              },
+              {
+                "label": "진입액",
+                "value": "${item.entryAmount}",
+                "format": "currency",
+                "editable": false
+              }
+            ]
+          },
+          {
+            "title": "손익 정보",
+            "collapsible": true,
+            "collapsed": false,
+            "fields": [
+              {
+                "label": "현재가",
+                "value": "${item.currentPrice}",
+                "format": "number",
+                "editable": false
+              },
+              {
+                "label": "평가액",
+                "value": "${item.currentValue}",
+                "format": "currency",
+                "editable": false
+              },
+              {
+                "label": "손익",
+                "value": "${item.pnlAmount}",
+                "format": "currency",
+                "color": "dynamic",
+                "editable": false
+              },
+              {
+                "label": "손익율",
+                "value": "${item.pnlRate}",
+                "format": "percentage",
+                "color": "dynamic",
+                "editable": false
+              }
+            ]
+          },
+          {
+            "title": "위험 관리",
+            "collapsible": true,
+            "collapsed": false,
+            "fields": [
+              {
+                "label": "수익 목표가",
+                "value": "${item.targetProfitPrice}",
+                "format": "number",
+                "editable": true
+              },
+              {
+                "label": "손절 수준",
+                "value": "${item.stopLossPrice}",
+                "format": "number",
+                "editable": true
+              }
+            ]
+          }
+        ]
+      },
+
+      "tabs": [
+        {
+          "id": "overview",
+          "label": "개요",
+          "contentType": "chart",
+          "charts": [
+            {
+              "type": "line",
+              "title": "가격 추이",
+              "dataSource": "GET /api/derivatives/${itemId}/price-trend",
+              "xAxis": {
+                "type": "time",
+                "field": "date"
+              },
+              "yAxis": {
+                "type": "value",
+                "field": "price"
+              },
+              "series": [
+                {
+                  "name": "진입가",
+                  "data": "entryPrice",
+                  "type": "line",
+                  "color": "#2196F3"
+                },
+                {
+                  "name": "현재가",
+                  "data": "currentPrice",
+                  "type": "line",
+                  "color": "#4CAF50"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "transactions",
+          "label": "거래 내역",
+          "contentType": "table",
+          "table": {
+            "dataSource": "GET /api/derivatives/${itemId}/transactions",
+            "columns": [
+              {
+                "field": "transactionDate",
+                "label": "거래일",
+                "format": "date"
+              },
+              {
+                "field": "type",
+                "label": "구분",
+                "format": "badge"
+              },
+              {
+                "field": "quantity",
+                "label": "수량",
+                "align": "right"
+              },
+              {
+                "field": "price",
+                "label": "거래가",
+                "format": "number",
+                "align": "right"
+              },
+              {
+                "field": "amount",
+                "label": "거래액",
+                "format": "currency",
+                "align": "right"
+              },
+              {
+                "field": "fee",
+                "label": "수수료",
+                "format": "currency",
+                "align": "right"
+              }
+            ]
+          }
+        },
+        {
+          "id": "analysis",
+          "label": "분석",
+          "contentType": "analysis",
+          "analysis": {
+            "sections": [
+              {
+                "title": "거래 성과",
+                "metrics": [
+                  {
+                    "label": "보유 기간",
+                    "value": "${item.holdingDays}",
+                    "unit": "일"
+                  },
+                  {
+                    "label": "일일 평균 손익",
+                    "value": "${item.dailyAvgPnL}",
+                    "format": "currency"
+                  },
+                  {
+                    "label": "변동성",
+                    "value": "${item.volatility}",
+                    "format": "percentage"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+
+    "form": {
+      "title": "선물 거래 신규 등록",
+      "type": "modal",
+      "size": "large",
+
+      "fields": [
+        {
+          "name": "productId",
+          "label": "상품 선택",
+          "type": "select",
+          "required": true,
+          "placeholder": "상품을 선택하세요",
+          "options": {
+            "source": "GET /api/derivatives/products",
+            "labelField": "productName",
+            "valueField": "productId"
+          },
+          "validation": [
+            {
+              "type": "required",
+              "message": "상품은 필수 항목입니다"
+            }
+          ]
+        },
+        {
+          "name": "quantity",
+          "label": "수량",
+          "type": "number",
+          "required": true,
+          "placeholder": "0",
+          "validation": [
+            {
+              "type": "required",
+              "message": "수량은 필수 항목입니다"
+            },
+            {
+              "type": "min",
+              "value": 1,
+              "message": "수량은 1 이상이어야 합니다"
+            },
+            {
+              "type": "max",
+              "value": 10000,
+              "message": "수량은 10,000 이하여야 합니다"
+            }
+          ]
+        },
+        {
+          "name": "entryPrice",
+          "label": "진입가",
+          "type": "number",
+          "required": true,
+          "placeholder": "0.00",
+          "step": 0.01,
+          "hint": "현재가: ${currentPrice}",
+          "validation": [
+            {
+              "type": "required",
+              "message": "진입가는 필수 항목입니다"
+            },
+            {
+              "type": "min",
+              "value": 0,
+              "message": "진입가는 0 이상이어야 합니다"
+            }
+          ]
+        },
+        {
+          "name": "targetProfitPrice",
+          "label": "수익 목표가 (선택사항)",
+          "type": "number",
+          "required": false,
+          "placeholder": "선택사항",
+          "step": 0.01,
+          "help": "이 가격에 도달하면 자동 매도할 수 있습니다"
+        },
+        {
+          "name": "stopLossPrice",
+          "label": "손절 수준 (선택사항)",
+          "type": "number",
+          "required": false,
+          "placeholder": "선택사항",
+          "step": 0.01,
+          "help": "이 가격까지 내려가면 자동 매도 됩니다",
+          "validation": [
+            {
+              "type": "custom",
+              "validate": "stopLossPrice < entryPrice",
+              "message": "손절 수준은 진입가보다 낮아야 합니다"
+            }
+          ]
+        },
+        {
+          "name": "memo",
+          "label": "메모",
+          "type": "textarea",
+          "required": false,
+          "maxLength": 500,
+          "placeholder": "거래에 대한 추가 정보를 입력하세요",
+          "rows": 4
+        }
+      ],
+
+      "submitButton": {
+        "label": "거래 시작",
+        "variant": "primary"
+      },
+
+      "cancelButton": {
+        "label": "취소",
+        "variant": "secondary"
+      }
+    },
+
+    "report": {
+      "title": "선물거래 분석",
+      "description": "기간별 선물 거래 성과 분석",
+
+      "metrics": [
+        {
+          "id": "total-trades",
+          "label": "총 거래건수",
+          "value": "totalTrades",
+          "format": "number",
+          "icon": "activity"
+        },
+        {
+          "id": "profit-trades",
+          "label": "수익 거래",
+          "value": "profitTrades",
+          "format": "number",
+          "icon": "trending-up"
+        },
+        {
+          "id": "loss-trades",
+          "label": "손실 거래",
+          "value": "lossTrades",
+          "format": "number",
+          "icon": "trending-down"
+        },
+        {
+          "id": "win-rate",
+          "label": "승률",
+          "value": "winRate",
+          "format": "percentage",
+          "icon": "percent"
+        },
+        {
+          "id": "total-pnl",
+          "label": "총 손익",
+          "value": "totalPnL",
+          "format": "currency",
+          "icon": "wallet",
+          "color": "dynamic"
+        },
+        {
+          "id": "avg-pnl",
+          "label": "평균 손익",
+          "value": "avgPnL",
+          "format": "currency",
+          "icon": "bar-chart-2"
+        }
+      ],
+
+      "charts": [
+        {
+          "id": "pnl-trend",
+          "type": "line",
+          "title": "손익 추이",
+          "dataSource": "GET /api/derivatives/report/pnl-trend?start=${startDate}&end=${endDate}",
+          "xAxis": "date",
+          "yAxis": "pnl",
+          "colors": ["#2196F3"]
+        },
+        {
+          "id": "monthly-performance",
+          "type": "bar",
+          "title": "월별 성과",
+          "dataSource": "GET /api/derivatives/report/monthly-performance?start=${startDate}&end=${endDate}",
+          "categories": ["수익", "손실"],
+          "colors": ["#4CAF50", "#F44336"]
+        },
+        {
+          "id": "trade-distribution",
+          "type": "pie",
+          "title": "거래 분포",
+          "dataSource": "GET /api/derivatives/report/trade-distribution?start=${startDate}&end=${endDate}",
+          "colors": ["#FF9800", "#2196F3", "#4CAF50", "#F44336"]
+        },
+        {
+          "id": "cumulative-pnl",
+          "type": "area",
+          "title": "누적 손익",
+          "dataSource": "GET /api/derivatives/report/cumulative-pnl?start=${startDate}&end=${endDate}",
+          "xAxis": "date",
+          "yAxis": "cumulativePnL",
+          "colors": ["#2196F3"]
+        }
+      ],
+
+      "table": {
+        "title": "주요 거래 내역",
+        "dataSource": "GET /api/derivatives/report/transactions?start=${startDate}&end=${endDate}&limit=20",
+        "columns": [
+          {
+            "field": "transactionDate",
+            "label": "거래일",
+            "format": "date"
+          },
+          {
+            "field": "productName",
+            "label": "상품"
+          },
+          {
+            "field": "quantity",
+            "label": "수량",
+            "align": "right"
+          },
+          {
+            "field": "entryPrice",
+            "label": "진입가",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "exitPrice",
+            "label": "청산가",
+            "format": "number",
+            "align": "right"
+          },
+          {
+            "field": "pnlAmount",
+            "label": "손익",
+            "format": "currency",
+            "align": "right",
+            "color": "dynamic"
+          },
+          {
+            "field": "pnlRate",
+            "label": "손익율",
+            "format": "percentage",
+            "align": "right",
+            "color": "dynamic"
+          }
+        ]
+      },
+
+      "insights": {
+        "sections": [
+          {
+            "title": "📈 주요 성과",
+            "type": "positive",
+            "items": []
+          },
+          {
+            "title": "⚠️ 주의사항",
+            "type": "warning",
+            "items": []
+          },
+          {
+            "title": "💡 추천사항",
+            "type": "suggestion",
+            "items": []
+          }
+        ]
+      }
+    }
+  },
+
+  "dataBinding": {
+    "listApi": {
+      "endpoint": "GET /api/derivatives/list",
+      "params": {
+        "search": "searchBar.value",
+        "filter": "filterTabs.selected",
+        "page": "pagination.currentPage",
+        "limit": "pagination.pageSize",
+        "sortBy": "dataTable.sortColumn",
+        "sortOrder": "dataTable.sortOrder"
+      },
+      "response": {
+        "items": "data.items",
+        "total": "data.total",
+        "summary": "data.summary"
+      }
+    },
+
+    "detailApi": {
+      "endpoint": "GET /api/derivatives/{itemId}",
+      "response": "data"
+    },
+
+    "formApi": {
+      "endpoint": "POST /api/derivatives/create",
+      "method": "POST",
+      "body": "formData",
+      "response": {
+        "success": "status == 'success'",
+        "message": "message"
+      }
+    }
+  },
+
+  "validation": {
+    "client": true,
+    "server": true,
+    "rules": {
+      "entryPrice": {
+        "required": true,
+        "type": "number",
+        "min": 0
+      },
+      "quantity": {
+        "required": true,
+        "type": "integer",
+        "min": 1,
+        "max": 10000
+      }
+    }
+  }
+}

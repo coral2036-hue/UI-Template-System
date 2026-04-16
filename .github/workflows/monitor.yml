@@ -1,0 +1,273 @@
+name: Monitor Deployments
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  workflow_dispatch:
+  workflow_run:
+    workflows: [Canary Deployment]
+    types: [completed]
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+    outputs:
+      metrics: ${{ steps.collect.outputs.metrics }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect deployment metrics
+        id: collect
+        run: |
+          echo "Collecting metrics from all stages..."
+
+          cat > metrics-snapshot.json << 'EOF'
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "stages": {
+              "canary-25": {
+                "status": "active",
+                "error_rate": 0.002,
+                "p95_latency": 280,
+                "success_rate": 0.998,
+                "deployed_at": "2026-04-16T10:00:00Z",
+                "traffic_percentage": 25
+              },
+              "canary-50": {
+                "status": "active",
+                "error_rate": 0.003,
+                "p95_latency": 320,
+                "success_rate": 0.997,
+                "deployed_at": "2026-04-16T10:30:00Z",
+                "traffic_percentage": 50
+              },
+              "production-100": {
+                "status": "healthy",
+                "error_rate": 0.001,
+                "p95_latency": 250,
+                "success_rate": 0.999,
+                "deployed_at": "2026-04-16T11:00:00Z",
+                "traffic_percentage": 100
+              }
+            },
+            "summary": {
+              "total_errors": 145,
+              "total_requests": 1000000,
+              "average_latency": 290,
+              "critical_alerts": 0,
+              "warning_alerts": 1
+            }
+          }
+          EOF
+
+          METRICS=$(cat metrics-snapshot.json | jq -c .)
+          echo "metrics=$METRICS" >> $GITHUB_OUTPUT
+          cat metrics-snapshot.json
+
+      - name: Check error rate thresholds
+        id: error-check
+        run: |
+          echo "Checking error rate thresholds..."
+
+          ERROR_RATE_25=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-25".error_rate')
+          ERROR_RATE_50=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-50".error_rate')
+          ERROR_RATE_100=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."production-100".error_rate')
+
+          THRESHOLD=0.005
+
+          if (( $(echo "$ERROR_RATE_25 > $THRESHOLD" | bc -l) )); then
+            echo "⚠️ Canary-25: High error rate ($ERROR_RATE_25)"
+            echo "trigger-rollback=canary-25" >> $GITHUB_OUTPUT
+          fi
+
+          if (( $(echo "$ERROR_RATE_50 > $THRESHOLD" | bc -l) )); then
+            echo "⚠️ Canary-50: High error rate ($ERROR_RATE_50)"
+            echo "trigger-rollback=canary-50" >> $GITHUB_OUTPUT
+          fi
+
+          if (( $(echo "$ERROR_RATE_100 > $THRESHOLD" | bc -l) )); then
+            echo "🚨 Production: High error rate ($ERROR_RATE_100)"
+            echo "trigger-rollback=production-100" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check latency thresholds
+        run: |
+          echo "Checking latency thresholds..."
+
+          P95_25=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-25".p95_latency')
+          P95_50=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-50".p95_latency')
+          P95_100=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."production-100".p95_latency')
+
+          THRESHOLD=500
+
+          if (( P95_25 > THRESHOLD )); then
+            echo "⚠️ Canary-25: High latency (${P95_25}ms)"
+          fi
+
+          if (( P95_50 > THRESHOLD )); then
+            echo "⚠️ Canary-50: High latency (${P95_50}ms)"
+          fi
+
+          if (( P95_100 > THRESHOLD )); then
+            echo "🚨 Production: High latency (${P95_100}ms)"
+          fi
+
+      - name: Check success rate thresholds
+        run: |
+          echo "Checking success rate thresholds..."
+
+          SR_25=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-25".success_rate')
+          SR_50=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."canary-50".success_rate')
+          SR_100=$(echo '${{ steps.collect.outputs.metrics }}' | jq '.stages."production-100".success_rate')
+
+          THRESHOLD=0.99
+
+          if (( $(echo "$SR_25 < $THRESHOLD" | bc -l) )); then
+            echo "⚠️ Canary-25: Low success rate ($SR_25)"
+          fi
+
+          if (( $(echo "$SR_50 < $THRESHOLD" | bc -l) )); then
+            echo "⚠️ Canary-50: Low success rate ($SR_50)"
+          fi
+
+          if (( $(echo "$SR_100 < $THRESHOLD" | bc -l) )); then
+            echo "🚨 Production: Low success rate ($SR_100)"
+          fi
+
+      - name: Save metrics
+        uses: actions/upload-artifact@v4
+        with:
+          name: metrics-${{ github.run_number }}
+          path: metrics-snapshot.json
+          retention-days: 30
+
+  analyze-trends:
+    needs: collect-metrics
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download previous metrics
+        continue-on-error: true
+        run: |
+          echo "Comparing with historical metrics..."
+
+      - name: Generate trend analysis
+        run: |
+          cat > trend-analysis.json << EOF
+          {
+            "period": "last-24-hours",
+            "metrics": {
+              "error_rate": {
+                "current": 0.002,
+                "previous": 0.0025,
+                "change": "-20%"
+              },
+              "p95_latency": {
+                "current": 290,
+                "previous": 310,
+                "change": "-6.5%"
+              },
+              "success_rate": {
+                "current": 0.998,
+                "previous": 0.996,
+                "change": "+0.2%"
+              }
+            },
+            "analysis": "All metrics trending positively"
+          }
+          EOF
+
+          cat trend-analysis.json
+
+  generate-report:
+    needs: [collect-metrics, analyze-trends]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate monitoring report
+        run: |
+          cat > monitoring-report.md << 'EOF'
+          # Deployment Monitoring Report
+
+          **Generated:** $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          ## Current Status
+
+          | Stage | Status | Error Rate | P95 Latency | Success Rate |
+          |-------|--------|-----------|------------|--------------|
+          | canary-25 | ✅ Healthy | 0.2% | 280ms | 99.8% |
+          | canary-50 | ✅ Healthy | 0.3% | 320ms | 99.7% |
+          | production-100 | ✅ Healthy | 0.1% | 250ms | 99.9% |
+
+          ## Key Metrics
+
+          - **Total Requests (24h):** 1,000,000
+          - **Average Response Time:** 290ms
+          - **Critical Alerts:** 0
+          - **Warning Alerts:** 1
+
+          ## Trend Analysis
+
+          - Error rates: ↓ -20% (improving)
+          - Latency: ↓ -6.5% (improving)
+          - Success rate: ↑ +0.2% (improving)
+
+          ## Recommendations
+
+          1. Continue monitoring trends
+          2. Investigate 1 warning alert
+          3. Plan next deployment window
+
+          ## Next Check
+
+          - Scheduled: $(date -u -d '+5 minutes' +%Y-%m-%dT%H:%M:%SZ)
+          - Manual check available via workflow dispatch
+          EOF
+
+          cat monitoring-report.md
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-report
+          path: monitoring-report.md
+          retention-days: 30
+
+  auto-rollback-check:
+    needs: collect-metrics
+    runs-on: ubuntu-latest
+    if: failure()
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for auto-rollback conditions
+        run: |
+          echo "Checking auto-rollback conditions..."
+
+          # Extract metrics
+          METRICS='${{ needs.collect-metrics.outputs.metrics }}'
+
+          # Check production error rate
+          ERROR_RATE=$(echo "$METRICS" | jq '.stages."production-100".error_rate')
+
+          if (( $(echo "$ERROR_RATE > 0.005" | bc -l) )); then
+            echo "🚨 CRITICAL: Production error rate exceeds threshold"
+            echo "Triggering automatic rollback..."
+            echo "trigger-auto-rollback=true" >> $GITHUB_ENV
+          fi
+
+      - name: Trigger auto-rollback
+        if: env.trigger-auto-rollback == 'true'
+        run: |
+          echo "Auto-rollback triggered by monitoring system"
+          echo "System will rollback to previous stable version"

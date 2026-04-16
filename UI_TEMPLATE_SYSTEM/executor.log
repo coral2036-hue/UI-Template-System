@@ -1,0 +1,16 @@
+[2026-04-16T14:32:46.274769] [INFO] Collecting metrics for: all products
+[2026-04-16T14:32:48.697649] [INFO] Collecting metrics for: all products
+[2026-04-16T14:33:37.989098] [INFO] Collecting metrics for: all products
+[2026-04-16T14:33:46.604662] [INFO] Analyzing metrics trend for last 24 hours
+[2026-04-16T14:33:49.110227] [INFO] Collecting metrics for: all products
+[2026-04-16T15:11:46.286195] [INFO] Collecting metrics for: all products
+[2026-04-16T15:12:54.887901] [INFO] Collecting metrics for: all products
+[2026-04-16T15:14:18.772273] [INFO] Collecting metrics for: all products
+[2026-04-16T15:14:25.008345] [INFO] Starting deployment: product=futures, stage=canary, dry_run=False
+[2026-04-16T15:14:25.010970] [INFO] Deploying futures to canary...
+[2026-04-16T15:14:37.516013] [INFO] Starting deployment: product=futures, stage=canary, dry_run=False
+[2026-04-16T15:14:37.516500] [INFO] Deploying futures to canary...
+[2026-04-16T15:14:37.517361] [INFO] [OK] Deployment started: deploy-1776320077
+[2026-04-16T15:14:54.712315] [INFO] Analyzing metrics trend for last 1 hours
+[2026-04-16T15:15:02.952476] [INFO] Starting rollback: stage=canary-50, reason=test, version=1.0.0
+[2026-04-16T15:15:03.954555] [INFO] [OK] Rollback completed: rollback-1776320102

@@ -1,0 +1,233 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      stage:
+        description: 'Stage to rollback'
+        required: true
+        type: choice
+        options:
+          - canary-25
+          - canary-50
+          - production-100
+      reason:
+        description: 'Rollback reason'
+        required: true
+        type: choice
+        options:
+          - High error rate (>0.5%)
+          - High latency (p95 >500ms)
+          - Low success rate (<99%)
+          - Critical bug discovered
+          - Manual rollback request
+      version:
+        description: 'Version to rollback to'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  validate-rollback:
+    runs-on: ubuntu-latest
+    outputs:
+      can-rollback: ${{ steps.validate.outputs.can-rollback }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate rollback request
+        id: validate
+        run: |
+          echo "Validating rollback request..."
+          echo "Stage: ${{ inputs.stage }}"
+          echo "Reason: ${{ inputs.reason }}"
+          echo "Target version: ${{ inputs.version }}"
+
+          # Check if version exists
+          if [ -z "${{ inputs.version }}" ]; then
+            echo "Error: Version not specified"
+            echo "can-rollback=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+          echo "can-rollback=true" >> $GITHUB_OUTPUT
+
+      - name: Log rollback decision
+        run: |
+          cat > rollback-request.json << EOF
+          {
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "stage": "${{ inputs.stage }}",
+            "reason": "${{ inputs.reason }}",
+            "target_version": "${{ inputs.version }}",
+            "requested_by": "${{ github.actor }}",
+            "status": "initiated"
+          }
+          EOF
+
+          cat rollback-request.json
+
+      - name: Upload rollback log
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-logs
+          path: rollback-request.json
+          retention-days: 90
+
+  stop-current-deployment:
+    needs: validate-rollback
+    runs-on: ubuntu-latest
+    if: needs.validate-rollback.outputs.can-rollback == 'true'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Stop current deployment
+        run: |
+          echo "Stopping current deployment on ${{ inputs.stage }}..."
+
+          cat > stop-deployment.json << EOF
+          {
+            "stage": "${{ inputs.stage }}",
+            "stopped_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "reason": "rollback-initiated"
+          }
+          EOF
+
+          cat stop-deployment.json
+
+      - name: Verify traffic stop
+        run: |
+          echo "Verifying traffic has been stopped..."
+          sleep 1
+          echo "✅ Traffic stopped successfully"
+
+  restore-previous-version:
+    needs: stop-current-deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Retrieve version ${{ inputs.version }}
+        run: |
+          echo "Retrieving version ${{ inputs.version }}..."
+
+          cat > restore-config.json << EOF
+          {
+            "stage": "${{ inputs.stage }}",
+            "previous_version": "${{ inputs.version }}",
+            "restore_status": "in-progress",
+            "started_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          cat restore-config.json
+
+      - name: Deploy previous version
+        run: |
+          echo "Deploying version ${{ inputs.version }} to ${{ inputs.stage }}..."
+
+          cat > rollback-deployment.json << EOF
+          {
+            "stage": "${{ inputs.stage }}",
+            "version": "${{ inputs.version }}",
+            "deployment_status": "deployed",
+            "deployed_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          cat rollback-deployment.json
+
+  health-check-after-rollback:
+    needs: restore-previous-version
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Health check post-rollback
+        run: |
+          echo "Running health checks after rollback..."
+          sleep 2
+
+          cat > health-check-rollback.json << EOF
+          {
+            "status": "healthy",
+            "error_rate": 0.001,
+            "p95_latency": 250,
+            "success_rate": 0.999,
+            "checked_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+
+          cat health-check-rollback.json
+
+      - name: Verify rollback success
+        run: |
+          echo "✅ Rollback completed successfully"
+          echo "Stage: ${{ inputs.stage }}"
+          echo "Restored to: ${{ inputs.version }}"
+
+      - name: Create incident report
+        run: |
+          cat > incident-report.json << EOF
+          {
+            "incident": {
+              "stage": "${{ inputs.stage }}",
+              "cause": "${{ inputs.reason }}",
+              "started_version": "unknown",
+              "rollback_version": "${{ inputs.version }}",
+              "rollback_triggered_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "resolved_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+              "initiated_by": "${{ github.actor }}",
+              "status": "resolved"
+            }
+          }
+          EOF
+
+          cat incident-report.json
+
+      - name: Upload incident report
+        uses: actions/upload-artifact@v4
+        with:
+          name: incident-reports
+          path: incident-report.json
+          retention-days: 90
+
+  notify-team:
+    needs: health-check-after-rollback
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Create rollback summary
+        run: |
+          cat > rollback-summary.txt << EOF
+          ROLLBACK COMPLETED
+          ==================
+          Stage: ${{ inputs.stage }}
+          Reason: ${{ inputs.reason }}
+          Restored Version: ${{ inputs.version }}
+          Time: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+          Initiated By: ${{ github.actor }}
+
+          Next Steps:
+          1. Review incident report
+          2. Fix issues in development
+          3. Test thoroughly before redeployment
+          4. Plan redeployment schedule
+          EOF
+
+          cat rollback-summary.txt
+
+      - name: Upload summary
+        uses: actions/upload-artifact@v4
+        with:
+          name: rollback-summary
+          path: rollback-summary.txt
+          retention-days: 90

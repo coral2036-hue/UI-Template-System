@@ -1,0 +1,956 @@
+# BranchQ UI 템플릿 시스템 v1.0
+# 신규 상품/기능 UI 자동 생성 프레임워크
+
+##############################################
+# 1. 표준 화면 템플릿 정의
+##############################################
+
+templates:
+
+  # 템플릿 1: 목록 조회 화면
+  list-view:
+    name: "목록 조회 템플릿"
+    description: "데이터 목록을 조회하고 필터링, 검색하는 화면"
+    figmaTemplate: "S1-ListTemplate"
+
+    layout:
+      - section: "header"
+        height: "60px"
+        components:
+          - title: { type: "text", size: "h2" }
+          - subtitle: { type: "text", size: "caption", color: "gray" }
+
+      - section: "filters"
+        height: "auto"
+        components:
+          - searchBar:
+              type: "input"
+              placeholder: "검색어 입력"
+              icon: "search"
+
+          - filterTabs:
+              type: "tab-group"
+              items: "${product.filterOptions}"
+
+          - actionButtons:
+              type: "button-group"
+              buttons:
+                - { label: "조회", variant: "primary", action: "fetch" }
+                - { label: "초기화", variant: "secondary", action: "reset" }
+
+      - section: "summary"
+        height: "auto"
+        components:
+          - summaryCards:
+              type: "metric-card-group"
+              cards: "${product.summaryMetrics}"
+
+      - section: "content"
+        height: "fill"
+        components:
+          - dataTable:
+              type: "data-table"
+              columns: "${product.listColumns}"
+              data: "${product.listData}"
+              sortable: true
+              selectable: "${product.enableSelection}"
+              pagination: true
+              rowActions: "${product.rowActions}"
+
+    dataBinding:
+      apiEndpoint: "GET /api/${product.id}/list"
+      requestParams:
+        - name: "search"
+          source: "searchBar.value"
+        - name: "filter"
+          source: "filterTabs.selected"
+        - name: "page"
+          source: "pagination.currentPage"
+        - name: "limit"
+          source: "pagination.pageSize"
+        - name: "sortBy"
+          source: "dataTable.sortColumn"
+        - name: "sortOrder"
+          source: "dataTable.sortOrder"
+
+      responseMapping:
+        - field: "dataTable.data"
+          source: "response.data.items"
+        - field: "pagination.total"
+          source: "response.data.total"
+        - field: "summaryCards.data"
+          source: "response.data.summary"
+
+    interactions:
+      - trigger: "row-click"
+        action: "navigate"
+        target: "detail-view"
+        params: { id: "row.id" }
+
+      - trigger: "action-button-click"
+        action: "execute"
+        target: "${rowAction.action}"
+
+      - trigger: "search-submit"
+        action: "fetch"
+        debounce: 500ms
+
+      - trigger: "filter-change"
+        action: "fetch"
+
+    responsive:
+      mobile:
+        hideColumns: ["${product.mobileHideColumns}"]
+        stackSummary: true
+      tablet:
+        columnWidths: "responsive"
+      desktop:
+        columnWidths: "fixed"
+
+
+  # 템플릿 2: 상세 조회 화면
+  detail-view:
+    name: "상세 조회 템플릿"
+    description: "선택된 항목의 상세 정보를 조회하는 화면"
+    figmaTemplate: "S2-DetailTemplate"
+
+    layout:
+      - section: "header"
+        height: "80px"
+        components:
+          - backButton: { type: "icon-button", icon: "back" }
+          - title: { type: "text", size: "h2", content: "${item.name}" }
+          - statusBadge: { type: "badge", status: "${item.status}" }
+          - actionButtons:
+              type: "button-group"
+              buttons: "${product.detailActions}"
+
+      - section: "tabs"
+        height: "50px"
+        components:
+          - tabGroup:
+              type: "tab-group"
+              tabs: "${product.detailTabs}"
+
+      - section: "content"
+        height: "fill"
+        components:
+          - twoColumnLayout:
+              left:
+                width: "35%"
+                components:
+                  - infoPanel:
+                      type: "info-panel"
+                      sections: "${product.detailSections}"
+
+              right:
+                width: "65%"
+                components:
+                  - tabContent:
+                      type: "tab-content"
+                      dynamic: true
+                      tabs: "${product.detailTabs}"
+
+    detailSections:
+      # 각 섹션은 다음과 같이 정의됨
+      - title: "기본 정보"
+        collapsible: false
+        fields:
+          - { label: "항목명", value: "${item.name}", editable: false }
+          - { label: "계약번호", value: "${item.contractNo}", editable: false }
+          - { label: "상태", value: "${item.status}", format: "badge", editable: false }
+
+      - title: "금액 정보"
+        collapsible: true
+        collapsed: false
+        fields:
+          - { label: "진입액", value: "${item.entryAmount}", format: "currency", editable: false }
+          - { label: "현재 평가액", value: "${item.currentValue}", format: "currency", editable: false }
+          - { label: "손익", value: "${item.pnl}", format: "currency", color: "dynamic", editable: false }
+          - { label: "손익율", value: "${item.pnlRate}", format: "percentage", color: "dynamic", editable: false }
+
+    detailTabs:
+      - id: "overview"
+        label: "개요"
+        content:
+          type: "chart-group"
+          charts:
+            - { type: "line", title: "추이", dataSource: "GET /api/${product.id}/${item.id}/trend" }
+            - { type: "bar", title: "비교", dataSource: "GET /api/${product.id}/${item.id}/comparison" }
+
+      - id: "transactions"
+        label: "거래 내역"
+        content:
+          type: "data-table"
+          columns: "${product.transactionColumns}"
+          dataSource: "GET /api/${product.id}/${item.id}/transactions"
+
+      - id: "analysis"
+        label: "분석"
+        content:
+          type: "analysis-panel"
+          sections: "${product.analysisSections}"
+          dataSource: "GET /api/${product.id}/${item.id}/analysis"
+
+      - id: "documents"
+        label: "문서"
+        content:
+          type: "document-list"
+          dataSource: "GET /api/${product.id}/${item.id}/documents"
+
+    dataBinding:
+      apiEndpoint: "GET /api/${product.id}/${itemId}"
+      responseMapping:
+        - field: "item.*"
+          source: "response.data"
+        - field: "detailSections.*.fields.*.value"
+          source: "response.data.[fieldName]"
+
+    interactions:
+      - trigger: "tab-change"
+        action: "load-tab-content"
+
+      - trigger: "action-button-click"
+        action: "execute"
+        target: "${action.name}"
+
+
+  # 템플릿 3: 입력/수정 폼
+  form-modal:
+    name: "입력/수정 폼 템플릿"
+    description: "데이터를 입력하거나 수정하는 모달 폼"
+    figmaTemplate: "CommonModal-L"
+
+    layout:
+      - section: "header"
+        height: "50px"
+        components:
+          - title: { type: "text", size: "h3", content: "${form.title}" }
+          - closeButton: { type: "icon-button", icon: "close", action: "close-modal" }
+
+      - section: "content"
+        height: "fill"
+        scrollable: true
+        components:
+          - formContainer:
+              type: "form"
+              layout: "vertical"
+              fields: "${product.formFields}"
+
+      - section: "footer"
+        height: "60px"
+        components:
+          - buttonGroup:
+              type: "button-group"
+              layout: "right"
+              buttons:
+                - { label: "저장", variant: "primary", action: "submit" }
+                - { label: "취소", variant: "secondary", action: "close" }
+
+    formFields:
+      # 필드 정의 패턴
+      - name: "accountName"
+        label: "계좌명"
+        type: "input"
+        required: true
+        placeholder: "계좌 이름을 입력하세요"
+        validation:
+          - type: "required"
+            message: "필수 입력 항목입니다"
+          - type: "maxLength"
+            value: 100
+            message: "100자 이내로 입력하세요"
+
+      - name: "productType"
+        label: "상품 유형"
+        type: "select"
+        required: true
+        options:
+          source: "GET /api/${product.id}/product-types"
+          labelField: "name"
+          valueField: "id"
+
+      - name: "amount"
+        label: "금액"
+        type: "number"
+        required: true
+        placeholder: "0"
+        validation:
+          - type: "min"
+            value: 0
+            message: "0 이상이어야 합니다"
+          - type: "max"
+            value: 1000000000
+            message: "1,000,000,000 이하여야 합니다"
+
+      - name: "targetProfit"
+        label: "수익 목표 (선택사항)"
+        type: "number"
+        required: false
+        placeholder: "선택사항"
+
+      - name: "stopLoss"
+        label: "손절 수준 (선택사항)"
+        type: "number"
+        required: false
+        placeholder: "선택사항"
+
+      - name: "memo"
+        label: "메모"
+        type: "textarea"
+        required: false
+        maxLength: 500
+        placeholder: "추가 정보를 입력하세요"
+
+    formActions:
+      - event: "submit"
+        validation: "validate-all-fields"
+        action: "POST /api/${product.id}/create"
+        successCallback: "close-modal && refresh-list"
+        errorCallback: "show-error-message"
+
+      - event: "fieldChange"
+        target: "targetProfit"
+        action: "calculate-related-fields"
+        updates:
+          - field: "profitPercentage"
+            formula: "(targetProfit - amount) / amount * 100"
+
+
+  # 템플릿 4: 리포트 섹션
+  report-section:
+    name: "리포트 섹션 템플릿"
+    description: "분석 리포트에 포함되는 상품별 섹션"
+    figmaTemplate: "ReportTemplate"
+
+    layout:
+      - section: "section-header"
+        height: "60px"
+        components:
+          - sectionTitle:
+              type: "text"
+              size: "h2"
+              content: "${product.name} 현황"
+          - sectionDescription:
+              type: "text"
+              size: "caption"
+              color: "gray"
+              content: "${report.period}"
+
+      - section: "metrics"
+        height: "120px"
+        components:
+          - metricCards:
+              type: "metric-card-group"
+              columns: 4
+              cards: "${product.reportMetrics}"
+
+      - section: "charts"
+        height: "400px"
+        components:
+          - chartGroup:
+              type: "chart-group"
+              layout: "2x2"
+              charts:
+                - {
+                    type: "line",
+                    title: "손익 추이",
+                    dataSource: "GET /api/${product.id}/report/pnl-trend",
+                    xAxis: "date",
+                    yAxis: "pnl",
+                    colors: ["#2196F3"]
+                  }
+                - {
+                    type: "bar",
+                    title: "월별 성과",
+                    dataSource: "GET /api/${product.id}/report/monthly-performance",
+                    categories: ["수익", "손실"],
+                    colors: ["#4CAF50", "#F44336"]
+                  }
+                - {
+                    type: "pie",
+                    title: "거래 분포",
+                    dataSource: "GET /api/${product.id}/report/trade-distribution",
+                    colors: ["#FF9800", "#2196F3", "#4CAF50"]
+                  }
+                - {
+                    type: "table",
+                    title: "통계",
+                    dataSource: "GET /api/${product.id}/report/statistics",
+                    columns: "${product.statisticsColumns}"
+                  }
+
+      - section: "data-table"
+        height: "300px"
+        components:
+          - transactionTable:
+              type: "data-table"
+              title: "주요 거래"
+              columns: "${product.reportTableColumns}"
+              dataSource: "GET /api/${product.id}/report/transactions"
+              rowLimit: 10
+
+      - section: "insights"
+        height: "auto"
+        components:
+          - insightPanel:
+              type: "insight-panel"
+              sections:
+                - title: "📈 주요 성과"
+                  items: "${report.insights.achievements}"
+                - title: "⚠️ 주의사항"
+                  items: "${report.insights.warnings}"
+                - title: "💡 추천사항"
+                  items: "${report.insights.recommendations}"
+
+    reportMetrics:
+      - { label: "총 거래", value: "totalTrades", format: "number" }
+      - { label: "수익 거래", value: "profitTrades", format: "number" }
+      - { label: "승률", value: "winRate", format: "percentage" }
+      - { label: "총 손익", value: "totalPnL", format: "currency" }
+
+
+##############################################
+# 2. 기존 상품 UI 매핑
+##############################################
+
+products:
+
+  # 상품 1: 신용카드
+  credit-card:
+    id: "card"
+    name: "신용카드"
+    dbFunction: "branchq_get_all_card_info"
+    status: "active"
+    version: "1.0.0"
+
+    screens:
+      - id: "list"
+        name: "신용카드 목록"
+        template: "list-view"
+        customization:
+          summaryMetrics:
+            - { label: "카드 수", value: "totalCards", format: "number" }
+            - { label: "총 한도", value: "totalLimit", format: "currency" }
+            - { label: "사용 금액", value: "totalUsed", format: "currency" }
+            - { label: "사용률", value: "usageRate", format: "percentage" }
+
+          listColumns:
+            - { field: "cardName", label: "카드명", width: "150px" }
+            - { field: "cardNickName", label: "별칭", width: "120px" }
+            - { field: "cardCo", label: "카드사", width: "100px" }
+            - { field: "validYm", label: "유효기한", width: "100px", format: "date" }
+            - { field: "limitAmt", label: "한도", width: "120px", format: "currency", align: "right" }
+            - { field: "usedAmt", label: "사용액", width: "120px", format: "currency", align: "right" }
+            - { field: "usageRate", label: "사용률", width: "100px", format: "percentage", align: "right" }
+
+          filterOptions:
+            - { label: "전체", value: "all" }
+            - { label: "사용 가능", value: "active" }
+            - { label: "만료 예정", value: "expiring" }
+
+          rowActions:
+            - { label: "상세보기", action: "view-detail", icon: "eye" }
+            - { label: "한도관리", action: "manage-limit", icon: "edit" }
+
+      - id: "detail"
+        name: "신용카드 상세"
+        template: "detail-view"
+        customization:
+          detailSections:
+            - title: "카드 정보"
+              fields:
+                - { label: "카드명", value: "${item.cardName}" }
+                - { label: "카드번호", value: "${item.cardNo}", mask: true }
+                - { label: "카드사", value: "${item.cardCo}" }
+                - { label: "유효기한", value: "${item.validYm}", format: "date" }
+                - { label: "발급일", value: "${item.issueDt}", format: "date" }
+
+            - title: "한도 및 사용"
+              fields:
+                - { label: "한도액", value: "${item.limitAmt}", format: "currency" }
+                - { label: "사용액", value: "${item.usedAmt}", format: "currency" }
+                - { label: "잔액", value: "${item.limitAmt - item.usedAmt}", format: "currency" }
+                - { label: "사용률", value: "${item.usageRate}", format: "percentage" }
+
+          detailTabs:
+            - { id: "usage", label: "사용내역" }
+            - { id: "limits", label: "한도관리" }
+            - { id: "rewards", label: "포인트/리워드" }
+
+      - id: "form"
+        name: "신용카드 등록"
+        template: "form-modal"
+        customization:
+          formFields:
+            - { name: "cardNickName", label: "카드 별칭", type: "input", required: true }
+            - { name: "cardType", label: "카드 종류", type: "select", required: true }
+            - { name: "limitAmt", label: "한도", type: "number", required: true }
+
+      - id: "report"
+        name: "신용카드 분석"
+        template: "report-section"
+        customization:
+          reportMetrics:
+            - { label: "활성 카드", value: "activeCards" }
+            - { label: "평균 사용률", value: "avgUsageRate", format: "percentage" }
+            - { label: "월 사용액", value: "monthlyUsage", format: "currency" }
+            - { label: "적립포인트", value: "totalRewards" }
+
+          reportTableColumns:
+            - { field: "cardName", label: "카드" }
+            - { field: "lastUsageDate", label: "최근사용" }
+            - { field: "usageAmt", label: "월사용액", format: "currency" }
+            - { field: "reward", label: "적립포인트" }
+
+
+  # 상품 2: 투자상품
+  investment:
+    id: "investment"
+    name: "투자상품"
+    dbFunction: "branchq_get_all_inv_list"
+    status: "active"
+    version: "1.0.0"
+
+    screens:
+      - id: "list"
+        name: "투자 포트폴리오"
+        template: "list-view"
+        customization:
+          summaryMetrics:
+            - { label: "총 투자액", value: "totalBuyAmt", format: "currency" }
+            - { label: "총 평가액", value: "totalEvaluateAmt", format: "currency" }
+            - { label: "총 손익", value: "totalReturnAmt", format: "currency", color: "dynamic" }
+            - { label: "총 수익률", value: "totalReturnRate", format: "percentage", color: "dynamic" }
+
+          listColumns:
+            - { field: "acctNo", label: "계좌", width: "120px" }
+            - { field: "prodName", label: "상품", width: "150px" }
+            - { field: "buyAmt", label: "매입액", width: "120px", format: "currency", align: "right" }
+            - { field: "currVal", label: "현재가", width: "120px", format: "currency", align: "right" }
+            - { field: "evaluateAmt", label: "평가액", width: "120px", format: "currency", align: "right" }
+            - { field: "returnAmt", label: "손익", width: "120px", format: "currency", align: "right", color: "dynamic" }
+            - { field: "returnRate", label: "수익율", width: "100px", format: "percentage", align: "right", color: "dynamic" }
+
+          filterOptions:
+            - { label: "전체", value: "all" }
+            - { label: "수익", value: "profit" }
+            - { label: "손실", value: "loss" }
+
+          rowActions:
+            - { label: "상세보기", action: "view-detail" }
+            - { label: "매도", action: "sell", enabled: "${item.returnRate > 0}" }
+
+      - id: "detail"
+        name: "투자상품 상세"
+        template: "detail-view"
+        customization:
+          detailSections:
+            - title: "상품 정보"
+              fields:
+                - { label: "상품명", value: "${item.prodName}" }
+                - { label: "계좌번호", value: "${item.acctNo}" }
+                - { label: "상품구분", value: "${item.prodType}" }
+
+            - title: "투자현황"
+              fields:
+                - { label: "매입액", value: "${item.buyAmt}", format: "currency" }
+                - { label: "현재가", value: "${item.currVal}", format: "currency" }
+                - { label: "평가액", value: "${item.evaluateAmt}", format: "currency" }
+                - { label: "손익", value: "${item.returnAmt}", format: "currency", color: "dynamic" }
+                - { label: "수익율", value: "${item.returnRate}", format: "percentage", color: "dynamic" }
+
+          detailTabs:
+            - { id: "chart", label: "가격추이" }
+            - { id: "transactions", label: "거래내역" }
+            - { id: "analysis", label: "분석" }
+
+      - id: "report"
+        name: "투자 분석"
+        template: "report-section"
+        customization:
+          reportMetrics:
+            - { label: "보유 종목", value: "holdingCount" }
+            - { label: "총 투자액", value: "totalBuyAmt", format: "currency" }
+            - { label: "총 수익율", value: "totalReturnRate", format: "percentage" }
+            - { label: "베스트 상품", value: "bestProduct" }
+
+
+  # 상품 3: 환율
+  exchange-rate:
+    id: "exchange"
+    name: "환율 정보"
+    dbFunction: "branchq_get_all_exg_rate"
+    status: "active"
+    version: "1.0.0"
+
+    screens:
+      - id: "list"
+        name: "환율 조회"
+        template: "list-view"
+        customization:
+          listColumns:
+            - { field: "currCd", label: "통화", width: "80px" }
+            - { field: "exgDate", label: "기준일", width: "100px", format: "date" }
+            - { field: "basicRate", label: "기준율", width: "120px", format: "number" }
+            - { field: "ttSellRate", label: "송금(매도)", width: "120px", format: "number" }
+            - { field: "ttBuyRate", label: "송금(매입)", width: "120px", format: "number" }
+            - { field: "cashSellRate", label: "현금(매도)", width: "120px", format: "number" }
+            - { field: "cashBuyRate", label: "현금(매입)", width: "120px", format: "number" }
+
+
+##############################################
+# 3. 신규 상품 추가 체크리스트
+##############################################
+
+newProductChecklist:
+
+  # 신규 상품 추가 시 자동 실행되는 프로세스
+
+  steps:
+
+    - step: 1
+      title: "상품 기본정보 정의"
+      tasks:
+        - "상품 ID 정의"
+        - "상품명 정의"
+        - "DB 함수명 확인"
+        - "상품 상태 설정 (active/inactive)"
+        - "버전 초기화 (1.0.0)"
+
+    - step: 2
+      title: "DB 함수 연결"
+      tasks:
+        - "DB 함수 명세서 검토"
+        - "입력 파라미터 매핑"
+        - "출력 필드 매핑"
+        - "API 엔드포인트 생성"
+        - "테스트 데이터 준비"
+
+    - step: 3
+      title: "UI 템플릿 선택 및 커스터마이징"
+      tasks:
+        - "목록 조회 템플릿 적용"
+        - "목록 열(column) 정의"
+        - "요약 지표(metric) 정의"
+        - "필터 옵션 정의"
+        - "행 액션(row actions) 정의"
+
+    - step: 4
+      title: "상세 조회 화면 구성"
+      tasks:
+        - "상세 정보 섹션 정의"
+        - "탭 구성 정의"
+        - "차트/그래프 정의"
+        - "관련 거래내역 테이블 정의"
+
+    - step: 5
+      title: "입력/수정 폼 정의"
+      tasks:
+        - "폼 필드 정의"
+        - "필드 유효성 규칙 정의"
+        - "필드 간 계산 로직 정의"
+        - "API 요청/응답 매핑"
+
+    - step: 6
+      title: "리포트 섹션 구성"
+      tasks:
+        - "리포트 지표(metrics) 정의"
+        - "차트 구성 정의"
+        - "테이블 구성 정의"
+        - "인사이트 항목 정의"
+
+    - step: 7
+      title: "Figma 디자인 생성"
+      tasks:
+        - "목록 화면 디자인"
+        - "상세 화면 디자인"
+        - "폼 모달 디자인"
+        - "리포트 섹션 디자인"
+        - "컴포넌트 연결"
+
+    - step: 8
+      title: "Code Connect 설정"
+      tasks:
+        - "Figma 노드 ID 매핑"
+        - "React 컴포넌트 파일 생성"
+        - "Code Connect 코드 작성"
+        - "자동 생성 테스트"
+
+    - step: 9
+      title: "통합 테스트"
+      tasks:
+        - "API 연결 테스트"
+        - "UI 렌더링 테스트"
+        - "데이터 바인딩 테스트"
+        - "상호작용 테스트"
+        - "반응형 디자인 테스트"
+
+    - step: 10
+      title: "문서화 및 배포"
+      tasks:
+        - "개발자 가이드 작성"
+        - "API 문서 업데이트"
+        - "컴포넌트 라이브러리 등록"
+        - "변경로그 작성"
+        - "운영 환경 배포"
+
+
+##############################################
+# 4. 템플릿 커스터마이징 규칙
+##############################################
+
+customizationRules:
+
+  # 각 상품별로 커스터마이징 가능한 항목들
+
+  listView:
+    required: true
+    customizable:
+      - summaryMetrics: "지표 추가/제거 가능"
+      - listColumns: "열 추가/제거/순서변경 가능"
+      - filterOptions: "필터 옵션 커스터마이징 가능"
+      - rowActions: "행 액션 추가 가능"
+      - pagination: "페이지 크기 커스터마이징 가능"
+    constraints:
+      - minColumns: 3
+      - maxColumns: 10
+      - minRows: 10
+      - maxRows: 100
+
+  detailView:
+    required: true
+    customizable:
+      - detailSections: "섹션 추가/제거 가능"
+      - detailTabs: "탭 추가/제거 가능"
+      - chartTypes: "차트 타입 커스터마이징 가능"
+    constraints:
+      - minSections: 1
+      - maxSections: 10
+      - minTabs: 1
+      - maxTabs: 8
+
+  formModal:
+    required: false
+    customizable:
+      - formFields: "필드 추가/제거 가능"
+      - fieldValidation: "검증 규칙 커스터마이징 가능"
+      - formLayout: "레이아웃 변경 가능"
+    constraints:
+      - minFields: 2
+      - maxFields: 20
+
+  reportSection:
+    required: false
+    customizable:
+      - reportMetrics: "지표 추가/제거 가능"
+      - chartConfig: "차트 구성 커스터마이징 가능"
+      - insightSections: "인사이트 항목 추가 가능"
+    constraints:
+      - minMetrics: 3
+      - maxMetrics: 8
+      - minCharts: 2
+      - maxCharts: 6
+
+
+##############################################
+# 5. 데이터 바인딩 표준화
+##############################################
+
+dataBindingPatterns:
+
+  # API 응답 데이터와 UI 필드 매핑 규칙
+
+  listView:
+    pattern: "GET /api/{product}/list?search={search}&filter={filter}&page={page}&limit={limit}"
+    requestParams:
+      - name: "search"
+        source: "searchBar.value"
+        required: false
+      - name: "filter"
+        source: "filterTabs.selected"
+        required: false
+      - name: "page"
+        source: "pagination.currentPage"
+        required: true
+        default: 1
+      - name: "limit"
+        source: "pagination.pageSize"
+        required: true
+        default: 20
+
+    responseFormat:
+      status: "success/error"
+      data:
+        items: "array"  # dataTable.data에 바인딩
+        total: "number"  # pagination.total에 바인딩
+        summary:
+          metric1: "number or currency"
+          metric2: "number or currency"
+          # ... summaryCards에 바인딩
+
+  detailView:
+    pattern: "GET /api/{product}/{itemId}"
+    responseFormat:
+      status: "success/error"
+      data:
+        id: "string"
+        name: "string"
+        # ... 모든 필드가 ${item.*}로 접근 가능
+        transactions:
+          - items: "array"  # 거래내역 탭
+        analysis:
+          - sections: "array"  # 분석 탭
+
+  formModal:
+    submitPattern: "POST /api/{product}/create OR PUT /api/{product}/{itemId}"
+    requestFormat:
+      fields: "form fields"
+      validation: "client-side + server-side"
+    responseFormat:
+      status: "success/error"
+      data:
+        id: "new item id"
+        message: "success message"
+      errors:
+        - field: "field name"
+          message: "error message"
+
+
+##############################################
+# 6. 자동 생성 가능 아티팩트
+##############################################
+
+autoGenerationTargets:
+
+  # 템플릿 기반으로 자동 생성 가능한 항목들
+
+  figmaDesign:
+    enabled: true
+    generator: "figma-code-generator"
+    outputs:
+      - "List view frame"
+      - "Detail view frame"
+      - "Form modal frame"
+      - "Report section frame"
+    parameters:
+      - productName
+      - columnDefinitions
+      - colorScheme
+
+  reactComponents:
+    enabled: true
+    generator: "code-connect"
+    outputs:
+      - "ListViewContainer.tsx"
+      - "DetailViewContainer.tsx"
+      - "FormModal.tsx"
+      - "ReportSection.tsx"
+    parameters:
+      - dataSource
+      - apiEndpoints
+      - stateManagement
+
+  apiDocumentation:
+    enabled: true
+    generator: "openapi-generator"
+    outputs:
+      - "openapi.yaml"
+      - "API Documentation (HTML)"
+      - "Postman Collection"
+    parameters:
+      - endpointPaths
+      - requestFormat
+      - responseFormat
+
+  testCases:
+    enabled: true
+    generator: "test-generator"
+    outputs:
+      - "*.test.tsx"
+      - "E2E test scenarios"
+    parameters:
+      - component
+      - dataScenarios
+
+  documentation:
+    enabled: true
+    generator: "doc-generator"
+    outputs:
+      - "Developer Guide"
+      - "Component Documentation"
+      - "API Reference"
+    parameters:
+      - productName
+      - features
+      - examples
+
+
+##############################################
+# 7. 변경 관리 및 버전 관리
+##############################################
+
+versionControl:
+
+  format: "MAJOR.MINOR.PATCH"
+
+  # 변경 타입별 버전 업데이트
+  changeTypes:
+
+    - type: "component-addition"
+      description: "새 컴포넌트 추가"
+      version: "minor"
+      breakingChange: false
+      example:
+        from: "1.0.0"
+        to: "1.1.0"
+
+    - type: "component-deletion"
+      description: "컴포넌트 제거"
+      version: "major"
+      breakingChange: true
+      example:
+        from: "1.0.0"
+        to: "2.0.0"
+
+    - type: "component-property-change"
+      description: "컴포넌트 속성 변경"
+      version: "minor"
+      breakingChange: false
+      example:
+        from: "1.0.0"
+        to: "1.1.0"
+
+    - type: "api-endpoint-change"
+      description: "API 엔드포인트 변경"
+      version: "major"
+      breakingChange: true
+      example:
+        from: "1.0.0"
+        to: "2.0.0"
+
+    - type: "bugfix"
+      description: "버그 수정"
+      version: "patch"
+      breakingChange: false
+      example:
+        from: "1.0.0"
+        to: "1.0.1"
+
+  # 변경사항 추적
+  changeLog:
+    - version: "1.0.0"
+      releaseDate: "2026-04-15"
+      type: "initial"
+      changes:
+        - "Initial release"
+      breakingChanges: []
+
+    - version: "1.1.0"
+      releaseDate: "2026-04-16"
+      type: "feature"
+      changes:
+        - "Add new metric to list view"
+        - "Improve form validation"
+      breakingChanges: []
+      migration: "None (backward compatible)"

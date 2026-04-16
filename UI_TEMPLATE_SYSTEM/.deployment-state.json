@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "deployments": {
+    "deploy-1776320065": {
+      "id": "deploy-1776320065",
+      "products": [
+        "futures"
+      ],
+      "stage": "canary",
+      "version": "1.0.0",
+      "started_at": "2026-04-16T15:14:25.010960",
+      "status": "deployed",
+      "metrics": {},
+      "deployed_at": "2026-04-16T15:14:25.011437"
+    },
+    "deploy-1776320077": {
+      "id": "deploy-1776320077",
+      "products": [
+        "futures"
+      ],
+      "stage": "canary",
+      "version": "1.0.0",
+      "started_at": "2026-04-16T15:14:37.516494",
+      "status": "deployed",
+      "metrics": {},
+      "deployed_at": "2026-04-16T15:14:37.516839"
+    }
+  },
+  "products": [],
+  "last_updated": "2026-04-16T15:15:03.953654",
+  "rollbacks": {
+    "rollback-1776320102": {
+      "id": "rollback-1776320102",
+      "stage": "canary-50",
+      "reason": "test",
+      "version": "1.0.0",
+      "started_at": "2026-04-16T15:15:02.953051",
+      "status": "completed",
+      "completed_at": "2026-04-16T15:15:03.953621"
+    }
+  }
+}
